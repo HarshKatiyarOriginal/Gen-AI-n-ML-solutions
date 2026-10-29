@@ -1,0 +1,1012 @@
+<title>Knowledge-Vault Team Handbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a field-manual e-book. Sticky chapter rail on wide screens, single reading column, full-bleed figures drawn in inline SVG. */
+:root{
+  --bg:#F1F3F6;
+  --surface:#FFFFFF;
+  --surface-2:#E7EBF0;
+  --ink:#14202E;
+  --ink-soft:#4A586A;
+  --ink-faint:#7D8999;
+  --line:#CDD4DE;
+  --accent:#0E6A70;      /* vault teal */
+  --accent-soft:#D7ECEC;
+  --brass:#A8761F;       /* brass of the vault door */
+  --brass-soft:#F3E6CC;
+  --bad:#B7442F;
+  --bad-soft:#F6DDD7;
+  --good:#2B7A4B;
+  --good-soft:#D9EFE1;
+  --code-bg:#14202E;
+  --code-ink:#D9E3EE;
+  --display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --body:'Literata', Georgia, 'Times New Roman', serif;
+  --mono:'IBM Plex Mono', Consolas, 'Courier New', monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D131A; --surface:#151E28; --surface-2:#1C2733; --ink:#E4EAF1; --ink-soft:#A9B5C3; --ink-faint:#748296;
+    --line:#2A3746; --accent:#4CC1C7; --accent-soft:#163236; --brass:#E2B35A; --brass-soft:#3A2F1A;
+    --bad:#E8826D; --bad-soft:#3B211C; --good:#6CCB92; --good-soft:#18301F; --code-bg:#0A0F15; --code-ink:#D9E3EE;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D131A; --surface:#151E28; --surface-2:#1C2733; --ink:#E4EAF1; --ink-soft:#A9B5C3; --ink-faint:#748296;
+  --line:#2A3746; --accent:#4CC1C7; --accent-soft:#163236; --brass:#E2B35A; --brass-soft:#3A2F1A;
+  --bad:#E8826D; --bad-soft:#3B211C; --good:#6CCB92; --good-soft:#18301F; --code-bg:#0A0F15; --code-ink:#D9E3EE;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.65;margin:0}
+.wrap{display:grid;grid-template-columns:240px minmax(0,1fr);gap:48px;max-width:1180px;margin:0 auto;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:32px 80px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);gap:0}}
+
+/* Rail */
+nav.rail{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 24px);align-self:start;max-height:calc(100vh - 48px);overflow:auto;font-family:var(--display);font-size:14px}
+nav.rail .brand{font-weight:800;font-size:18px;letter-spacing:-.01em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+nav.rail ol{list-style:none;margin:0;padding:0;display:grid;gap:2px;counter-reset:ch}
+nav.rail a{display:flex;gap:10px;padding:6px 10px;border-radius:8px;color:var(--ink-soft);text-decoration:none;line-height:1.3}
+nav.rail a span{font-family:var(--mono);font-size:12px;color:var(--ink-faint);min-width:20px;padding-top:1px}
+nav.rail a:hover{background:var(--surface-2);color:var(--ink)}
+nav.rail a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.rail a.on span{color:var(--accent)}
+@media (max-width:900px){nav.rail{display:none}}
+.chips{display:none;flex-wrap:wrap;gap:8px;margin:20px 0 8px}
+.chips a{font-family:var(--display);font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ink-soft);text-decoration:none;background:var(--surface)}
+@media (max-width:900px){.chips{display:flex}}
+
+main{min-width:0}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0;letter-spacing:-.015em}
+h2{font-size:clamp(28px,4vw,38px);font-weight:800}
+h3{font-size:21px;font-weight:700;margin-top:28px}
+p{margin:0}
+.prose{display:grid;gap:16px;max-width:68ch}
+a{color:var(--accent)}
+strong{font-weight:600}
+code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:1px 6px;border-radius:5px}
+
+/* Cover */
+.cover{padding-block:24px 40px;border-bottom:1px solid var(--line);display:grid;gap:20px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass)}
+.cover h1{font-size:clamp(40px,7vw,76px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.cover h1 em{font-style:normal;color:var(--accent)}
+.cover .lede{font-size:clamp(18px,2.2vw,22px);color:var(--ink-soft);max-width:60ch}
+.cover .formula{font-family:var(--mono);font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;max-width:fit-content}
+.formula b{color:var(--accent)}
+.formula i{font-style:normal;color:var(--brass);font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--display);font-size:14px;color:var(--ink-faint)}
+
+/* Chapters */
+section.ch{padding-block:56px 8px;display:grid;gap:22px;scroll-margin-top:16px}
+.ch-head{display:grid;gap:8px}
+.ch-num{font-family:var(--mono);font-size:13px;color:var(--brass);letter-spacing:.08em}
+
+figure{margin:8px 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:12px}
+figure .scroll{overflow-x:auto}
+figure svg{display:block;width:100%;height:auto}
+figure .scroll svg{min-width:620px}
+figcaption{font-family:var(--display);font-size:14px;color:var(--ink-faint)}
+figcaption b{color:var(--ink-soft)}
+
+/* SVG primitives — all colour from tokens */
+.s-box{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+.s-card{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.s-acc{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.s-brass{fill:var(--brass-soft);stroke:var(--brass);stroke-width:1.5}
+.s-bad{fill:var(--bad-soft);stroke:var(--bad);stroke-width:1.5}
+.s-good{fill:var(--good-soft);stroke:var(--good);stroke-width:1.5}
+.s-solid{fill:var(--accent)}
+.s-solid-brass{fill:var(--brass)}
+.s-line{stroke:var(--ink-faint);stroke-width:1.6;fill:none}
+.s-line-acc{stroke:var(--accent);stroke-width:2;fill:none}
+.s-line-bad{stroke:var(--bad);stroke-width:1.6;fill:none;stroke-dasharray:5 4}
+.s-line-good{stroke:var(--good);stroke-width:2;fill:none}
+.s-dash{stroke:var(--ink-faint);stroke-width:1.4;fill:none;stroke-dasharray:4 4}
+.t{font-family:var(--display);fill:var(--ink);font-size:14px}
+.t-b{font-family:var(--display);fill:var(--ink);font-size:15px;font-weight:700}
+.t-s{font-family:var(--display);fill:var(--ink-soft);font-size:12px}
+.t-m{font-family:var(--mono);fill:var(--ink-soft);font-size:11px}
+.t-acc{font-family:var(--display);fill:var(--accent);font-size:13px;font-weight:700}
+.t-brass{font-family:var(--display);fill:var(--brass);font-size:13px;font-weight:700}
+.t-bad{font-family:var(--display);fill:var(--bad);font-size:13px;font-weight:700}
+.t-good{font-family:var(--display);fill:var(--good);font-size:13px;font-weight:700}
+.t-inv{font-family:var(--display);fill:var(--bg);font-size:14px;font-weight:700}
+.ah{fill:var(--ink-faint)} .ah-acc{fill:var(--accent)} .ah-bad{fill:var(--bad)} .ah-good{fill:var(--good)}
+
+/* Callouts */
+.say{border-radius:var(--r);padding:16px 18px;background:var(--brass-soft);border:1px solid var(--brass);display:grid;gap:6px;max-width:68ch}
+.say .lab{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);font-weight:600}
+.note{border-left:3px solid var(--accent);padding:4px 0 4px 16px;color:var(--ink-soft);max-width:68ch}
+
+/* Grids & cards */
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:8px;align-content:start;min-width:0}
+.card h4{font-size:17px}
+.card p{font-size:15.5px;color:var(--ink-soft)}
+.card .k{font-family:var(--mono);font-size:12px;color:var(--brass);font-weight:600}
+
+/* Tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-size:13px;color:var(--ink-faint);font-weight:600;background:var(--surface-2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600;font-family:var(--display)}
+.num{font-variant-numeric:tabular-nums}
+
+/* Code */
+pre.code{background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);font-size:13px;line-height:1.55;border-radius:var(--r);padding:16px 18px;overflow-x:auto;margin:0}
+pre.code .c{color:#7F93A8} pre.code .k{color:#E2B35A} pre.code .s{color:#7FD3C9}
+
+/* Interactive pipeline */
+.pipe-node{cursor:pointer}
+.pipe-node:focus{outline:none}
+.pipe-node:focus-visible rect,.pipe-node:hover rect{stroke:var(--accent);stroke-width:2.5}
+.pipe-node.sel rect{fill:var(--accent);stroke:var(--accent)}
+.pipe-node.sel text{fill:var(--bg)}
+.detail{background:var(--surface-2);border-radius:10px;padding:16px 18px;display:grid;gap:8px;min-height:150px}
+.detail h4{font-size:18px;color:var(--accent)}
+.detail ul{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15.5px}
+.detail .tag{font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+
+/* Steps walkthrough */
+.steps{display:grid;gap:12px;counter-reset:st;padding:0;margin:0;list-style:none}
+.steps li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.steps li::before{counter-increment:st;content:counter(st);font-family:var(--display);font-weight:800;font-size:20px;width:36px;height:36px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.steps h4{font-size:16.5px;margin-bottom:4px}
+.steps p{font-size:15.5px;color:var(--ink-soft)}
+.steps .io{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);background:var(--surface-2);padding:8px 10px;border-radius:8px;margin-top:8px;overflow-x:auto;white-space:pre}
+
+/* Flashcards */
+.fc-wrap{display:grid;gap:14px;justify-items:center}
+.fc{width:min(560px,100%);min-height:220px;perspective:1200px;cursor:pointer;border:0;background:none;padding:0;font:inherit;color:inherit}
+.fc-in{position:relative;width:100%;min-height:220px;transition:transform .5s;transform-style:preserve-3d}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;padding:26px;display:grid;align-content:center;gap:10px;text-align:left;border:1px solid var(--line)}
+.fc-front{background:var(--surface)}
+.fc-back{background:var(--accent-soft);border-color:var(--accent);transform:rotateY(180deg)}
+.fc-face .lab{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass)}
+.fc-face .q{font-family:var(--display);font-size:22px;font-weight:700;line-height:1.25}
+.fc-face .a{font-size:16.5px}
+.fc-ctl{display:flex;gap:10px;align-items:center;font-family:var(--display);font-size:14px;color:var(--ink-faint)}
+.btn{font-family:var(--display);font-size:14px;font-weight:600;padding:9px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn:focus-visible,.fc:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+
+/* Repo tree */
+.tree{font-family:var(--mono);font-size:13px;line-height:1.7;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;overflow-x:auto;white-space:pre;color:var(--ink-soft)}
+.tree b{color:var(--accent);font-weight:600}
+.tree i{color:var(--ink-faint);font-style:normal}
+
+.end{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);font-family:var(--display);color:var(--ink-faint);font-size:14px}
+</style>
+
+<div class="wrap">
+<nav class="rail" aria-label="Chapters">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="23" rx="5" class="s-acc"/><circle cx="13" cy="13" r="6" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="13" cy="13" r="1.8" class="s-solid"/><path d="M13 7v2M13 17v2M7 13h2M17 13h2" stroke="var(--accent)" stroke-width="2"/></svg>
+    Knowledge-Vault
+  </div>
+  <ol id="toc">
+    <li><a href="#philosophy"><span>01</span>Philosophy</a></li>
+    <li><a href="#problem"><span>02</span>The problem</a></li>
+    <li><a href="#idea"><span>03</span>The core idea</a></li>
+    <li><a href="#concepts"><span>04</span>LLM, RAG, Agents</a></li>
+    <li><a href="#team"><span>05</span>The AI editorial team</a></li>
+    <li><a href="#pipeline"><span>06</span>The full pipeline</a></li>
+    <li><a href="#walkthrough"><span>07</span>A real run: DBMS</a></li>
+    <li><a href="#verify"><span>08</span>The verifier loop</a></li>
+    <li><a href="#formats"><span>09</span>One source, four formats</a></li>
+    <li><a href="#pyq"><span>10</span>PYQ intelligence</a></li>
+    <li><a href="#system"><span>11</span>System architecture</a></li>
+    <li><a href="#build"><span>12</span>Build process</a></li>
+    <li><a href="#roles"><span>13</span>Who builds what</a></li>
+    <li><a href="#eval"><span>14</span>Proving it works</a></li>
+    <li><a href="#business"><span>15</span>Business model</a></li>
+    <li><a href="#risks"><span>16</span>Risks</a></li>
+    <li><a href="#check"><span>17</span>Test yourself</a></li>
+    <li><a href="#glossary"><span>18</span>Glossary</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="cover">
+  <div class="eyebrow">Team handbook · Major Project · Gen-AI &amp; ML</div>
+  <h1>Knowledge-<em>Vault</em></h1>
+  <p class="lede">An AI engine that writes the study material for any syllabus. You give it the requirements. It researches the internet, checks its facts, and returns an exam-ready study pack.</p>
+  <div class="formula" aria-label="Knowledge-Vault in one line">
+    <span>University + Course + Subject + Syllabus</span><b>→</b><i>Agentic RAG Engine</i><b>→</b><span>E-book · PDF notebook · Flashcards · Quiz</span>
+  </div>
+  <div class="meta"><span>18 chapters</span><span>12 figures</span><span>Read time ≈ 35 min</span><span>Flashcards at the end</span></div>
+  <div class="chips" aria-label="Jump to chapter">
+    <a href="#philosophy">Philosophy</a><a href="#idea">Core idea</a><a href="#concepts">RAG &amp; Agents</a><a href="#pipeline">Pipeline</a><a href="#walkthrough">Example run</a><a href="#build">Build plan</a><a href="#roles">Roles</a><a href="#check">Flashcards</a>
+  </div>
+</header>
+
+<!-- 01 PHILOSOPHY -->
+<section class="ch" id="philosophy">
+  <div class="ch-head"><div class="ch-num">CHAPTER 01</div><h2>The philosophy</h2></div>
+  <div class="prose">
+    <p>Knowledge-Vault starts from one belief: <strong>every student deserves study material that matches their exact syllabus, is correct, and is pleasant to study from</strong>, whatever university or course they are in.</p>
+    <p>Today that material is made by hand, one subject at a time, so only popular subjects at big universities get good notes. We want a machine that does the work of an entire publishing house, so that the quality of the books our team made by hand becomes available for every subject.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="k">PRINCIPLE 1</div><h4>Syllabus first</h4><p>Content follows the official syllabus: university → course → semester → subject → unit → topic. Nothing extra, nothing missing.</p></div>
+    <div class="card"><div class="k">PRINCIPLE 2</div><h4>Exam-focused</h4><p>We teach what earns marks: ★ important topics, solved numericals in the exam pattern, and answers written in 2, 7 and 10-mark formats.</p></div>
+    <div class="card"><div class="k">PRINCIPLE 3</div><h4>Truth with sources</h4><p>Every fact comes from a real source and is checked before it is published. The AI is not allowed to guess.</p></div>
+    <div class="card"><div class="k">PRINCIPLE 4</div><h4>Learn your way</h4><p>The same knowledge in four forms: interactive e-book to understand, PDF to revise, flashcards to remember, quizzes to test.</p></div>
+    <div class="card"><div class="k">PRINCIPLE 5</div><h4>Any university</h4><p>AKTU is the first market only. The engine reads any syllabus, so any university, course or language can be added.</p></div>
+    <div class="card"><div class="k">PRINCIPLE 6</div><h4>Affordable</h4><p>Free to start, nominal prices for full content. Low cost is possible because the machine, not a person, does the writing.</p></div>
+  </div>
+  <div class="say"><div class="lab">Seedhi baat</div><p>Hum notes bechne wali company nahi hain. Hum woh <strong>machine</strong> bana rahe hain jo kisi bhi syllabus ke best notes khud bana de.</p></div>
+</section>
+
+<!-- 02 PROBLEM -->
+<section class="ch" id="problem">
+  <div class="ch-head"><div class="ch-num">CHAPTER 02</div><h2>The problem we solve</h2></div>
+  <div class="prose">
+    <p>Before an exam, a student looks in five places, cannot tell which notes are correct, and still does not know which topics carry marks. Meanwhile, the people who make good notes cannot keep up, because one quality book takes days to write.</p>
+  </div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 330" role="img" aria-labelledby="f1t">
+      <title id="f1t">Today students gather notes from scattered sources; with Knowledge-Vault they get one verified study pack</title>
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-bad"/></marker>
+        <marker id="a1g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-good"/></marker>
+      </defs>
+      <text x="20" y="28" class="t-bad">TODAY</text>
+      <rect x="20" y="44" width="110" height="34" rx="8" class="s-box"/><text x="75" y="66" text-anchor="middle" class="t">Google search</text>
+      <rect x="20" y="88" width="110" height="34" rx="8" class="s-box"/><text x="75" y="110" text-anchor="middle" class="t">YouTube</text>
+      <rect x="20" y="132" width="110" height="34" rx="8" class="s-box"/><text x="75" y="154" text-anchor="middle" class="t">Telegram PDFs</text>
+      <rect x="20" y="176" width="110" height="34" rx="8" class="s-box"/><text x="75" y="198" text-anchor="middle" class="t">Textbooks</text>
+      <rect x="20" y="220" width="110" height="34" rx="8" class="s-box"/><text x="75" y="242" text-anchor="middle" class="t">Senior's notes</text>
+      <path d="M130 61 C190 61 200 150 238 150" class="s-line-bad" marker-end="url(#a1)"/>
+      <path d="M130 105 C180 105 200 155 238 155" class="s-line-bad" marker-end="url(#a1)"/>
+      <path d="M130 149 L238 160" class="s-line-bad" marker-end="url(#a1)"/>
+      <path d="M130 193 C180 193 200 165 238 165" class="s-line-bad" marker-end="url(#a1)"/>
+      <path d="M130 237 C190 237 200 170 238 170" class="s-line-bad" marker-end="url(#a1)"/>
+      <circle cx="275" cy="160" r="34" class="s-bad"/>
+      <text x="275" y="156" text-anchor="middle" class="t-bad">Student</text>
+      <text x="275" y="172" text-anchor="middle" class="t-s">confused</text>
+      <text x="200" y="290" class="t-s">✗ not syllabus-wise   ✗ unverified</text>
+      <text x="200" y="308" class="t-s">✗ boring   ✗ no idea what scores</text>
+      <line x1="370" y1="30" x2="370" y2="310" class="s-dash"/>
+      <text x="400" y="28" class="t-good">WITH KNOWLEDGE-VAULT</text>
+      <rect x="400" y="120" width="130" height="80" rx="12" class="s-acc"/>
+      <text x="465" y="155" text-anchor="middle" class="t-b">Knowledge</text>
+      <text x="465" y="174" text-anchor="middle" class="t-b">Vault</text>
+      <path d="M530 160 L600 160" class="s-line-good" marker-end="url(#a1g)"/>
+      <rect x="606" y="60" width="140" height="200" rx="12" class="s-good"/>
+      <text x="676" y="88" text-anchor="middle" class="t-good">One study pack</text>
+      <text x="622" y="118" class="t">📘 E-book</text>
+      <text x="622" y="146" class="t">📄 PDF notebook</text>
+      <text x="622" y="174" class="t">🃏 Flashcards</text>
+      <text x="622" y="202" class="t">✅ Quizzes</text>
+      <text x="622" y="236" class="t-s">verified · ★ marked</text>
+      <text x="400" y="290" class="t-s">✓ exact syllabus   ✓ sources checked</text>
+      <text x="400" y="308" class="t-s">✓ interactive   ✓ exam-focused</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 2.1</b> From five scattered, unverified sources to one verified study pack.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Who</th><th>Pain today</th><th>What Knowledge-Vault changes</th></tr></thead>
+    <tbody>
+      <tr><td>Student</td><td>Searches for hours, unsure what is correct or important</td><td>Opens the subject, everything is already there, verified and ★ marked</td></tr>
+      <tr><td>Content maker (us)</td><td>2–3 days per subject by hand; impossible to cover every university</td><td>One subject generated in under 30 minutes, then reviewed</td></tr>
+      <tr><td>Universities / coaching</td><td>No affordable way to give students custom material</td><td>Generate material for their own syllabus (B2B, later)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 03 IDEA -->
+<section class="ch" id="idea">
+  <div class="ch-head"><div class="ch-num">CHAPTER 03</div><h2>The core idea: requirements in, study pack out</h2></div>
+  <div class="prose">
+    <p>The app is how students receive the material. <strong>The real product is the engine behind it.</strong> We only type what we need. The engine decides what to search, reads the results, writes the content, checks it, and designs it.</p>
+  </div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 270" role="img" aria-labelledby="f2t">
+      <title id="f2t">Input requirements flow into the engine, which produces four study formats</title>
+      <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-acc"/></marker></defs>
+      <rect x="10" y="40" width="210" height="190" rx="12" class="s-card"/>
+      <text x="26" y="66" class="t-brass">INPUT · what we type</text>
+      <text x="26" y="96" class="t-m">university: "AKTU"</text>
+      <text x="26" y="118" class="t-m">course:     "B.Tech CSE"</text>
+      <text x="26" y="140" class="t-m">semester:   5</text>
+      <text x="26" y="162" class="t-m">subject:    "BCS501 DBMS"</text>
+      <text x="26" y="184" class="t-m">syllabus:   syllabus.pdf</text>
+      <text x="26" y="206" class="t-m">pyqs:       papers/ (optional)</text>
+      <path d="M222 135 L282 135" class="s-line-acc" marker-end="url(#a2)"/>
+      <rect x="288" y="30" width="200" height="210" rx="16" class="s-acc"/>
+      <text x="388" y="62" text-anchor="middle" class="t-b">THE ENGINE</text>
+      <text x="388" y="92" text-anchor="middle" class="t">plans the syllabus</text>
+      <text x="388" y="116" text-anchor="middle" class="t">searches the web</text>
+      <text x="388" y="140" text-anchor="middle" class="t">reads &amp; ranks sources</text>
+      <text x="388" y="164" text-anchor="middle" class="t">writes the content</text>
+      <text x="388" y="188" text-anchor="middle" class="t">fact-checks itself</text>
+      <text x="388" y="212" text-anchor="middle" class="t">designs every format</text>
+      <path d="M490 135 C520 135 520 60 548 60" class="s-line-acc" marker-end="url(#a2)"/>
+      <path d="M490 135 C525 135 525 112 548 112" class="s-line-acc" marker-end="url(#a2)"/>
+      <path d="M490 135 C525 135 525 164 548 164" class="s-line-acc" marker-end="url(#a2)"/>
+      <path d="M490 135 C520 135 520 216 548 216" class="s-line-acc" marker-end="url(#a2)"/>
+      <rect x="552" y="40" width="196" height="40" rx="10" class="s-brass"/><text x="566" y="65" class="t">📘 Interactive e-book</text>
+      <rect x="552" y="92" width="196" height="40" rx="10" class="s-brass"/><text x="566" y="117" class="t">📄 A4 exam notebook</text>
+      <rect x="552" y="144" width="196" height="40" rx="10" class="s-brass"/><text x="566" y="169" class="t">🃏 Flashcards</text>
+      <rect x="552" y="196" width="196" height="40" rx="10" class="s-brass"/><text x="566" y="221" class="t">✅ Quiz / MCQs</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 3.1</b> The whole product in one picture. Our job in this project is the middle box.</figcaption>
+  </figure>
+  <div class="say"><div class="lab">Seedhi baat</div><p>Hum log sirf requirement daalenge. Baaki sab, matlab search karna, padhna, likhna, check karna aur design karna, engine khud karega. Aapki 5 hand-made e-books aur 5th sem notebook isi output ka <strong>gold standard</strong> hain.</p></div>
+</section>
+
+<!-- 04 CONCEPTS -->
+<section class="ch" id="concepts">
+  <div class="ch-head"><div class="ch-num">CHAPTER 04</div><h2>LLM, RAG and Agents: what each one does</h2></div>
+  <div class="prose">
+    <p>Knowledge-Vault is an <strong>Agentic RAG-based Multi-Agent System</strong>. That name has three parts. Each one solves a different problem, so you need to understand all three.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="k">THE BRAIN</div><h4>LLM</h4><p>A Large Language Model (Claude, GPT, Gemini, Llama) reads, writes and reasons in language. On its own it can explain anything, but it sometimes makes facts up and does not know your syllabus.</p></div>
+    <div class="card"><div class="k">THE MEMORY</div><h4>RAG</h4><p>Retrieval-Augmented Generation. Before writing, the system <em>retrieves</em> real documents and the LLM writes <em>only from them</em>, with citations. This is how we stop hallucination.</p></div>
+    <div class="card"><div class="k">THE HANDS</div><h4>Agent</h4><p>An LLM that can use tools (web search, page reader, calculator) and decide its own next step in a loop: think → act → observe → repeat, until the job is done.</p></div>
+    <div class="card"><div class="k">THE COMPANY</div><h4>Multi-agent</h4><p>Several agents, each with one job (planner, researcher, writer, verifier), passing work to each other like a team.</p></div>
+  </div>
+
+  <h3>Plain LLM vs RAG</h3>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 300" role="img" aria-labelledby="f3t">
+      <title id="f3t">A plain LLM answers from memory and can hallucinate; RAG retrieves sources first and writes a grounded answer with citations</title>
+      <defs>
+        <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
+        <marker id="a3b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-bad"/></marker>
+        <marker id="a3g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-good"/></marker>
+      </defs>
+      <text x="10" y="24" class="t-bad">A · PLAIN LLM</text>
+      <rect x="10" y="40" width="150" height="50" rx="10" class="s-box"/><text x="85" y="62" text-anchor="middle" class="t">Topic:</text><text x="85" y="80" text-anchor="middle" class="t-s">"Explain BCNF"</text>
+      <path d="M160 65 L238 65" class="s-line" marker-end="url(#a3)"/>
+      <rect x="244" y="40" width="150" height="50" rx="10" class="s-card"/><text x="319" y="70" text-anchor="middle" class="t-b">LLM memory</text>
+      <path d="M394 65 L472 65" class="s-line-bad" marker-end="url(#a3b)"/>
+      <rect x="478" y="34" width="270" height="62" rx="10" class="s-bad"/>
+      <text x="492" y="58" class="t">Fluent answer, no sources</text>
+      <text x="492" y="80" class="t-bad">may contain made-up facts</text>
+
+      <line x1="10" y1="122" x2="750" y2="122" class="s-dash"/>
+
+      <text x="10" y="152" class="t-good">B · RAG</text>
+      <rect x="10" y="170" width="150" height="50" rx="10" class="s-box"/><text x="85" y="192" text-anchor="middle" class="t">Topic:</text><text x="85" y="210" text-anchor="middle" class="t-s">"Explain BCNF"</text>
+      <path d="M160 195 L198 195" class="s-line" marker-end="url(#a3)"/>
+      <rect x="204" y="170" width="120" height="50" rx="10" class="s-acc"/><text x="264" y="192" text-anchor="middle" class="t-b">1 · Retrieve</text><text x="264" y="210" text-anchor="middle" class="t-s">search sources</text>
+      <path d="M324 195 L362 195" class="s-line" marker-end="url(#a3)"/>
+      <g>
+        <rect x="368" y="156" width="96" height="24" rx="6" class="s-card"/><text x="378" y="173" class="t-m">NPTEL notes</text>
+        <rect x="368" y="184" width="96" height="24" rx="6" class="s-card"/><text x="378" y="201" class="t-m">textbook ch.</text>
+        <rect x="368" y="212" width="96" height="24" rx="6" class="s-card"/><text x="378" y="229" class="t-m">lecture PDF</text>
+      </g>
+      <path d="M464 195 L502 195" class="s-line" marker-end="url(#a3)"/>
+      <rect x="508" y="170" width="110" height="50" rx="10" class="s-acc"/><text x="563" y="192" text-anchor="middle" class="t-b">2 · Generate</text><text x="563" y="210" text-anchor="middle" class="t-s">LLM + sources</text>
+      <path d="M618 195 L650 195" class="s-line-good" marker-end="url(#a3g)"/>
+      <rect x="656" y="160" width="94" height="70" rx="10" class="s-good"/>
+      <text x="703" y="186" text-anchor="middle" class="t-good">Grounded</text>
+      <text x="703" y="204" text-anchor="middle" class="t-s">with [1][2]</text>
+      <text x="703" y="220" text-anchor="middle" class="t-s">citations</text>
+      <text x="10" y="272" class="t-s">RAG = the LLM writes an open-book exam instead of a closed-book one. It can only use what it retrieved, and must show where each fact came from.</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 4.1</b> RAG turns a closed-book answer into an open-book one.</figcaption>
+  </figure>
+
+  <h3>How an agent thinks</h3>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 250" role="img" aria-labelledby="f4t">
+      <title id="f4t">The agent loop: think, act with a tool, observe the result, and repeat until the goal is met</title>
+      <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-acc"/></marker></defs>
+      <rect x="20" y="95" width="130" height="56" rx="12" class="s-brass"/><text x="85" y="119" text-anchor="middle" class="t-b">Goal</text><text x="85" y="138" text-anchor="middle" class="t-s">"Research BCNF"</text>
+      <path d="M150 123 L208 123" class="s-line-acc" marker-end="url(#a4)"/>
+      <rect x="214" y="30" width="150" height="56" rx="12" class="s-acc"/><text x="289" y="54" text-anchor="middle" class="t-b">THINK</text><text x="289" y="73" text-anchor="middle" class="t-s">what do I still need?</text>
+      <rect x="440" y="30" width="150" height="56" rx="12" class="s-acc"/><text x="515" y="54" text-anchor="middle" class="t-b">ACT</text><text x="515" y="73" text-anchor="middle" class="t-s">call a tool</text>
+      <rect x="327" y="160" width="150" height="56" rx="12" class="s-acc"/><text x="402" y="184" text-anchor="middle" class="t-b">OBSERVE</text><text x="402" y="203" text-anchor="middle" class="t-s">read the result</text>
+      <path d="M364 58 L434 58" class="s-line-acc" marker-end="url(#a4)"/>
+      <path d="M540 86 C540 150 520 188 482 188" class="s-line-acc" marker-end="url(#a4)"/>
+      <path d="M327 188 C270 188 255 140 270 92" class="s-line-acc" marker-end="url(#a4)"/>
+      <text x="402" y="128" text-anchor="middle" class="t-m">loop</text>
+      <rect x="610" y="30" width="140" height="120" rx="12" class="s-card"/>
+      <text x="624" y="54" class="t-brass">TOOLS</text>
+      <text x="624" y="78" class="t-m">web_search()</text>
+      <text x="624" y="98" class="t-m">read_page()</text>
+      <text x="624" y="118" class="t-m">vector_lookup()</text>
+      <text x="624" y="138" class="t-m">run_python()</text>
+      <path d="M590 58 L606 58" class="s-line"/>
+      <path d="M480 188 C600 188 640 200 650 200" class="s-dash"/>
+      <rect x="610" y="176" width="140" height="44" rx="12" class="s-good"/><text x="680" y="203" text-anchor="middle" class="t-good">Done → output</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 4.2</b> The ReAct loop. The agent keeps going until it decides it has enough to finish.</figcaption>
+  </figure>
+  <div class="say"><div class="lab">Viva line</div><p>"LLM reasoning aur writing karta hai, RAG ensure karta hai ki content real sources par based ho, aur agents tools use karke poora kaam khud plan aur execute karte hain. Isliye hamara system Agentic RAG hai, simple chatbot nahi."</p></div>
+</section>
+
+<!-- 05 TEAM -->
+<section class="ch" id="team">
+  <div class="ch-head"><div class="ch-num">CHAPTER 05</div><h2>The AI editorial team</h2></div>
+  <div class="prose"><p>Think of Knowledge-Vault as a publishing house where every employee is an AI agent. Each one has one responsibility, its own instructions, and its own tools.</p></div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 230" role="img" aria-labelledby="f5t">
+      <title id="f5t">Six roles pass work along: planner, researcher, PYQ analyser, writer, verifier, renderer</title>
+      <defs><marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+      <g>
+        <rect x="6" y="40" width="112" height="150" rx="12" class="s-card"/>
+        <circle cx="62" cy="76" r="20" class="s-brass"/><text x="62" y="82" text-anchor="middle" class="t-brass">P</text>
+        <text x="62" y="120" text-anchor="middle" class="t-b">Planner</text><text x="62" y="140" text-anchor="middle" class="t-s">Chief editor</text><text x="62" y="166" text-anchor="middle" class="t-m">syllabus → plan</text>
+      </g>
+      <path d="M118 115 L130 115" class="s-line" marker-end="url(#a5)"/>
+      <g>
+        <rect x="134" y="40" width="112" height="150" rx="12" class="s-card"/>
+        <circle cx="190" cy="76" r="20" class="s-acc"/><text x="190" y="82" text-anchor="middle" class="t-acc">R</text>
+        <text x="190" y="120" text-anchor="middle" class="t-b">Researcher</text><text x="190" y="140" text-anchor="middle" class="t-s">Library assistant</text><text x="190" y="166" text-anchor="middle" class="t-m">web → sources</text>
+      </g>
+      <path d="M246 115 L258 115" class="s-line" marker-end="url(#a5)"/>
+      <g>
+        <rect x="262" y="40" width="112" height="150" rx="12" class="s-card"/>
+        <circle cx="318" cy="76" r="20" class="s-brass"/><text x="318" y="82" text-anchor="middle" class="t-brass">Q</text>
+        <text x="318" y="120" text-anchor="middle" class="t-b">PYQ Analyser</text><text x="318" y="140" text-anchor="middle" class="t-s">Senior teacher</text><text x="318" y="166" text-anchor="middle" class="t-m">papers → ★</text>
+      </g>
+      <path d="M374 115 L386 115" class="s-line" marker-end="url(#a5)"/>
+      <g>
+        <rect x="390" y="40" width="112" height="150" rx="12" class="s-card"/>
+        <circle cx="446" cy="76" r="20" class="s-acc"/><text x="446" y="82" text-anchor="middle" class="t-acc">W</text>
+        <text x="446" y="120" text-anchor="middle" class="t-b">Writer</text><text x="446" y="140" text-anchor="middle" class="t-s">Author</text><text x="446" y="166" text-anchor="middle" class="t-m">sources → content</text>
+      </g>
+      <path d="M502 115 L514 115" class="s-line" marker-end="url(#a5)"/>
+      <g>
+        <rect x="518" y="40" width="112" height="150" rx="12" class="s-card"/>
+        <circle cx="574" cy="76" r="20" class="s-bad"/><text x="574" y="82" text-anchor="middle" class="t-bad">V</text>
+        <text x="574" y="120" text-anchor="middle" class="t-b">Verifier</text><text x="574" y="140" text-anchor="middle" class="t-s">Fact-checker</text><text x="574" y="166" text-anchor="middle" class="t-m">pass / rewrite</text>
+      </g>
+      <path d="M630 115 L642 115" class="s-line" marker-end="url(#a5)"/>
+      <g>
+        <rect x="646" y="40" width="108" height="150" rx="12" class="s-card"/>
+        <circle cx="700" cy="76" r="20" class="s-good"/><text x="700" y="82" text-anchor="middle" class="t-good">D</text>
+        <text x="700" y="120" text-anchor="middle" class="t-b">Renderer</text><text x="700" y="140" text-anchor="middle" class="t-s">Designer</text><text x="700" y="166" text-anchor="middle" class="t-m">JSON → formats</text>
+      </g>
+      <path d="M574 190 C574 222 446 222 446 194" class="s-line-bad" marker-end="url(#a5)"/>
+      <text x="510" y="224" text-anchor="middle" class="t-m">rewrite if it fails</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 5.1</b> Each agent is a role with one job. The Verifier can send work back to the Writer.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Agent</th><th>Input</th><th>Does</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><td>Planner</td><td>Syllabus PDF / text</td><td>Splits it into units, topics, subtopics; decides depth and block types for each</td><td>Topic tree (JSON)</td></tr>
+      <tr><td>Researcher</td><td>One topic</td><td>Generates search queries, fetches pages, cleans text, removes duplicates, scores credibility</td><td>Ranked source chunks in the vector DB</td></tr>
+      <tr><td>PYQ Analyser</td><td>Past question papers</td><td>Extracts questions, groups similar ones, maps them to topics, counts frequency × marks</td><td>★ importance score per topic</td></tr>
+      <tr><td>Writer</td><td>Topic + its best sources + style examples</td><td>Writes concept, tables, diagram code, solved numericals, exam answers, flashcards, MCQs, all cited</td><td>Content blocks (JSON)</td></tr>
+      <tr><td>Verifier</td><td>Writer's blocks + sources</td><td>Checks every claim against sources, re-solves numericals with code, checks syllabus coverage</td><td>Pass, or a list of fixes</td></tr>
+      <tr><td>Renderer</td><td>Verified JSON</td><td>Fills templates</td><td>HTML e-book, PDF, flashcards, quiz</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 06 PIPELINE -->
+<section class="ch" id="pipeline">
+  <div class="ch-head"><div class="ch-num">CHAPTER 06</div><h2>The full pipeline</h2></div>
+  <div class="prose"><p>This is the complete flow from requirements to a published study pack. <strong>Select any stage</strong> to see what happens inside it, the tools it uses, and what it hands to the next stage.</p></div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 560" role="img" aria-labelledby="f6t" id="pipe">
+      <title id="f6t">Pipeline: requirements, planner, researcher, knowledge store, PYQ analyser, writer, verifier with feedback loop, structured JSON, renderers, and web app</title>
+      <defs><marker id="a6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
+      <marker id="a6b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-bad"/></marker></defs>
+
+      <g class="pipe-node" data-s="0" tabindex="0" role="button" aria-label="Stage 0: Requirements"><rect x="280" y="10" width="200" height="46" rx="10" class="s-brass"/><text x="380" y="38" text-anchor="middle" class="t-b">0 · Requirements</text></g>
+      <path d="M380 56 L380 80" class="s-line" marker-end="url(#a6)"/>
+      <g class="pipe-node" data-s="1" tabindex="0" role="button" aria-label="Stage 1: Planner Agent"><rect x="280" y="84" width="200" height="46" rx="10" class="s-card"/><text x="380" y="112" text-anchor="middle" class="t-b">1 · Planner Agent</text></g>
+      <path d="M330 130 C330 150 180 150 180 166" class="s-line" marker-end="url(#a6)"/>
+      <path d="M430 130 C430 150 580 150 580 166" class="s-line" marker-end="url(#a6)"/>
+      <g class="pipe-node" data-s="2" tabindex="0" role="button" aria-label="Stage 2: Research Agent"><rect x="80" y="170" width="200" height="46" rx="10" class="s-card"/><text x="180" y="198" text-anchor="middle" class="t-b">2 · Research Agent</text></g>
+      <g class="pipe-node" data-s="4" tabindex="0" role="button" aria-label="Stage 4: PYQ Analyser"><rect x="480" y="170" width="200" height="46" rx="10" class="s-card"/><text x="580" y="198" text-anchor="middle" class="t-b">4 · PYQ Analyser</text></g>
+      <path d="M180 216 L180 240" class="s-line" marker-end="url(#a6)"/>
+      <g class="pipe-node" data-s="3" tabindex="0" role="button" aria-label="Stage 3: Knowledge Store"><rect x="80" y="244" width="200" height="46" rx="10" class="s-card"/><text x="180" y="272" text-anchor="middle" class="t-b">3 · Knowledge Store</text></g>
+      <path d="M180 290 C180 316 330 312 330 330" class="s-line" marker-end="url(#a6)"/>
+      <path d="M580 216 C580 300 430 300 430 330" class="s-line" marker-end="url(#a6)"/>
+      <text x="590" y="280" class="t-m">★ scores</text>
+      <text x="196" y="318" class="t-m">top chunks</text>
+      <g class="pipe-node" data-s="5" tabindex="0" role="button" aria-label="Stage 5: Writer Agent"><rect x="280" y="334" width="200" height="46" rx="10" class="s-card"/><text x="380" y="362" text-anchor="middle" class="t-b">5 · Writer Agent</text></g>
+      <path d="M380 380 L380 404" class="s-line" marker-end="url(#a6)"/>
+      <g class="pipe-node" data-s="6" tabindex="0" role="button" aria-label="Stage 6: Verifier Agent"><rect x="280" y="408" width="200" height="46" rx="10" class="s-card"/><text x="380" y="436" text-anchor="middle" class="t-b">6 · Verifier Agent</text></g>
+      <path d="M480 431 C560 431 560 357 486 357" class="s-line-bad" marker-end="url(#a6b)"/>
+      <text x="568" y="398" class="t-bad">fail → fix</text>
+      <path d="M380 454 L380 478" class="s-line" marker-end="url(#a6)"/>
+      <text x="390" y="472" class="t-good">pass</text>
+      <g class="pipe-node" data-s="7" tabindex="0" role="button" aria-label="Stage 7: Structured content JSON"><rect x="280" y="482" width="200" height="46" rx="10" class="s-acc"/><text x="380" y="510" text-anchor="middle" class="t-b">7 · Content JSON</text></g>
+      <path d="M480 505 L536 505" class="s-line" marker-end="url(#a6)"/>
+      <g class="pipe-node" data-s="8" tabindex="0" role="button" aria-label="Stage 8: Renderers"><rect x="540" y="482" width="140" height="46" rx="10" class="s-brass"/><text x="610" y="510" text-anchor="middle" class="t-b">8 · Renderers</text></g>
+      <path d="M280 505 L224 505" class="s-line" marker-end="url(#a6)"/>
+      <g class="pipe-node" data-s="9" tabindex="0" role="button" aria-label="Stage 9: Web app"><rect x="80" y="482" width="140" height="46" rx="10" class="s-good"/><text x="150" y="510" text-anchor="middle" class="t-b">9 · Web app</text></g>
+      <text x="380" y="552" text-anchor="middle" class="t-m">admin review happens between 7 and 9 for paid content</text>
+    </svg>
+    </div>
+    <div class="detail" id="detail" aria-live="polite"></div>
+    <figcaption><b>Fig 6.1</b> The Knowledge-Vault pipeline. Research and PYQ analysis run in parallel; writing waits for both.</figcaption>
+  </figure>
+</section>
+
+<!-- 07 WALKTHROUGH -->
+<section class="ch" id="walkthrough">
+  <div class="ch-head"><div class="ch-num">CHAPTER 07</div><h2>A real run, step by step: BCS501 DBMS</h2></div>
+  <div class="prose"><p>Here is what the engine does for one subject, the same subject as the 5th-semester notebook we already made by hand. Follow one topic, <strong>"3.3 Normal Forms"</strong>, all the way through.</p></div>
+  <ol class="steps">
+    <li><div><h4>We give the requirements</h4><p>One command or one form on the admin page.</p>
+      <div class="io">kv generate --university AKTU --course "B.Tech CSE" --sem 5 \
+  --subject "BCS501 DBMS" --syllabus aktu_bcs501.pdf --pyqs papers/bcs501/</div></div></li>
+    <li><div><h4>Planner builds the topic tree</h4><p>Reads the syllabus PDF and returns 5 units and about 25 topics, each with the block types it needs.</p>
+      <div class="io">Unit 3 · Dependencies &amp; Normalization
+  3.1 Functional dependencies, closure, keys   [concept, numerical]
+  3.2 Canonical cover                          [concept, numerical]
+  3.3 Normal forms 1NF → BCNF, 4NF             [concept, table, numerical, long-answer]</div></div></li>
+    <li><div><h4>Researcher gathers sources for 3.3</h4><p>Writes 6 search queries ("BCNF vs 3NF example", "decompose relation into BCNF lossless"…), opens about 15 pages, keeps the best 6 after scoring and de-duplication, and stores them as embedded chunks.</p></div></li>
+    <li><div><h4>PYQ Analyser scores the topic</h4><p>Normal forms appear in most past papers as a 7 or 10-mark question, so 3.3 gets ★★★ and is flagged "highest scoring part".</p></div></li>
+    <li><div><h4>Writer drafts the topic</h4><p>Retrieves the top chunks and writes: a definition, a 1NF→5NF comparison table, a "find the highest normal form" numerical with steps, a BCNF decomposition numerical, 4 flashcards and 3 MCQs. Each fact carries a citation like <code>[s2]</code>. It imitates the style of our hand-made notebook.</p></div></li>
+    <li><div><h4>Verifier checks it</h4><p>Splits the draft into about 40 small claims and checks each against the sources. It recomputes the candidate keys in the numerical with Python. If one claim is unsupported or a step is wrong, that block goes back to the Writer with the reason.</p></div></li>
+    <li><div><h4>Verified JSON is saved</h4><p>The topic becomes structured data (see Chapter 9) and is stored in the database.</p></div></li>
+    <li><div><h4>Renderers publish all formats</h4><p>The same JSON becomes an e-book chapter, a notebook page section, a flashcard deck and a quiz. After admin review, it appears in the app for students.</p></div></li>
+  </ol>
+  <div class="note">Target for the whole subject: under 30 minutes and a small API cost, compared with 2–3 days of manual work. We measure both (Chapter 14).</div>
+</section>
+
+<!-- 08 VERIFY -->
+<section class="ch" id="verify">
+  <div class="ch-head"><div class="ch-num">CHAPTER 08</div><h2>The verifier loop: how we stop wrong content</h2></div>
+  <div class="prose"><p>The biggest danger with AI-generated study material is a confident mistake. A student who learns a wrong formula loses marks. That is why nothing is published until it passes the Verifier.</p></div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 280" role="img" aria-labelledby="f8t">
+      <title id="f8t">Verifier splits a draft into claims, checks each claim against sources, recomputes numericals, and passes or returns the block</title>
+      <defs><marker id="a8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
+      <marker id="a8g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-good"/></marker>
+      <marker id="a8b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-bad"/></marker></defs>
+      <rect x="10" y="100" width="120" height="70" rx="12" class="s-card"/><text x="70" y="130" text-anchor="middle" class="t-b">Draft block</text><text x="70" y="150" text-anchor="middle" class="t-s">from Writer</text>
+      <path d="M130 135 L168 135" class="s-line" marker-end="url(#a8)"/>
+      <rect x="172" y="30" width="200" height="210" rx="12" class="s-box"/>
+      <text x="186" y="54" class="t-brass">SPLIT INTO CLAIMS</text>
+      <rect x="186" y="66" width="172" height="30" rx="6" class="s-good"/><text x="196" y="86" class="t-s">"BCNF ⊂ 3NF"  ✓ [s1][s3]</text>
+      <rect x="186" y="102" width="172" height="30" rx="6" class="s-good"/><text x="196" y="122" class="t-s">"X must be a superkey" ✓</text>
+      <rect x="186" y="138" width="172" height="30" rx="6" class="s-bad"/><text x="196" y="158" class="t-s">"3NF removes MVDs" ✗</text>
+      <rect x="186" y="174" width="172" height="30" rx="6" class="s-good"/><text x="196" y="194" class="t-s">keys = {AB, AC} ✓ (code)</text>
+      <text x="186" y="226" class="t-m">each claim vs retrieved sources</text>
+      <path d="M372 135 L410 135" class="s-line" marker-end="url(#a8)"/>
+      <path d="M416 135 L476 105 L536 135 L476 165 Z" class="s-brass"/>
+      <text x="476" y="132" text-anchor="middle" class="t-b">All</text><text x="476" y="148" text-anchor="middle" class="t-b">pass?</text>
+      <path d="M536 135 L600 135" class="s-line-good" marker-end="url(#a8g)"/>
+      <text x="560" y="125" class="t-good">yes</text>
+      <rect x="606" y="105" width="146" height="60" rx="12" class="s-good"/><text x="679" y="132" text-anchor="middle" class="t-good">Publish</text><text x="679" y="151" text-anchor="middle" class="t-s">to content JSON</text>
+      <path d="M476 165 L476 258 L70 258 L70 174" class="s-line-bad" marker-end="url(#a8b)"/>
+      <text x="270" y="252" class="t-bad">no → back to Writer with the reason: "MVDs are removed by 4NF, not 3NF"</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 8.1</b> Claim-level fact checking (FActScore-style), plus code execution for numericals.</figcaption>
+  </figure>
+  <div class="grid">
+    <div class="card"><div class="k">CHECK 1</div><h4>Is every claim supported?</h4><p>Each small fact must be backed by at least one retrieved source. Unsupported claims are removed or rewritten.</p></div>
+    <div class="card"><div class="k">CHECK 2</div><h4>Is the maths right?</h4><p>Numericals (closures, keys, sorting steps, complexities) are recomputed with Python and compared with the written answer.</p></div>
+    <div class="card"><div class="k">CHECK 3</div><h4>Is the syllabus covered?</h4><p>Every subtopic in the plan must appear. Missing ones are sent back for writing.</p></div>
+    <div class="card"><div class="k">CHECK 4</div><h4>Is it original?</h4><p>Text overlap with any single source is measured, so we never copy a website word for word.</p></div>
+  </div>
+</section>
+
+<!-- 09 FORMATS -->
+<section class="ch" id="formats">
+  <div class="ch-head"><div class="ch-num">CHAPTER 09</div><h2>One source, four formats</h2></div>
+  <div class="prose"><p>The Writer does not produce an e-book or a PDF directly. It produces <strong>structured content</strong> in one JSON format. Separate renderers turn that one source into every format. Write once, publish everywhere.</p></div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 250" role="img" aria-labelledby="f9t">
+      <title id="f9t">One content JSON file feeds four renderers that produce e-book, PDF notebook, flashcards and quiz</title>
+      <defs><marker id="a9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah-acc"/></marker></defs>
+      <rect x="10" y="40" width="250" height="170" rx="12" class="s-acc"/>
+      <text x="26" y="66" class="t-acc">topic_3_3.json</text>
+      <text x="26" y="92" class="t-m">concept     → definition, intuition</text>
+      <text x="26" y="112" class="t-m">table       → 1NF … 5NF comparison</text>
+      <text x="26" y="132" class="t-m">diagram     → mermaid / svg code</text>
+      <text x="26" y="152" class="t-m">numerical   → steps[] + answer</text>
+      <text x="26" y="172" class="t-m">flashcards  → q / a pairs</text>
+      <text x="26" y="192" class="t-m">mcq         → options + correct</text>
+      <path d="M260 125 C330 125 330 50 390 50" class="s-line-acc" marker-end="url(#a9)"/>
+      <path d="M260 125 C330 125 330 100 390 100" class="s-line-acc" marker-end="url(#a9)"/>
+      <path d="M260 125 C330 125 330 150 390 150" class="s-line-acc" marker-end="url(#a9)"/>
+      <path d="M260 125 C330 125 330 200 390 200" class="s-line-acc" marker-end="url(#a9)"/>
+      <rect x="396" y="30" width="356" height="40" rx="10" class="s-brass"/><text x="410" y="55" class="t-b">E-book</text><text x="500" y="55" class="t-s">all blocks, interactive, diagrams animated</text>
+      <rect x="396" y="80" width="356" height="40" rx="10" class="s-brass"/><text x="410" y="105" class="t-b">PDF notebook</text><text x="520" y="105" class="t-s">concept + table + numerical, 2-column A4</text>
+      <rect x="396" y="130" width="356" height="40" rx="10" class="s-brass"/><text x="410" y="155" class="t-b">Flashcards</text><text x="510" y="155" class="t-s">flashcards block + spaced repetition</text>
+      <rect x="396" y="180" width="356" height="40" rx="10" class="s-brass"/><text x="410" y="205" class="t-b">Quiz</text><text x="470" y="205" class="t-s">mcq block, scored, weak-topic tracking</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 9.1</b> Each renderer picks the blocks it needs from the same JSON.</figcaption>
+  </figure>
+  <h3>What one block looks like</h3>
+<pre class="code"><span class="c">// one numerical block inside topic 3.3 (simplified)</span>
+{
+  <span class="k">"type"</span>: <span class="s">"numerical"</span>,
+  <span class="k">"importance"</span>: 3,                        <span class="c">// ★★★ from PYQ Analyser</span>
+  <span class="k">"marks"</span>: 7,
+  <span class="k">"question"</span>: <span class="s">"Decompose R(A,B,C,D), F = {AB→C, C→D, D→A} into BCNF."</span>,
+  <span class="k">"steps"</span>: [
+    <span class="s">"Find keys: AB, AC, BD are candidate keys."</span>,
+    <span class="s">"C→D violates BCNF (C is not a superkey). Split into (C,D) and (A,B,C)."</span>,
+    <span class="s">"In (A,B,C), C→A violates BCNF. Split into (C,A) and (B,C)."</span>
+  ],
+  <span class="k">"answer"</span>: <span class="s">"(C,D), (C,A), (B,C)"</span>,
+  <span class="k">"verified"</span>: { <span class="k">"claims_ok"</span>: true, <span class="k">"recomputed"</span>: true },
+  <span class="k">"sources"</span>: [<span class="s">"s2"</span>, <span class="s">"s5"</span>]
+}</pre>
+  <div class="note">Why this matters: consistent design across every subject, progress tracking per topic in the app, and new formats later (audio summary, Hindi edition) without regenerating content.</div>
+</section>
+
+<!-- 10 PYQ -->
+<section class="ch" id="pyq">
+  <div class="ch-head"><div class="ch-num">CHAPTER 10</div><h2>PYQ intelligence: where the ★ comes from</h2></div>
+  <div class="prose"><p>In our hand-made notebook, we marked important topics with ★ from experience. The engine does it with data: it reads 8–10 years of previous-year papers and measures how often each topic is asked and for how many marks.</p></div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 300" role="img" aria-labelledby="f10t">
+      <title id="f10t">Illustrative bar chart of PYQ importance scores per DBMS topic, highest for normal forms</title>
+      <text x="10" y="22" class="t-brass">ILLUSTRATIVE EXAMPLE · not real data yet</text>
+      <line x1="230" y1="40" x2="230" y2="262" class="s-line"/>
+      <g class="t-m">
+        <text x="230" y="282" text-anchor="middle" class="t-m">0</text>
+        <text x="350" y="282" text-anchor="middle" class="t-m">25</text>
+        <text x="470" y="282" text-anchor="middle" class="t-m">50</text>
+        <text x="590" y="282" text-anchor="middle" class="t-m">75</text>
+        <text x="710" y="282" text-anchor="middle" class="t-m">100</text>
+      </g>
+      <line x1="350" y1="40" x2="350" y2="262" class="s-dash" opacity=".5"/>
+      <line x1="470" y1="40" x2="470" y2="262" class="s-dash" opacity=".5"/>
+      <line x1="590" y1="40" x2="590" y2="262" class="s-dash" opacity=".5"/>
+      <line x1="710" y1="40" x2="710" y2="262" class="s-dash" opacity=".5"/>
+      <text x="220" y="62" text-anchor="end" class="t">Normal forms (3.3)</text><rect x="230" y="48" width="451" height="22" rx="4" class="s-solid"/><text x="688" y="64" class="t-acc">94 ★★★</text>
+      <text x="220" y="98" text-anchor="end" class="t">SQL queries (2.3)</text><rect x="230" y="84" width="413" height="22" rx="4" class="s-solid"/><text x="650" y="100" class="t-acc">86 ★★★</text>
+      <text x="220" y="134" text-anchor="end" class="t">ER → relational (1.4)</text><rect x="230" y="120" width="355" height="22" rx="4" class="s-solid"/><text x="592" y="136" class="t-acc">74 ★★</text>
+      <text x="220" y="170" text-anchor="end" class="t">Serializability (4.2)</text><rect x="230" y="156" width="326" height="22" rx="4" class="s-solid"/><text x="563" y="172" class="t-acc">68 ★★</text>
+      <text x="220" y="206" text-anchor="end" class="t">Triggers (2.4)</text><rect x="230" y="192" width="134" height="22" rx="4" class="s-solid-brass"/><text x="371" y="208" class="t-brass">28 ★</text>
+      <text x="220" y="242" text-anchor="end" class="t">Data models (1.1)</text><rect x="230" y="228" width="86" height="22" rx="4" class="s-solid-brass"/><text x="323" y="244" class="t-brass">18</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 10.1</b> Importance score = frequency of appearance × average marks, normalised to 100. The bars show an example of the output format; real scores will come from real papers.</figcaption>
+  </figure>
+  <ol class="steps">
+    <li><div><h4>Collect papers</h4><p>PDFs or photos of past papers. Scanned ones go through OCR.</p></div></li>
+    <li><div><h4>Extract questions</h4><p>The LLM splits each paper into individual questions with their marks.</p></div></li>
+    <li><div><h4>Group similar questions</h4><p>Convert every question to an embedding and cluster them, so "Explain BCNF with example" and "Define BCNF. How is it different from 3NF?" land together.</p></div></li>
+    <li><div><h4>Map to syllabus topics</h4><p>Match each cluster to the nearest topic in the Planner's topic tree.</p></div></li>
+    <li><div><h4>Score and predict</h4><p>Score each topic by frequency, marks and recency. Test predictions on a held-out year: how many of that year's questions did we mark ★?</p></div></li>
+  </ol>
+  <div class="say"><div class="lab">ML angle</div><p>This is the classic machine-learning part of the project: embeddings, clustering (k-means / HDBSCAN), similarity search, and a measurable prediction metric (PYQ hit-rate).</p></div>
+</section>
+
+<!-- 11 SYSTEM -->
+<section class="ch" id="system">
+  <div class="ch-head"><div class="ch-num">CHAPTER 11</div><h2>System architecture: how the pieces connect</h2></div>
+  <div class="prose"><p>The engine runs on the back end. Students never talk to it directly. They use the web app, which reads published content from the database and checks payments before unlocking anything.</p></div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 330" role="img" aria-labelledby="f11t">
+      <title id="f11t">Deployment architecture: admin triggers the engine which calls LLM and search APIs, stores content in Postgres, and the web app serves students with Razorpay payments</title>
+      <defs><marker id="a11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+      <rect x="10" y="20" width="360" height="290" rx="14" class="s-box"/>
+      <text x="26" y="44" class="t-brass">CONTENT FACTORY (back office)</text>
+      <rect x="26" y="60" width="120" height="44" rx="10" class="s-card"/><text x="86" y="87" text-anchor="middle" class="t">Admin panel</text>
+      <path d="M146 82 L188 82" class="s-line" marker-end="url(#a11)"/>
+      <rect x="192" y="60" width="160" height="130" rx="12" class="s-acc"/>
+      <text x="272" y="86" text-anchor="middle" class="t-b">KV Engine</text>
+      <text x="272" y="106" text-anchor="middle" class="t-s">Python · FastAPI</text>
+      <text x="272" y="126" text-anchor="middle" class="t-s">agents + job queue</text>
+      <text x="272" y="146" text-anchor="middle" class="t-s">renderers</text>
+      <text x="272" y="166" text-anchor="middle" class="t-s">cost + quality logs</text>
+      <rect x="26" y="130" width="140" height="40" rx="10" class="s-card"/><text x="96" y="155" text-anchor="middle" class="t">LLM API</text>
+      <rect x="26" y="180" width="140" height="40" rx="10" class="s-card"/><text x="96" y="205" text-anchor="middle" class="t">Web search API</text>
+      <path d="M192 150 L170 150" class="s-line" marker-end="url(#a11)"/>
+      <path d="M192 180 L170 196" class="s-line" marker-end="url(#a11)"/>
+      <rect x="26" y="240" width="326" height="54" rx="12" class="s-brass"/>
+      <text x="189" y="263" text-anchor="middle" class="t-b">PostgreSQL + pgvector + File storage</text>
+      <text x="189" y="282" text-anchor="middle" class="t-s">sources · embeddings · content JSON · PDFs · users · orders</text>
+      <path d="M272 190 L272 236" class="s-line" marker-end="url(#a11)"/>
+
+      <rect x="400" y="20" width="350" height="290" rx="14" class="s-box"/>
+      <text x="416" y="44" class="t-brass">STUDENT SIDE (public)</text>
+      <rect x="416" y="60" width="150" height="56" rx="12" class="s-card"/><text x="491" y="84" text-anchor="middle" class="t-b">Students</text><text x="491" y="102" text-anchor="middle" class="t-s">web · Android</text>
+      <path d="M566 88 L604 88" class="s-line" marker-end="url(#a11)"/>
+      <rect x="608" y="60" width="126" height="130" rx="12" class="s-good"/>
+      <text x="671" y="86" text-anchor="middle" class="t-b">Web app</text>
+      <text x="671" y="106" text-anchor="middle" class="t-s">Next.js</text>
+      <text x="671" y="126" text-anchor="middle" class="t-s">library · reader</text>
+      <text x="671" y="146" text-anchor="middle" class="t-s">flashcards · quiz</text>
+      <text x="671" y="166" text-anchor="middle" class="t-s">progress</text>
+      <rect x="416" y="150" width="150" height="40" rx="10" class="s-card"/><text x="491" y="175" text-anchor="middle" class="t">Razorpay</text>
+      <path d="M608 170 L570 170" class="s-line" marker-end="url(#a11)"/>
+      <text x="420" y="214" class="t-m">payment webhook → unlock content</text>
+      <path d="M671 190 L671 266 L356 266" class="s-line" marker-end="url(#a11)"/>
+      <text x="530" y="258" class="t-m">reads published content</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 11.1</b> Two halves: a content factory we operate, and a student app that sells and serves what the factory makes.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Layer</th><th>Technology</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Engine</td><td>Python, FastAPI, Claude API (swappable), LangGraph or a custom agent loop</td><td>Python has the best AI ecosystem</td></tr>
+      <tr><td>Research</td><td>Tavily / Brave / Serper search API, trafilatura, BeautifulSoup</td><td>Search plus clean text extraction</td></tr>
+      <tr><td>Retrieval</td><td>Sentence-Transformers, pgvector or ChromaDB, re-ranker</td><td>Semantic search over sources</td></tr>
+      <tr><td>ML</td><td>scikit-learn, Tesseract / PaddleOCR</td><td>PYQ clustering and OCR</td></tr>
+      <tr><td>Rendering</td><td>Jinja2, HTML/CSS/JS, WeasyPrint, Mermaid</td><td>Templates for e-book and PDF</td></tr>
+      <tr><td>App</td><td>Next.js, Tailwind, Supabase (Postgres, Auth, Storage)</td><td>Fast to build, good SEO, free tier</td></tr>
+      <tr><td>Payments</td><td>Razorpay</td><td>UPI, cards and net banking in India</td></tr>
+      <tr><td>DevOps</td><td>GitHub, Docker, GitHub Actions, Vercel</td><td>Tests and deploys on every push</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 12 BUILD -->
+<section class="ch" id="build">
+  <div class="ch-head"><div class="ch-num">CHAPTER 12</div><h2>The build process</h2></div>
+  <div class="prose"><p>We build in phases. Each phase ends with something that works and can be demonstrated. The engine comes first, because it is the project's core; the app comes after, because it only delivers what the engine produces.</p></div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 330" role="img" aria-labelledby="f12t">
+      <title id="f12t">Sixteen-week timeline with seven phases from design to pilot</title>
+      <g>
+        <text x="200" y="22" class="t-m">wk 1</text><text x="335" y="22" class="t-m">wk 5</text><text x="470" y="22" class="t-m">wk 9</text><text x="605" y="22" class="t-m">wk 13</text><text x="722" y="22" class="t-m">16</text>
+        <line x1="200" y1="30" x2="200" y2="306" class="s-dash" opacity=".5"/>
+        <line x1="335" y1="30" x2="335" y2="306" class="s-dash" opacity=".5"/>
+        <line x1="470" y1="30" x2="470" y2="306" class="s-dash" opacity=".5"/>
+        <line x1="605" y1="30" x2="605" y2="306" class="s-dash" opacity=".5"/>
+      </g>
+      <!-- 33.75px per week starting at x=200 -->
+      <text x="190" y="56" text-anchor="end" class="t">1 · Design &amp; schema</text><rect x="200" y="40" width="67" height="24" rx="6" class="s-brass"/>
+      <text x="190" y="96" text-anchor="end" class="t">2 · Planner + Research</text><rect x="267" y="80" width="101" height="24" rx="6" class="s-acc"/>
+      <text x="190" y="136" text-anchor="end" class="t">3 · Writer + PDF</text><rect x="368" y="120" width="101" height="24" rx="6" class="s-acc"/>
+      <text x="190" y="176" text-anchor="end" class="t">4 · Verifier + e-book</text><rect x="469" y="160" width="68" height="24" rx="6" class="s-acc"/>
+      <text x="190" y="216" text-anchor="end" class="t">5 · PYQ + evaluation</text><rect x="537" y="200" width="68" height="24" rx="6" class="s-acc"/>
+      <text x="190" y="256" text-anchor="end" class="t">6 · Web app + payments</text><rect x="605" y="240" width="68" height="24" rx="6" class="s-good"/>
+      <text x="190" y="296" text-anchor="end" class="t">7 · Pilot + report</text><rect x="673" y="280" width="67" height="24" rx="6" class="s-brass"/>
+      <text x="474" y="114" class="t-m">◆ first subject generated</text>
+      <text x="609" y="194" class="t-m">◆ metrics ready</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 12.1</b> A 16-week plan. App work can start earlier in parallel if the team has a dedicated web developer.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Phase</th><th>Weeks</th><th>Done when…</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Design</td><td class="num">1–2</td><td>Literature survey written; content JSON schema agreed; repo and CI set up</td></tr>
+      <tr><td>2 · Planner + Research</td><td class="num">3–5</td><td>Syllabus PDF → topic tree works; each topic gets ≥ 5 ranked sources in the vector DB</td></tr>
+      <tr><td>3 · Writer + PDF</td><td class="num">6–8</td><td>BCS501 DBMS fully generated as a PDF notebook; compared side by side with our hand-made one</td></tr>
+      <tr><td>4 · Verifier + e-book</td><td class="num">9–10</td><td>Feedback loop works; interactive e-book, flashcards and quiz render from the same JSON</td></tr>
+      <tr><td>5 · PYQ + evaluation</td><td class="num">11–12</td><td>★ scores from real papers; coverage, faithfulness and hit-rate measured; ablation done</td></tr>
+      <tr><td>6 · App + payments</td><td class="num">13–14</td><td>Students can sign up, choose a semester, read free content, pay and unlock</td></tr>
+      <tr><td>7 · Pilot + report</td><td class="num">15–16</td><td>Real students use it before exams; results, report and demo ready</td></tr>
+    </tbody>
+  </table></div>
+  <h3>How the repository will be organised</h3>
+<div class="tree"><b>Gen-AI-n-ML-solutions/</b>
+├── <b>docs/</b>              <i># proposal, synopsis, this handbook</i>
+├── <b>engine/</b>            <i># the Knowledge-Vault engine (Python)</i>
+│   ├── agents/        <i># planner.py, researcher.py, writer.py, verifier.py</i>
+│   ├── pyq/           <i># question extraction, clustering, scoring</i>
+│   ├── store/         <i># embeddings + vector DB access</i>
+│   ├── schema/        <i># content JSON schema</i>
+│   ├── renderers/     <i># ebook/, pdf/, flashcards/, quiz/</i>
+│   └── cli.py         <i># "kv generate ..."</i>
+├── <b>eval/</b>              <i># metrics, benchmark, ablation scripts</i>
+├── <b>samples/</b>           <i># our hand-made e-books + notebook (gold standard)</i>
+├── <b>app/</b>               <i># Next.js web app + admin panel</i>
+└── <b>.github/workflows/</b> <i># tests + deploy</i></div>
+  <div class="note">Working rules: every feature goes on its own branch and is merged through a pull request reviewed by one teammate. Every agent has unit tests with saved example inputs, so prompt changes can be compared before and after.</div>
+</section>
+
+<!-- 13 ROLES -->
+<section class="ch" id="roles">
+  <div class="ch-head"><div class="ch-num">CHAPTER 13</div><h2>Who builds what</h2></div>
+  <div class="prose"><p>Each member owns one deep part of the system and can explain it for 30 minutes in a viva or an interview. Everyone also understands the whole pipeline, which is what this handbook is for.</p></div>
+  <div class="grid">
+    <div class="card"><div class="k">MEMBER 1</div><h4>Research &amp; Retrieval</h4><p>Planner and Research agents, web search, page extraction, embeddings, vector DB.</p><p><strong>Prepares for:</strong> GenAI Engineer</p></div>
+    <div class="card"><div class="k">MEMBER 2</div><h4>Writing &amp; Verification</h4><p>Writer and Verifier agents, prompts, citation format, feedback loop, numerical recomputation.</p><p><strong>Prepares for:</strong> LLM / AI Engineer</p></div>
+    <div class="card"><div class="k">MEMBER 3</div><h4>PYQ &amp; Evaluation</h4><p>PYQ analyser, clustering, all metrics, ablation study, results charts for the report.</p><p><strong>Prepares for:</strong> Data Scientist / ML Engineer</p></div>
+    <div class="card"><div class="k">MEMBER 4</div><h4>Renderers, App &amp; Payments</h4><p>E-book and PDF templates, Next.js app, auth, Razorpay, admin panel, deployment.</p><p><strong>Prepares for:</strong> Full-stack Developer</p></div>
+  </div>
+  <div class="note">Roles adjust to team size. With 3 members, Member 4's work is split between Members 1 and 3. With 5, a fifth member owns renderers and design separately from the app.</div>
+</section>
+
+<!-- 14 EVAL -->
+<section class="ch" id="eval">
+  <div class="ch-head"><div class="ch-num">CHAPTER 14</div><h2>Proving it works</h2></div>
+  <div class="prose"><p>Saying "it works" is not enough for evaluators or interviewers. We measure. Our hand-made e-books and notebook are the benchmark the engine is compared against.</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Metric</th><th>Question it answers</th><th>How we measure</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Syllabus coverage</td><td>Did we miss anything?</td><td>Subtopics present ÷ subtopics in syllabus</td><td class="num">≥ 90%</td></tr>
+      <tr><td>Faithfulness</td><td>Is it true?</td><td>Claims supported by sources ÷ all claims (FActScore / RAGAS)</td><td class="num">≥ 90%</td></tr>
+      <tr><td>Numerical accuracy</td><td>Is the maths right?</td><td>Correct solutions ÷ all numericals, checked by code and by hand</td><td class="num">≥ 95%</td></tr>
+      <tr><td>PYQ hit-rate</td><td>Does it help in the exam?</td><td>Questions in a held-out paper covered by ★ topics</td><td class="num">≥ 70%</td></tr>
+      <tr><td>Human preference</td><td>Is it as good as ours?</td><td>Blind rating by students and faculty, 5-point rubric, generated vs hand-made</td><td class="num">≥ 4 / 5</td></tr>
+      <tr><td>Time and cost</td><td>Can it scale?</td><td>Minutes and ₹ of API use per subject</td><td class="num">&lt; 30 min</td></tr>
+    </tbody>
+  </table></div>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 210" role="img" aria-labelledby="f14t">
+      <title id="f14t">Ablation study: four system versions compared, each adding one component</title>
+      <defs><marker id="a14" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+      <text x="10" y="22" class="t-brass">ABLATION STUDY · four versions, same subject, same metrics</text>
+      <rect x="10" y="44" width="170" height="120" rx="12" class="s-bad"/><text x="95" y="74" text-anchor="middle" class="t-b">A</text><text x="95" y="98" text-anchor="middle" class="t">Plain LLM</text><text x="95" y="124" text-anchor="middle" class="t-s">no sources</text><text x="95" y="144" text-anchor="middle" class="t-s">baseline</text>
+      <path d="M180 104 L198 104" class="s-line" marker-end="url(#a14)"/>
+      <rect x="202" y="44" width="170" height="120" rx="12" class="s-card"/><text x="287" y="74" text-anchor="middle" class="t-b">B</text><text x="287" y="98" text-anchor="middle" class="t">+ RAG</text><text x="287" y="124" text-anchor="middle" class="t-s">one search,</text><text x="287" y="144" text-anchor="middle" class="t-s">then write</text>
+      <path d="M372 104 L390 104" class="s-line" marker-end="url(#a14)"/>
+      <rect x="394" y="44" width="170" height="120" rx="12" class="s-acc"/><text x="479" y="74" text-anchor="middle" class="t-b">C</text><text x="479" y="98" text-anchor="middle" class="t">+ Agents</text><text x="479" y="124" text-anchor="middle" class="t-s">planner, multi-step</text><text x="479" y="144" text-anchor="middle" class="t-s">research</text>
+      <path d="M564 104 L582 104" class="s-line" marker-end="url(#a14)"/>
+      <rect x="586" y="44" width="166" height="120" rx="12" class="s-good"/><text x="669" y="74" text-anchor="middle" class="t-b">D</text><text x="669" y="98" text-anchor="middle" class="t">+ Verifier</text><text x="669" y="124" text-anchor="middle" class="t-s">full</text><text x="669" y="144" text-anchor="middle" class="t-s">Knowledge-Vault</text>
+      <text x="10" y="196" class="t-s">The difference between neighbouring versions shows how much each component adds. This is the result table evaluators look for.</text>
+    </svg>
+    </div>
+    <figcaption><b>Fig 14.1</b> Ablation: add one component at a time and measure the improvement.</figcaption>
+  </figure>
+  <div class="say"><div class="lab">The sentence we want to say at the end</div><p>"Our engine generates a complete syllabus-aligned subject in under 30 minutes, with over 90% syllabus coverage and over 90% verified faithfulness, rated close to hand-made material by students." The numbers will be whatever we actually measure.</p></div>
+</section>
+
+<!-- 15 BUSINESS -->
+<section class="ch" id="business">
+  <div class="ch-head"><div class="ch-num">CHAPTER 15</div><h2>Business model</h2></div>
+  <div class="grid">
+    <div class="card"><div class="k">FREE</div><h4>₹0</h4><p>Syllabus view, Unit 1 of every subject, sample flashcards. This brings students in.</p></div>
+    <div class="card"><div class="k">SUBJECT</div><h4>₹49 – ₹99</h4><p>Full e-book, PDF notebook, flashcards and quizzes for one subject.</p></div>
+    <div class="card"><div class="k">SEMESTER PASS</div><h4>₹199 – ₹299</h4><p>Every subject of one semester. The main product during exam season.</p></div>
+    <div class="card"><div class="k">B2B, LATER</div><h4>Licence</h4><p>Coaching institutes and colleges generate material for their own syllabus.</p></div>
+  </div>
+  <div class="prose">
+    <p><strong>Why it scales:</strong> once the engine exists, a new subject costs only a few rupees of API calls and a review. Every new university syllabus becomes a new product line.</p>
+    <p><strong>How we reach students:</strong> start with AKTU B.Tech CSE, where we already have content. Grow through class WhatsApp and Telegram groups and campus ambassadors, then expand branch by branch and university by university.</p>
+  </div>
+</section>
+
+<!-- 16 RISKS -->
+<section class="ch" id="risks">
+  <div class="ch-head"><div class="ch-num">CHAPTER 16</div><h2>Risks and how we handle them</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Risk</th><th>What we do</th></tr></thead>
+    <tbody>
+      <tr><td>Wrong content</td><td>RAG grounding, Verifier agent, numericals recomputed by code, human review before paid content goes live</td></tr>
+      <tr><td>Copyright</td><td>We write original explanations and cite sources. We never copy text verbatim, and we prefer open sources (NPTEL, open textbooks, Wikipedia)</td></tr>
+      <tr><td>Poor web sources</td><td>Credibility scoring, and a fact must agree across several sources</td></tr>
+      <tr><td>API cost</td><td>Caching, cheaper models for simple steps, cost logged per subject</td></tr>
+      <tr><td>Piracy of paid PDFs</td><td>In-app reader, signed links that expire, buyer's name watermarked on downloads</td></tr>
+      <tr><td>Syllabus changes</td><td>Regenerate only the changed topics from the new syllabus</td></tr>
+      <tr><td>Scope too big for one semester</td><td>Engine first. Pilot with one semester of one branch. More universities after the project.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 17 FLASHCARDS -->
+<section class="ch" id="check">
+  <div class="ch-head"><div class="ch-num">CHAPTER 17</div><h2>Test yourself</h2></div>
+  <div class="prose"><p>A small taste of what Knowledge-Vault produces. Tap the card to see the answer, then move to the next one. If you can answer all of these, you can explain the project to anyone.</p></div>
+  <div class="fc-wrap">
+    <button class="fc" id="fc" type="button" aria-label="Flashcard, press to flip">
+      <div class="fc-in">
+        <div class="fc-face fc-front"><div class="lab" id="fc-n">Question 1 of 10</div><div class="q" id="fc-q"></div><div class="t-s" style="font-family:var(--display);color:var(--ink-faint);font-size:13px">tap to reveal</div></div>
+        <div class="fc-face fc-back"><div class="lab">Answer</div><div class="a" id="fc-a"></div></div>
+      </div>
+    </button>
+    <div class="fc-ctl">
+      <button class="btn" id="fc-prev" type="button">Previous</button>
+      <button class="btn primary" id="fc-next" type="button">Next card</button>
+    </div>
+  </div>
+</section>
+
+<!-- 18 GLOSSARY -->
+<section class="ch" id="glossary">
+  <div class="ch-head"><div class="ch-num">CHAPTER 18</div><h2>Glossary</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Term</th><th>Meaning in this project</th></tr></thead>
+    <tbody>
+      <tr><td>LLM</td><td>Large Language Model. The AI that reads and writes text; the brain of every agent.</td></tr>
+      <tr><td>RAG</td><td>Retrieval-Augmented Generation. Find sources first, then write only from them.</td></tr>
+      <tr><td>Agent</td><td>An LLM that uses tools and decides its own next step in a loop.</td></tr>
+      <tr><td>Multi-agent system</td><td>Several agents with separate roles working together.</td></tr>
+      <tr><td>Embedding</td><td>A list of numbers that represents the meaning of a text, so similar texts have similar numbers.</td></tr>
+      <tr><td>Vector database</td><td>A database that finds texts by similar meaning using embeddings (pgvector, ChromaDB).</td></tr>
+      <tr><td>Chunk</td><td>A small piece (a few paragraphs) of a source document, stored and retrieved separately.</td></tr>
+      <tr><td>Hallucination</td><td>When an LLM states something false with confidence.</td></tr>
+      <tr><td>Grounding</td><td>Tying every generated statement to a real source.</td></tr>
+      <tr><td>Faithfulness</td><td>The share of generated claims that the sources actually support.</td></tr>
+      <tr><td>PYQ</td><td>Previous-year question (paper).</td></tr>
+      <tr><td>Clustering</td><td>Grouping similar items automatically, used here to group similar exam questions.</td></tr>
+      <tr><td>Content schema</td><td>The fixed JSON structure every topic is stored in.</td></tr>
+      <tr><td>Renderer</td><td>Code that turns content JSON into a format: HTML, PDF, flashcards, quiz.</td></tr>
+      <tr><td>Ablation study</td><td>Removing or adding one component at a time to measure its effect.</td></tr>
+      <tr><td>Webhook</td><td>A message Razorpay sends to our server when a payment succeeds, so we can unlock content.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="end">Knowledge-Vault · Team handbook · See also <code>docs/PROPOSAL.md</code> and <code>docs/SYNOPSIS.md</code> in the repository.</p>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+  var stages = [
+    {t:"0 · Requirements", tag:"input", d:["University, course, semester, subject code","Syllabus as PDF or text","Optional: folder of previous-year papers","Optional: style choice (default = our hand-made e-book style)"], out:"A job description the Planner can read"},
+    {t:"1 · Planner Agent", tag:"LLM + JSON-schema output", d:["Reads the syllabus and splits it into units → topics → subtopics","Decides which blocks each topic needs: concept, table, diagram, numerical, long answer","Estimates depth from the marks pattern","Sends topics to Research and PYQ Analysis in parallel"], out:"Topic tree (JSON)"},
+    {t:"2 · Research Agent", tag:"agent loop · web search · page reader", d:["Writes 4–8 search queries per topic","Fetches pages and extracts clean text (trafilatura)","Removes duplicates and near-duplicates","Scores each source: domain trust, relevance, agreement with others","Searches again if a subtopic is still thin"], out:"Ranked, cleaned sources"},
+    {t:"3 · Knowledge Store", tag:"embeddings · pgvector / ChromaDB", d:["Splits sources into chunks of a few paragraphs","Converts each chunk to an embedding","Stores chunk, embedding, source URL and topic","Answers 'give me the best chunks for this subtopic' with re-ranking"], out:"Top-k evidence chunks per subtopic"},
+    {t:"4 · PYQ Analyser", tag:"OCR · embeddings · clustering", d:["Extracts questions and marks from past papers","Clusters similar questions","Maps clusters to syllabus topics","Scores importance = frequency × marks × recency"], out:"★ importance score per topic"},
+    {t:"5 · Writer Agent", tag:"RAG generation · few-shot style", d:["Gets the topic plan, evidence chunks and ★ score","Writes concept, tables, diagram code, solved numericals, exam answers","Adds flashcards and MCQs","Cites a source for every factual statement","Imitates the style of our gold-standard e-books"], out:"Draft content blocks (JSON)"},
+    {t:"6 · Verifier Agent", tag:"claim checking · code execution", d:["Splits each block into atomic claims","Checks each claim against the evidence","Recomputes numericals with Python","Checks syllabus coverage and text overlap with sources","Fail → returns the block to the Writer with reasons (max 3 rounds, then flag for a human)"], out:"Pass, or a list of fixes"},
+    {t:"7 · Content JSON", tag:"single source of truth", d:["Verified blocks saved in the content schema","Versioned, so a syllabus change only regenerates affected topics","Logs: sources used, cost, time, quality scores"], out:"Publishable content"},
+    {t:"8 · Renderers", tag:"Jinja2 · HTML/JS · WeasyPrint", d:["E-book: interactive HTML with expandable Q&A, diagrams, quizzes","PDF: two-column A4 exam notebook with ★ marks and formula sheet","Flashcards: decks with spaced repetition","Quiz: scored MCQs per unit"], out:"Four formats from one JSON"},
+    {t:"9 · Web app", tag:"Next.js · Supabase · Razorpay", d:["Students choose university → course → semester → subject","Free previews; paid subjects unlocked after payment","Reader, flashcards, quizzes, progress tracking","Admin panel to run the engine, review and publish"], out:"Study material in students' hands"}
+  ];
+  var detail = document.getElementById('detail');
+  var nodes = document.querySelectorAll('.pipe-node');
+  function show(i){
+    var s = stages[i];
+    nodes.forEach(function(n){ n.classList.toggle('sel', +n.getAttribute('data-s') === i); });
+    detail.innerHTML = '<h4>'+s.t+'</h4><div class="tag">'+s.tag+'</div><ul>'+s.d.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul><div><strong>Hands over:</strong> '+s.out+'</div>';
+  }
+  nodes.forEach(function(n){
+    var i = +n.getAttribute('data-s');
+    n.addEventListener('click', function(){ show(i); });
+    n.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); show(i);} });
+  });
+  show(5);
+
+  var cards = [
+    ["What is the real product of Knowledge-Vault: the app or the engine?","The engine. It turns requirements into a verified study pack. The app is how students receive and pay for it."],
+    ["What do we give the engine as input?","University, course, semester, subject and syllabus, plus optional previous-year papers."],
+    ["What are the four output formats?","Interactive e-book, A4 PDF exam notebook, flashcards and quizzes."],
+    ["What does RAG stand for, and why do we need it?","Retrieval-Augmented Generation. The LLM writes only from retrieved sources with citations, which stops it from making facts up."],
+    ["What makes a system 'agentic'?","The LLM uses tools (search, page reader, code) and decides its own next step in a think → act → observe loop."],
+    ["Name the six roles in the pipeline.","Planner, Researcher, PYQ Analyser, Writer, Verifier, Renderer."],
+    ["What does the Verifier do when a claim fails?","Sends that block back to the Writer with the reason. After 3 failed rounds, it flags the block for a human."],
+    ["Why do we store content as JSON instead of writing HTML directly?","One source feeds every format, the design stays consistent, and only changed topics need regenerating."],
+    ["How does the ★ importance score work?","Past questions are clustered and mapped to topics; score = frequency × marks × recency."],
+    ["What is an ablation study, and what are our four versions?","Adding one component at a time and measuring the gain: plain LLM → + RAG → + agents → + verifier."]
+  ];
+  var i = 0, fc = document.getElementById('fc');
+  function render(){
+    fc.classList.remove('flip');
+    document.getElementById('fc-n').textContent = 'Question '+(i+1)+' of '+cards.length;
+    document.getElementById('fc-q').textContent = cards[i][0];
+    document.getElementById('fc-a').textContent = cards[i][1];
+  }
+  fc.addEventListener('click', function(){ fc.classList.toggle('flip'); });
+  document.getElementById('fc-next').addEventListener('click', function(){ i = (i+1)%cards.length; render(); });
+  document.getElementById('fc-prev').addEventListener('click', function(){ i = (i-1+cards.length)%cards.length; render(); });
+  render();
+
+  var links = document.querySelectorAll('#toc a');
+  if ('IntersectionObserver' in window){
+    var map = {}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('on');}); var a = map[e.target.id]; if(a) a.classList.add('on'); } });
+    }, {rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('section.ch').forEach(function(s){ io.observe(s); });
+  }
+})();
+</script>

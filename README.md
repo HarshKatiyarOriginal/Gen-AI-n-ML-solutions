@@ -6,3 +6,4 @@ Enter a subject's requirements (university, course, semester, subject, syllabus)
 
 - 📄 [Project Proposal](docs/PROPOSAL.md)
 - 📝 [Project Synopsis](docs/SYNOPSIS.md)
+- 📘 [Team Handbook (interactive e-book)](docs/knowledge-vault-explained.html)
