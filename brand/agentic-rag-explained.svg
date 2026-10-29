@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="'Segoe UI',Arial,sans-serif">
+<defs>
+ <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6878"/></marker>
+ <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#B07D1E"/></marker>
+ <marker id="at" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0E6A70"/></marker>
+</defs>
+<rect width="1600" height="1000" fill="#F1F3F6"/>
+<text x="800" y="62" text-anchor="middle" font-size="36" font-weight="800" fill="#14202E">Agentic RAG-based Multi-Agent Content Generation System</text>
+<text x="800" y="94" text-anchor="middle" font-size="18" fill="#4A586A">Four ideas in one name, and how they fit together in Knowledge-Vault</text>
+
+<!-- chips -->
+<g>
+ <rect x="40" y="120" width="360" height="140" rx="16" fill="#FFFFFF" stroke="#B07D1E" stroke-width="2"/>
+ <rect x="40" y="120" width="360" height="46" rx="16" fill="#B07D1E"/><rect x="40" y="150" width="360" height="16" fill="#B07D1E"/>
+ <text x="60" y="151" font-size="22" font-weight="800" fill="#fff">① AGENTIC</text>
+ <text x="60" y="196" font-size="17" fill="#14202E">AI that decides its own next step</text>
+ <text x="60" y="222" font-size="17" fill="#14202E">and uses tools in a loop:</text>
+ <text x="60" y="248" font-size="16" font-weight="700" fill="#B07D1E">think → act → observe → repeat</text>
+</g>
+<g>
+ <rect x="430" y="120" width="360" height="140" rx="16" fill="#FFFFFF" stroke="#0E6A70" stroke-width="2"/>
+ <rect x="430" y="120" width="360" height="46" rx="16" fill="#0E6A70"/><rect x="430" y="150" width="360" height="16" fill="#0E6A70"/>
+ <text x="450" y="151" font-size="22" font-weight="800" fill="#fff">② RAG-BASED</text>
+ <text x="450" y="196" font-size="17" fill="#14202E">Retrieve real sources first,</text>
+ <text x="450" y="222" font-size="17" fill="#14202E">then write only from them:</text>
+ <text x="450" y="248" font-size="16" font-weight="700" fill="#0E6A70">no guessing, every fact cited</text>
+</g>
+<g>
+ <rect x="820" y="120" width="360" height="140" rx="16" fill="#FFFFFF" stroke="#B7442F" stroke-width="2"/>
+ <rect x="820" y="120" width="360" height="46" rx="16" fill="#B7442F"/><rect x="820" y="150" width="360" height="16" fill="#B7442F"/>
+ <text x="840" y="151" font-size="22" font-weight="800" fill="#fff">③ MULTI-AGENT</text>
+ <text x="840" y="196" font-size="17" fill="#14202E">A team of AI agents, each with</text>
+ <text x="840" y="222" font-size="17" fill="#14202E">one job, passing work along:</text>
+ <text x="840" y="248" font-size="16" font-weight="700" fill="#B7442F">like a publishing house</text>
+</g>
+<g>
+ <rect x="1210" y="120" width="350" height="140" rx="16" fill="#FFFFFF" stroke="#2B7A4B" stroke-width="2"/>
+ <rect x="1210" y="120" width="350" height="46" rx="16" fill="#2B7A4B"/><rect x="1210" y="150" width="350" height="16" fill="#2B7A4B"/>
+ <text x="1230" y="151" font-size="22" font-weight="800" fill="#fff">④ CONTENT GENERATION</text>
+ <text x="1230" y="196" font-size="17" fill="#14202E">The goal: produce complete</text>
+ <text x="1230" y="222" font-size="17" fill="#14202E">study material automatically:</text>
+ <text x="1230" y="248" font-size="16" font-weight="700" fill="#2B7A4B">e-book · PDF · flashcards · quiz</text>
+</g>
+
+<!-- diagram card -->
+<rect x="40" y="290" width="1520" height="620" rx="20" fill="#FFFFFF" stroke="#CDD4DE" stroke-width="1.5"/>
+
+<!-- input -->
+<rect x="70" y="480" width="210" height="190" rx="14" fill="#E7EBF0" stroke="#CDD4DE" stroke-width="1.5"/>
+<text x="90" y="512" font-size="15" font-weight="800" fill="#5B6878" letter-spacing="1.5">INPUT</text>
+<text x="90" y="545" font-size="16" fill="#14202E">University: AKTU</text>
+<text x="90" y="572" font-size="16" fill="#14202E">Course: B.Tech CSE</text>
+<text x="90" y="599" font-size="16" fill="#14202E">Subject: DBMS</text>
+<text x="90" y="626" font-size="16" fill="#14202E">Syllabus PDF</text>
+<text x="90" y="653" font-size="16" fill="#14202E">Old papers</text>
+<path d="M280 575 L338 575" stroke="#5B6878" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+
+<!-- multi-agent zone -->
+<rect x="345" y="315" width="830" height="575" rx="18" fill="#FBEFEC" stroke="#B7442F" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="365" y="345" font-size="15" font-weight="800" fill="#B7442F" letter-spacing="1.5">③ MULTI-AGENT TEAM</text>
+
+<!-- agents row -->
+<g font-size="17" font-weight="700" fill="#14202E" text-anchor="middle">
+ <rect x="370" y="380" width="140" height="70" rx="12" fill="#fff" stroke="#B7442F" stroke-width="2"/><text x="440" y="411">Planner</text><text x="440" y="433" font-size="13" font-weight="400" fill="#4A586A">plans topics</text>
+ <rect x="530" y="380" width="140" height="70" rx="12" fill="#fff" stroke="#B7442F" stroke-width="2"/><text x="600" y="411">Researcher</text><text x="600" y="433" font-size="13" font-weight="400" fill="#4A586A">finds sources</text>
+ <rect x="690" y="380" width="140" height="70" rx="12" fill="#fff" stroke="#B7442F" stroke-width="2"/><text x="760" y="411">Writer</text><text x="760" y="433" font-size="13" font-weight="400" fill="#4A586A">writes content</text>
+ <rect x="850" y="380" width="140" height="70" rx="12" fill="#fff" stroke="#B7442F" stroke-width="2"/><text x="920" y="411">Verifier</text><text x="920" y="433" font-size="13" font-weight="400" fill="#4A586A">checks facts</text>
+ <rect x="1010" y="380" width="140" height="70" rx="12" fill="#fff" stroke="#B7442F" stroke-width="2"/><text x="1080" y="411">Renderer</text><text x="1080" y="433" font-size="13" font-weight="400" fill="#4A586A">designs output</text>
+</g>
+<g stroke="#5B6878" stroke-width="2" fill="none">
+ <path d="M510 415 L526 415" marker-end="url(#a)"/><path d="M670 415 L686 415" marker-end="url(#a)"/>
+ <path d="M830 415 L846 415" marker-end="url(#a)"/><path d="M990 415 L1006 415" marker-end="url(#a)"/>
+</g>
+<!-- agentic loop -->
+<path d="M920 450 C920 505 760 505 760 456" stroke="#B07D1E" stroke-width="2.5" fill="none" stroke-dasharray="6 4" marker-end="url(#ab)"/>
+<text x="840" y="520" text-anchor="middle" font-size="14" font-weight="700" fill="#B07D1E">wrong? → rewrite (self-correction loop)</text>
+
+<!-- LLM brain -->
+<rect x="530" y="560" width="460" height="80" rx="40" fill="#14202E"/>
+<text x="760" y="594" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">🧠 LLM: the brain inside every agent</text>
+<text x="760" y="620" text-anchor="middle" font-size="14" fill="#C9D3DE">reads · reasons · writes (Claude / GPT / Gemini)</text>
+<g stroke="#8A97A6" stroke-width="1.5" stroke-dasharray="3 4">
+ <line x1="440" y1="450" x2="560" y2="560"/><line x1="600" y1="450" x2="640" y2="560"/><line x1="760" y1="530" x2="760" y2="560"/>
+ <line x1="920" y1="450" x2="880" y2="560"/><line x1="1080" y1="450" x2="960" y2="560"/>
+</g>
+
+<!-- RAG zone -->
+<rect x="370" y="680" width="390" height="190" rx="14" fill="#E3F1F1" stroke="#0E6A70" stroke-width="2"/>
+<text x="390" y="710" font-size="15" font-weight="800" fill="#0E6A70" letter-spacing="1.5">② RAG: KNOWLEDGE SOURCE</text>
+<g font-size="15" fill="#14202E" text-anchor="middle">
+ <rect x="390" y="728" width="105" height="48" rx="10" fill="#fff" stroke="#0E6A70"/><text x="442" y="757">🌐 Web</text>
+ <rect x="515" y="728" width="105" height="48" rx="10" fill="#fff" stroke="#0E6A70"/><text x="567" y="750">Clean</text><text x="567" y="768" font-size="12" fill="#4A586A">rank sources</text>
+ <rect x="640" y="728" width="105" height="48" rx="10" fill="#fff" stroke="#0E6A70"/><text x="692" y="750">Vector DB</text><text x="692" y="768" font-size="12" fill="#4A586A">embeddings</text>
+</g>
+<path d="M495 752 L511 752" stroke="#0E6A70" stroke-width="2" marker-end="url(#at)"/>
+<path d="M620 752 L636 752" stroke="#0E6A70" stroke-width="2" marker-end="url(#at)"/>
+<text x="390" y="808" font-size="14" fill="#14202E">1 · Retrieve: Researcher fills it with sources</text>
+<text x="390" y="832" font-size="14" fill="#14202E">2 · Generate: Writer pulls the best facts</text>
+<text x="390" y="856" font-size="14" fill="#14202E">3 · Verify: Verifier checks claims against it</text>
+<path d="M560 450 C500 520 420 600 420 676" stroke="#0E6A70" stroke-width="2.5" fill="none" marker-end="url(#at)"/>
+
+
+<!-- agentic tools -->
+<rect x="785" y="680" width="370" height="190" rx="14" fill="#F6EBD3" stroke="#B07D1E" stroke-width="2"/>
+<text x="805" y="710" font-size="15" font-weight="800" fill="#B07D1E" letter-spacing="1.5">① AGENTIC: TOOLS + DECISIONS</text>
+<g font-size="15" fill="#14202E">
+ <text x="805" y="744">🔍 web_search()   📄 read_page()</text>
+ <text x="805" y="772">🗂 vector_lookup()   🐍 run_python()</text>
+ <text x="805" y="810" font-size="14">Each agent decides which tool to use,</text>
+ <text x="805" y="832" font-size="14">checks the result, and repeats until</text>
+ <text x="805" y="854" font-size="14">its job is really done.</text>
+</g>
+
+<!-- output -->
+<path d="M1150 415 C1185 415 1185 575 1222 575" stroke="#5B6878" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<rect x="1230" y="430" width="300" height="300" rx="14" fill="#E3F2E8" stroke="#2B7A4B" stroke-width="2"/>
+<text x="1250" y="462" font-size="15" font-weight="800" fill="#2B7A4B" letter-spacing="1.5">④ GENERATED CONTENT</text>
+<g font-size="18" fill="#14202E">
+ <rect x="1250" y="480" width="260" height="50" rx="10" fill="#fff" stroke="#2B7A4B"/><text x="1268" y="512">📘 Interactive e-book</text>
+ <rect x="1250" y="540" width="260" height="50" rx="10" fill="#fff" stroke="#2B7A4B"/><text x="1268" y="572">📄 PDF exam notebook</text>
+ <rect x="1250" y="600" width="260" height="50" rx="10" fill="#fff" stroke="#2B7A4B"/><text x="1268" y="632">🃏 Flashcards</text>
+ <rect x="1250" y="660" width="260" height="50" rx="10" fill="#fff" stroke="#2B7A4B"/><text x="1268" y="692">✅ Quiz / MCQs</text>
+</g>
+<text x="1380" y="770" text-anchor="middle" font-size="14" fill="#4A586A">verified · syllabus-wise · ★ marked</text>
+
+<!-- equation -->
+<text x="800" y="958" text-anchor="middle" font-size="20" fill="#14202E"><tspan font-weight="800" fill="#B07D1E">Agentic</tspan> (decides &amp; self-corrects)  +  <tspan font-weight="800" fill="#0E6A70">RAG</tspan> (grounded in real sources)  +  <tspan font-weight="800" fill="#B7442F">Multi-Agent</tspan> (team of roles)  =  <tspan font-weight="800" fill="#2B7A4B">Content Generation System</tspan></text>
+</svg>
