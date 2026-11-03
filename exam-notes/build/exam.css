@@ -1,0 +1,66 @@
+@page { size: A4; margin: 15mm 16mm 17mm 16mm; }
+html { background: #fff; }
+body { font-family: "TeX Gyre Termes", "Liberation Serif", serif; font-size: 12pt; line-height: 1.48; color: #000; background: #fff; margin: 0; max-width: none; }
+
+/* subject title page header */
+h1 { font-size: 22pt; text-align: center; border: 2px solid #000; padding: 8pt; margin: 0 0 6pt; break-before: page; }
+h1:first-of-type { break-before: avoid; }
+h1 + p { text-align: center; font-style: italic; margin-top: 0; }
+
+/* unit heading */
+h2 { font-size: 15pt; border-top: 2.5px solid #000; border-bottom: 2.5px solid #000; padding: 3pt 2pt; margin: 18pt 0 8pt; break-after: avoid; text-transform: uppercase; letter-spacing: 0.4px; }
+h2.section, h4 { font-size: 12.5pt; }
+
+/* question */
+h3 { font-size: 12.5pt; margin: 16pt 0 4pt; padding-bottom: 2pt; border-bottom: 1.2px solid #000; break-after: avoid; }
+h3 .m, .m { float: right; font-weight: normal; font-style: italic; font-size: 11pt; }
+
+/* section labels inside answers */
+h4 { margin: 10pt 0 2pt; text-decoration: underline; break-after: avoid; }
+
+p { margin: 4pt 0; orphans: 3; widows: 3; }
+ul, ol { margin: 3pt 0 4pt; padding-left: 22pt; }
+li { margin: 1.5pt 0; }
+strong { font-weight: bold; }
+em { font-style: italic; }
+u { text-decoration: underline; }
+
+/* exam tip / remember boxes */
+blockquote { border: 1.4px solid #000; border-left-width: 5px; margin: 8pt 0; padding: 4pt 10pt; break-inside: avoid; font-size: 11.2pt; }
+blockquote p { margin: 2pt 0; }
+
+/* maths */
+math { font-family: "TeX Gyre Termes Math", "Latin Modern Math", serif; font-size: 1.05em; }
+
+/* code */
+pre { font-family: "DejaVu Sans Mono", monospace; font-size: 9pt; line-height: 1.3; border: 1px solid #000; padding: 5px 8px; white-space: pre; overflow: hidden; break-inside: avoid; }
+pre code { font-size: 9pt; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: 10pt; }
+
+/* tables */
+table { border-collapse: collapse; width: 100%; margin: 6pt 0; break-inside: avoid; font-size: 10.8pt; line-height: 1.3; }
+th, td { border: 1px solid #000; padding: 3px 6px; vertical-align: top; }
+th { border-bottom: 2px solid #000; }
+
+/* figures */
+figure, figure.fig { margin: 8pt 0; text-align: center; break-inside: avoid; }
+figure.fig .svgwrap { margin: 0 auto; max-width: 100%; }
+figure.fig svg, figure img { max-width: 100%; height: auto; }
+figcaption { font-style: italic; font-size: 10pt; margin-top: 2pt; }
+p > img { display: block; margin: 6pt auto; max-width: 100%; }
+hr { border: 0; border-top: 1px dashed #000; margin: 12pt 0; }
+
+/* mock-ups reused from the long notes */
+.formmock { display: inline-block; text-align: left; border: 1.5px solid #000; border-radius: 6px; padding: 8px 14px 10px; font-size: 10pt; width: 72%; }
+.fm-title { font-weight: bold; text-align: center; border-bottom: 1px solid #000; padding-bottom: 4px; margin-bottom: 6px; }
+.fm-row { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
+.fm-row > span { width: 95px; flex: none; }
+.fm-row input[type=text], .fm-row input[type=password], .fm-row select, .fm-row textarea { flex: 1; border: 1px solid #000; border-radius: 3px; padding: 2px 4px; font: inherit; background: #fff; color: #000; }
+.fm-row button { border: 1px solid #000; background: #fff; border-radius: 3px; padding: 1px 10px; font: inherit; }
+.fm-note { margin-top: 6px; font-style: italic; font-size: 9pt; text-align: center; }
+.boxmodel { display: inline-block; width: 74%; font-size: 10pt; }
+.boxmodel div { position: relative; padding: 24px 22px 14px; border-radius: 3px; }
+.bm-margin { border: 1.2px dashed #000; } .bm-border { border: 3px solid #000; }
+.bm-padding { border: 1px dotted #000; background: #ececec; }
+.bm-content { border: 1.2px solid #000; background: #fff; text-align: center; padding: 14px !important; font-weight: bold; }
+.bm-lbl { position: absolute; top: 5px; left: 10px; font-size: 9pt; }
