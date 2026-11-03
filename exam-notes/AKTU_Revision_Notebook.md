@@ -52,26 +52,31 @@ The **three-schema architecture** (ANSI/SPARC architecture) separates a database
 **3. Core Explanation / Working**
 
 *(a) Internal Level (Physical Level)*
+
 - Lowest level of abstraction. Describes **how** data is actually stored on disk.
 - Covers storage structures, file organization, indexes, hashing, compression, record placement and access paths.
 - Example: `STUDENT` records stored in a B+ tree file indexed on `Roll_No`.
 
 *(b) Conceptual Level (Logical Level)*
+
 - Describes **what** data is stored in the whole database and the relationships among the data.
 - Hides physical storage details. Covers entities, attributes, data types, relationships, constraints and security.
 - Designed and managed by the **DBA**.
 - Example: `STUDENT(Roll_No, Name, DOB, Dept_ID)`, `DEPARTMENT(Dept_ID, DName)`.
 
 *(c) External Level (View Level)*
+
 - Highest level. Describes only the **part** of the database that a particular user group needs.
 - Many external views can exist for one conceptual schema.
 - Example: the Accounts section sees `(Roll_No, Name, Fee_Status)`. The Exam cell sees `(Roll_No, Name, Marks)`.
 
 *(d) Mappings*
+
 - **External/Conceptual mapping:** translates a request on a user view into a request on the conceptual schema.
 - **Conceptual/Internal mapping:** translates conceptual records into stored records and access paths.
 
 *(e) Data Independence*
+
 - **Physical data independence:** the internal schema can change without changing the conceptual schema or application programs. Only the conceptual/internal mapping is updated.
   - Example: adding an index, moving to a new disk, or changing a file from heap to hashed organization.
 - **Logical data independence:** the conceptual schema can change without changing external views or application programs. Only the external/conceptual mapping is updated.
@@ -92,12 +97,14 @@ The **three-schema architecture** (ANSI/SPARC architecture) separates a database
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - Gives data independence, which lowers application maintenance cost.
 - Each user gets a customised view, which improves **security** by hiding unrelated data.
 - The DBA can tune physical storage without affecting users.
 - Supports many users with different needs on one shared database.
 
 *Disadvantages*
+
 - Mapping between levels adds **processing overhead** and can slow queries.
 - More complex to design and to implement in the DBMS.
 - Full logical independence is hard to achieve in practice.
@@ -177,22 +184,26 @@ Generalization, specialization and aggregation are **Enhanced ER (EER)** concept
 **3. Core Explanation / Working**
 
 *(a) Generalization*
+
 - A **bottom-up** process: two or more lower-level entities with common attributes are combined into a **single higher-level entity**.
 - Common attributes move to the super-class. Distinct attributes stay in the sub-classes.
 - Example: `CAR (Reg_No, Model, Seats)` and `TRUCK (Reg_No, Model, Load_Capacity)` are generalized into `VEHICLE (Reg_No, Model)`.
 
 *(b) Specialization*
+
 - A **top-down** process: a higher-level entity is divided into **sub-classes** based on a distinguishing feature.
 - Sub-classes **inherit** all attributes and relationships of the super-class and add their own.
 - Example: `EMPLOYEE` is specialized into `ENGINEER (Skill)` and `MANAGER (Allowance)`.
 
 *(c) Constraints on Generalization/Specialization*
+
 - **Disjoint:** an entity belongs to at most one sub-class (an employee is either an Engineer or a Manager).
 - **Overlapping:** an entity may belong to more than one sub-class (a person can be both a Student and an Employee).
 - **Total participation:** every super-class entity must belong to some sub-class.
 - **Partial participation:** some super-class entities may belong to no sub-class.
 
 *(d) Aggregation*
+
 - The ER model **cannot express relationships between relationships**.
 - Aggregation is an **abstraction** in which a relationship set, together with its participating entity sets, is treated as **one higher-level entity**.
 - Example: `EMPLOYEE --WORKS_ON-- PROJECT` is aggregated, and `MANAGER` then has a `MONITORS` relationship with this aggregate.
@@ -212,12 +223,14 @@ Generalization, specialization and aggregation are **Enhanced ER (EER)** concept
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - Generalization removes **redundancy** of common attributes.
 - Specialization models real-world **sub-types** precisely, with their own attributes.
 - Aggregation can model **relationships among relationships** without redundant ternary sets.
 - Together they make the ER diagram closer to object-oriented design.
 
 *Disadvantages*
+
 - They make the ER diagram more **complex** to read and draw.
 - Mapping these hierarchies to tables needs extra design choices (one table per class, or one table for the whole hierarchy), which can cause **NULL values** or extra joins.
 
@@ -292,11 +305,13 @@ In 1985 **Dr. E.F. Codd**, the father of the relational model, proposed **13 rul
 **5. Advantages & Disadvantages**
 
 *Advantages (of following Codd's rules)*
+
 - They give a **standard benchmark** for judging whether a DBMS is truly relational.
 - They ensure **data independence, integrity and security**.
 - They promote set-based processing, which makes queries **simpler and more powerful**.
 
 *Disadvantages*
+
 - Strict compliance is **hard to implement**, and no commercial product achieves it fully.
 - Some rules, like full view updatability, are **theoretically complex** and can reduce performance.
 
@@ -309,6 +324,7 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 ### Q4. Short Definitions (2 Marks Each)
 
 **(a) Data Dictionary**
+
 - A **data dictionary** is a centralized repository of **metadata** ("data about data").
 - It stores table names, attribute names, data types, constraints, indexes, views, users and access rights.
 - An **active** data dictionary is updated automatically by the DBMS. A **passive** one is maintained manually.
@@ -324,6 +340,7 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 | Example: `STUDENT(Roll, Name, Age)` | Example: `(101, 'Harsh', 21)` |
 
 **(c) Responsibilities of a DBA (Database Administrator)**
+
 - **Schema definition:** creates the conceptual schema using DDL.
 - **Storage structure and access method definition:** chooses file organization and indexes.
 - **Granting authorization:** controls user access and privileges (GRANT/REVOKE).
@@ -366,6 +383,7 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 **3. Core Explanation / Working**
 
 *(a) Fundamental Operators*
+
 - **Select (σ):** chooses **rows** that satisfy a predicate. `σ Dept='CSE' (STUDENT)`
 - **Project (π):** chooses **columns** and removes duplicates. `π Name, Dept (STUDENT)`
 - **Union (∪):** all tuples in R or S. R and S must be **union compatible** (same degree and domains).
@@ -374,6 +392,7 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 - **Rename (ρ):** renames a relation or its attributes. `ρ S(STUDENT)`
 
 *(b) Derived Operators*
+
 - **Intersection:** `R ∩ S = R − (R − S)`
 - **Theta Join:** `R ⋈θ S = σθ (R × S)`
 
@@ -391,6 +410,7 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 ```
 
 *(c) Natural Join (EMP ⋈ DEPT)*
+
 - Joins on **all common attributes** (here `DID`) with an equality condition and keeps **one copy** of each common column.
 - Formula: `R ⋈ S = π (R ∪ S attrs) ( σ R.A = S.A (R × S) )`
 
@@ -404,6 +424,7 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 ```
 
 *(d) Outer Joins*
+
 - They keep **unmatched tuples** as well, filling the missing values with **NULL**. This avoids the information loss of a natural join.
 - **Left Outer Join (EMP ⟕ DEPT):** all EMP tuples are kept.
 - **Right Outer Join (EMP ⟖ DEPT):** all DEPT tuples are kept.
@@ -423,6 +444,7 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 ```
 
 *(e) Division Operator (R ÷ S)*
+
 - Used for **"for all"** queries, for example "find students who are enrolled in **all** courses".
 - If R(A, B) and S(B), then R ÷ S gives every A value that is paired with **every** B value in S.
 - Formula: `R ÷ S = π A (R) − π A ( (π A (R) × S) − R )`
@@ -462,11 +484,13 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - It is the **formal foundation** of SQL and of query optimization.
 - Operators are **closed**: the output is always a relation, so operations can be **nested**.
 - Derived operators like join and division make complex queries **shorter**.
 
 *Disadvantages*
+
 - It is **procedural**: the user must specify *how* to get the result.
 - It lacks aggregation, sorting and recursion in its basic form.
 - Cartesian products and joins on large tables can be very **costly**.
@@ -512,6 +536,7 @@ Relational algebra is used **internally by the query optimizer** of every RDBMS 
 *Sample relation:* `STUDENT(Roll, Name, Age, Dept)`
 
 *(a) Tuple Relational Calculus (TRC)*
+
 - **General form:** `{ t | P(t) }`, read as "the set of all tuples t for which predicate P is true".
 - `t.A` means the value of attribute A in tuple t.
 - Uses `∈`, comparison operators (`<, >, =, ≠, ≤, ≥`), connectives (`∧, ∨, ¬, ⇒`) and quantifiers (`∃` there exists, `∀` for all).
@@ -521,6 +546,7 @@ Relational algebra is used **internally by the query optimizer** of every RDBMS 
   `{ t.Name | t ∈ STUDENT ∧ ∃ d ∈ DEPT ( d.Dept = t.Dept ∧ d.Dept = 'CSE' ) }`
 
 *(b) Domain Relational Calculus (DRC)*
+
 - **General form:** `{ <x1, x2, ..., xn> | P(x1, x2, ..., xn) }`
 - Each `xi` is a **domain variable** that stands for a single attribute value.
 - `<r, n, a, d> ∈ STUDENT` means a tuple with those values exists in STUDENT.
@@ -530,6 +556,7 @@ Relational algebra is used **internally by the query optimizer** of every RDBMS 
   `{ <r, n> | ∃ a ( <r, n, a, 'CSE'> ∈ STUDENT ) }`
 
 *(c) Safety of Expressions*
+
 - An expression like `{ t | ¬(t ∈ STUDENT) }` is **unsafe** because it produces an infinite result.
 - A **safe** expression only returns values from the **domain of the expression**, meaning values that appear in the relations or constants used in the query.
 - Safe TRC, safe DRC and relational algebra have **equal expressive power**. This property is called **relational completeness**.
@@ -549,11 +576,13 @@ Relational algebra is used **internally by the query optimizer** of every RDBMS 
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - It is **declarative**: users state *what* they want, which is close to natural logic.
 - It allows **query optimization freedom**, because the DBMS chooses the execution strategy.
 - It is **relationally complete**, with the same power as relational algebra.
 
 *Disadvantages*
+
 - Unsafe expressions can give **infinite results**, so safety checks are needed.
 - Quantifiers (`∀`, `∃`) make complex queries **hard to write and understand** for beginners.
 - Like basic algebra, it does not support aggregation directly.
@@ -596,6 +625,7 @@ TRC is the theoretical basis of **SQL's** `SELECT ... FROM ... WHERE` and DRC is
 **3. Core Explanation / Working**
 
 *(a) Domain Constraint*
+
 - Each attribute value must be an **atomic** value from its defined **domain** (data type, length, range, format).
 - Defined using data types, `NOT NULL`, `DEFAULT` and `CHECK`.
 - SQL: `Age INT CHECK (Age BETWEEN 17 AND 30)`
@@ -612,9 +642,11 @@ TRC is the theoretical basis of **SQL's** `SELECT ... FROM ... WHERE` and DRC is
 ```
 
 *(b) Key Constraint*
+
 - Every candidate key must be **unique**. No two tuples may have the same key value.
 
 *(c) Entity Integrity Constraint*
+
 - **No primary key attribute may be NULL.** The primary key identifies each tuple uniquely, and NULL cannot identify anything.
 - SQL: `Roll INT PRIMARY KEY` (this implies `NOT NULL` and `UNIQUE`).
 
@@ -630,6 +662,7 @@ TRC is the theoretical basis of **SQL's** `SELECT ... FROM ... WHERE` and DRC is
 ```
 
 *(d) Referential Integrity Constraint*
+
 - A **foreign key (FK)** value in the referencing (child) table must either **match an existing primary key** value in the referenced (parent) table or be **NULL**.
 - SQL: `Dept_ID INT REFERENCES DEPARTMENT(Dept_ID)`
 
@@ -646,6 +679,7 @@ TRC is the theoretical basis of **SQL's** `SELECT ... FROM ... WHERE` and DRC is
 ```
 
 *(e) How operations can violate constraints*
+
 - **Insert:** can violate domain, key, entity and referential integrity (child insert with a non-existent FK).
 - **Delete:** can violate referential integrity only (deleting a parent row that child rows still reference).
 - **Update:** can violate all of them.
@@ -664,11 +698,13 @@ TRC is the theoretical basis of **SQL's** `SELECT ... FROM ... WHERE` and DRC is
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - They keep the database **accurate and consistent** by preventing invalid data.
 - Enforcement is **centralised** in the DBMS, so each application does not need validation code.
 - Referential integrity prevents **orphan records** (dangling references).
 
 *Disadvantages*
+
 - Checking constraints on every operation adds **performance overhead**, especially on bulk loads.
 - `CASCADE` actions can **unintentionally delete** large amounts of related data.
 
@@ -681,16 +717,19 @@ Integrity constraints are used in every **banking, e-commerce and university ERP
 ### Q4. Short Definitions (2 Marks Each)
 
 **(a) Cartesian Product (×)**
+
 - A binary operation that combines **every tuple of R with every tuple of S**.
 - If R has m tuples and n1 attributes, and S has p tuples and n2 attributes, then R × S has **m x p tuples** and **n1 + n2 attributes**.
 - Example: R with 3 rows × S with 4 rows = 12 rows.
 
 **(b) Theta Join (⋈θ)**
+
 - A join that combines tuples from two relations that satisfy a **general condition θ**, which can use any of `=, <, >, ≤, ≥, ≠`.
 - `R ⋈θ S = σθ (R × S)`
 - Example: `EMP ⋈ (EMP.Salary > MGR.Salary) MGR`. When θ uses only `=`, it is called an **Equi Join**.
 
 **(c) Foreign Key and Cascading Deletes**
+
 - When a foreign key is declared with **`ON DELETE CASCADE`**, deleting a parent (referenced) row **automatically deletes all child rows** that refer to it. This keeps referential integrity without leaving orphan rows.
 - SQL: `FOREIGN KEY (Dept_ID) REFERENCES DEPARTMENT(Dept_ID) ON DELETE CASCADE`
 - Example: deleting `Dept_ID = 10` from DEPARTMENT also deletes every STUDENT row with `Dept_ID = 10`.
@@ -738,6 +777,7 @@ A decomposition of relation R into R1 and R2 is **lossless (non-additive) join**
 **3. Core Explanation / Working**
 
 *(a) Conditions for a lossless join (R into R1, R2)*
+
 1. `Attr(R1) ∪ Attr(R2) = Attr(R)`
 2. `Attr(R1) ∩ Attr(R2) ≠ ∅`
 3. `R1 ∩ R2 → R1` **or** `R1 ∩ R2 → R2` must hold in F+. In other words, the common attribute(s) must be a **superkey** of at least one of the two relations.
@@ -760,6 +800,7 @@ Decomposition: `R1(A, B, C)` and `R2(A, D, E)`
 *(c) Solved Example 2 - LOSSY (shown with data)*
 
 `R(A, B, C)`, `F = { A → B }`, decomposed into `R1(A, B)` and `R2(B, C)`.
+
 - R1 ∩ R2 = {B}, and B+ = {B}. B is a key of neither R1 nor R2, so the decomposition is **LOSSY**.
 
 ```
@@ -777,12 +818,14 @@ Decomposition: `R1(A, B, C)` and `R2(A, D, E)`
 The join gives 4 tuples instead of 2. The extra tuples make information **ambiguous**, which is why the decomposition is called "lossy".
 
 *(d) Decomposition into more than two relations (successive joins)*
+
 - `R(A,B,C,D)`, `F = {A → B, B → C, C → D}`, decomposition `R1(A,B), R2(B,C), R3(C,D)`.
 - R1 ⋈ R2: common attribute B, and B → C, so B is a key of R2. Lossless, giving `R12(A,B,C)`.
 - R12 ⋈ R3: common attribute C, and C → D, so C is a key of R3. Lossless, giving `R(A,B,C,D)`.
 - **Result: LOSSLESS.** For harder cases, use the **Chase (Tableau) matrix method**.
 
 *(e) Dependency Preservation*
+
 - Let Fi be the set of FDs in F+ that contain **only attributes of Ri** (the projection of F onto Ri).
 - The decomposition is **dependency preserving** if `(F1 ∪ F2 ∪ ... ∪ Fn)+ = F+`.
 - *Checking Example 1:*
@@ -804,11 +847,13 @@ The join gives 4 tuples instead of 2. The extra tuples make information **ambigu
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - A lossless decomposition **removes redundancy** without losing information.
 - Dependency preservation lets constraints be **checked locally** on single tables without costly joins.
 - Together they guarantee a **correct normalization** (3NF gives both properties).
 
 *Disadvantages*
+
 - A lossless decomposition still needs **joins** at query time, which costs performance.
 - **BCNF may not preserve dependencies**, so a designer sometimes has to accept 3NF.
 
@@ -869,6 +914,7 @@ A **canonical (minimal) cover Fc** of an FD set F is the **smallest equivalent s
 ```
 
 *Step 2: Remove extraneous attributes from LHS* (only `AC → D` has a composite LHS)
+
 - Is A extraneous? Check C+ = {C, B}. D is not in it, so **A is needed**.
 - Is C extraneous? Check A+ = {A, B}. D is not in it, so **C is needed**.
 - `AC → D` stays as it is.
@@ -885,6 +931,7 @@ A **canonical (minimal) cover Fc** of an FD set F is the **smallest equivalent s
 | AC → D | AC+ = {A, C, B} | No | Keep |
 
 *Step 4: Combine FDs with the same LHS*
+
 - `D → A` and `D → C` combine to give `D → AC`.
 
 **Answer:**
@@ -896,6 +943,7 @@ A **canonical (minimal) cover Fc** of an FD set F is the **smallest equivalent s
 **Solved Example 2 (Korth)**
 
 **Given:** `F = { A → BC, B → C, A → B, AB → C }`
+
 - *Step 1:* `{ A → B, A → C, B → C, A → B, AB → C }`. Remove the duplicate to get `{ A → B, A → C, B → C, AB → C }`.
 - *Step 2:* in `AB → C`, A+ = {A, B, C} already contains C, so **B is extraneous**. `AB → C` becomes `A → C`, which is a duplicate.
 - *Step 3:* `A → C` is redundant, because A → B and B → C give A → C by transitivity. Remove it.
@@ -914,11 +962,13 @@ A **canonical (minimal) cover Fc** of an FD set F is the **smallest equivalent s
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - It **reduces the cost of checking** FDs on every database update.
 - It is the **input to the 3NF synthesis algorithm**, which gives a lossless and dependency-preserving design.
 - It removes redundancy in the constraint set, making the design **simpler to analyse**.
 
 *Disadvantages*
+
 - Computing closures repeatedly is **time-consuming by hand** for large FD sets.
 - The result is **not unique**: a different processing order may give a different (but equivalent) cover.
 
@@ -969,6 +1019,7 @@ A **Multivalued Dependency (MVD)** `X →→ Y` exists when, for one value of X,
 **3. Core Explanation / Working**
 
 *(a) Multivalued Dependency (MVD)*
+
 - **Definition:** in R, `X →→ Y` holds if whenever two tuples t1 and t2 agree on X, there exist tuples t3 and t4 such that:
   - t3[X] = t4[X] = t1[X] = t2[X]
   - t3[Y] = t1[Y] and t3[R−X−Y] = t2[R−X−Y]
@@ -997,6 +1048,7 @@ A student takes several courses and has several hobbies, and the two are **indep
 - Problem: adding one new hobby for S1 requires **2 new rows** (one per course). This is redundancy and an update anomaly.
 
 *(c) Fourth Normal Form (4NF)*
+
 - **Definition:** R is in 4NF if it is in **BCNF** and, for every **non-trivial MVD** `X →→ Y`, **X is a superkey**.
 - In the example, SID is not a superkey, so the relation is **not in 4NF**.
 - **Decomposition:** for X →→ Y, split into R1(X ∪ Y) and R2(R − Y).
@@ -1013,6 +1065,7 @@ A student takes several courses and has several hobbies, and the two are **indep
 ```
 
 *(d) Join Dependency (JD)*
+
 - **Definition:** R satisfies the join dependency `*(R1, R2, ..., Rn)` if R is always equal to the natural join of its projections: `R = π R1 (R) ⋈ π R2 (R) ⋈ ... ⋈ π Rn (R)`.
 - An MVD is a special case of a JD with n = 2.
 - A JD is **trivial** if one of the Ri equals R.
@@ -1039,6 +1092,7 @@ Rule (cyclic constraint): if a Supplier supplies Part P, the Supplier supplies t
 - So `*(SP, PJ, JS)` holds and is **not implied by the candidate key**.
 
 *(f) Fifth Normal Form (5NF / Project-Join Normal Form)*
+
 - **Definition:** R is in 5NF if it is in 4NF and **every non-trivial join dependency is implied by the candidate keys**.
 - **Decomposition:** replace SPJ with the three tables `SP(Supplier, Part)`, `PJ(Part, Project)` and `JS(Project, Supplier)`. Each one is in 5NF.
 
@@ -1056,11 +1110,13 @@ Rule (cyclic constraint): if a Supplier supplies Part P, the Supplier supplies t
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - They **remove the redundancy** caused by independent multi-valued facts, which BCNF cannot remove.
 - They eliminate **insertion, deletion and update anomalies** completely.
 - 5NF is the **ultimate normal form** for project-join decomposition: the data cannot be decomposed any further without loss.
 
 *Disadvantages*
+
 - More tables means **more joins** and slower query performance.
 - JDs are **hard to identify** in real schemas, so 5NF is rarely applied in practice.
 
@@ -1073,6 +1129,7 @@ Rule (cyclic constraint): if a Supplier supplies Part P, the Supplier supplies t
 ### Q4. Short Definitions (2 Marks Each)
 
 **(a) Update / Insertion Anomalies**
+
 - **Insertion anomaly:** a fact cannot be inserted without inserting other, unrelated facts. Example: a new department cannot be added until at least one student joins it, if both are stored in one table.
 - **Update anomaly:** a change to one fact must be repeated in many rows. If one row is missed, the data becomes **inconsistent**. Example: a department's HOD name stored in every student row.
 - (**Deletion anomaly:** deleting one fact unintentionally deletes another, for example deleting the last student also deletes the department details.)
@@ -1088,6 +1145,7 @@ Rule (cyclic constraint): if a Supplier supplies Part P, the Supplier supplies t
 - *Completely non-trivial:* `X ∩ Y = ∅`.
 
 **(c) Armstrong's Axioms** (sound and complete inference rules for FDs)
+
 - **Reflexivity:** if Y ⊆ X, then X → Y.
 - **Augmentation:** if X → Y, then XZ → YZ.
 - **Transitivity:** if X → Y and Y → Z, then X → Z.
@@ -1138,11 +1196,13 @@ A schedule is **serializable** if its effect is equivalent to some **serial sche
 **3. Core Explanation / Working**
 
 *(a) Conflict Serializability*
+
 - Two operations **conflict** if they belong to **different transactions**, act on the **same data item**, and **at least one is a write**: R-W, W-R or W-W.
 - **Test:** build a **precedence graph**. Draw an edge Ti → Tj if an operation of Ti conflicts with, and comes before, an operation of Tj.
 - If the graph is **acyclic**, the schedule is conflict serializable. A topological sort gives the equivalent serial order.
 
 *(b) View Serializability*
+
 - Schedules S and S' are **view equivalent** if, for each data item Q:
   1. **Initial read:** if Ti reads the initial value of Q in S, it also reads the initial value in S'.
   2. **Updated read (reads-from):** if Ti reads a value of Q written by Tj in S, it does so in S' as well.
@@ -1166,6 +1226,7 @@ A schedule is **serializable** if its effect is equivalent to some **serial sche
 ```
 
 *Step 1: Conflict test with a precedence graph*
+
 - R1(A) before W2(A) gives T1 → T2.
 - W2(A) before W1(A) gives T2 → T1.
 - W1(A) before W3(A) gives T1 → T3. W2(A) before W3(A) gives T2 → T3.
@@ -1208,11 +1269,13 @@ A schedule is **serializable** if its effect is equivalent to some **serial sche
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - Both guarantee **database consistency** while still allowing **concurrent execution**.
 - The conflict test is **efficient** and is the basis of practical protocols like 2PL.
 - View serializability **accepts more schedules**, which allows more concurrency in theory.
 
 *Disadvantages*
+
 - Testing view serializability is **NP-complete**, so it is not practical for a real DBMS.
 - Conflict serializability **rejects some correct schedules** (those with blind writes).
 
@@ -1260,11 +1323,13 @@ The **Timestamp Ordering (TO) Protocol** is a **non-lock-based** concurrency con
 **3. Core Explanation / Working**
 
 *(a) Timestamps*
+
 - **TS(Ti):** a unique timestamp given when Ti starts (from the system clock or a logical counter). If Ti starts before Tj, then TS(Ti) < TS(Tj).
 - **W-timestamp(Q):** the largest timestamp of any transaction that **wrote** Q successfully.
 - **R-timestamp(Q):** the largest timestamp of any transaction that **read** Q successfully.
 
 *(b) Rules of the Basic Timestamp Ordering Protocol*
+
 - **When Ti issues READ(Q):**
   - If `TS(Ti) < W-TS(Q)`, Ti wants a value that has already been overwritten by a younger transaction. **Reject and roll back Ti.**
   - Otherwise, **execute** the read and set `R-TS(Q) = max(R-TS(Q), TS(Ti))`.
@@ -1275,6 +1340,7 @@ The **Timestamp Ordering (TO) Protocol** is a **non-lock-based** concurrency con
 - A rolled-back transaction restarts with a **new, larger timestamp**.
 
 *(c) Thomas Write Rule*
+
 - It changes **only the second write check**.
 - If `TS(Ti) < W-TS(Q)`, the write is **obsolete**, because a younger transaction has already written Q and nobody will ever read Ti's value. So the write is simply **ignored** and Ti continues, with no rollback.
 - This allows some **view-serializable schedules that are not conflict serializable**, which increases concurrency.
@@ -1302,11 +1368,13 @@ TS(T1) = 10, TS(T2) = 20, and initially R-TS(Q) = W-TS(Q) = 0.
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - It is **deadlock-free**, because no transaction ever waits for a lock.
 - It guarantees **serializability** in timestamp order.
 - The Thomas Write Rule **reduces unnecessary rollbacks**, which improves throughput.
 
 *Disadvantages*
+
 - **Starvation** is possible, because a long transaction may be rolled back again and again.
 - The schedules may be **non-recoverable** or cause **cascading rollbacks** unless strict TO is used.
 - Storing R-TS and W-TS for every data item and updating them on each access adds **overhead**.
@@ -1347,6 +1415,7 @@ Timestamp-based concurrency control is the basis of **MVCC (Multi-Version Concur
 **3. Core Explanation / Working**
 
 *(a) Lock Modes*
+
 - **S (Shared):** read access to the node and all its descendants.
 - **X (Exclusive):** read/write access to the node and all its descendants.
 - **IS (Intention-Shared):** explicit S locks will be taken at a **lower level**.
@@ -1368,6 +1437,7 @@ Timestamp-based concurrency control is the basis of **MVCC (Multi-Version Concur
 ```
 
 *(c) Rules of the Multiple Granularity Locking Protocol* (for transaction Ti)
+
 1. Ti must follow the **compatibility matrix**.
 2. The **root** must be locked first, in any mode.
 3. Ti can lock node Q in **S or IS** mode only if it holds the **parent** in **IX or IS** mode.
@@ -1378,11 +1448,13 @@ Timestamp-based concurrency control is the basis of **MVCC (Multi-Version Concur
 *Example:* T1 wants to update record `ra1`. It takes **IX** on DB, **IX** on A1, **IX** on Fa and then **X** on ra1. At the same time, T2 can read `rb1` by taking IS on DB, IS on A1, IS on Fb and S on rb1. Both run in parallel because IX and IS are compatible.
 
 *(d) Purpose of Intention Locks*
+
 - Without them, to lock a whole file the DBMS would have to **search every descendant** to check for conflicting locks, which is very slow.
 - With intention locks, the DBMS only checks the **node and its ancestors**. If any ancestor shows a conflicting intention, the request waits.
 - This lets **coarse and fine locks coexist** safely and efficiently.
 
 *(e) Lock Escalation*
+
 - When a transaction holds **too many fine-grained locks** (for example more than 5000 row locks on one table), the DBMS **replaces them with one coarser lock** (a table lock).
 - **Why:** it reduces **memory use** for the lock table and the **overhead of lock management**.
 - **Cost:** concurrency drops, because other transactions are now blocked from the whole table.
@@ -1401,11 +1473,13 @@ Timestamp-based concurrency control is the basis of **MVCC (Multi-Version Concur
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - It **balances concurrency and overhead** by choosing the right lock size for each transaction.
 - Intention locks make conflict detection **fast**, since there is no need to scan the subtree.
 - It ensures **serializability**, because it is based on two-phase locking.
 
 *Disadvantages*
+
 - It is **complex to implement**, with five lock modes and hierarchical rules.
 - **Deadlocks are still possible**, because the protocol is lock-based.
 - Lock escalation can suddenly **reduce concurrency** and cause blocking.
@@ -1419,10 +1493,12 @@ Multiple granularity locking with intention locks is implemented in **Microsoft 
 ### Q4. Short Definitions (2 Marks Each)
 
 **(a) Dirty Read Problem (Temporary Update / W-R Conflict)**
+
 - Happens when a transaction **reads data written by another transaction that has not yet committed**. If that transaction then **aborts**, the first transaction has used an invalid value.
 - Example: T1 writes A = 500 (uncommitted), T2 reads A = 500, then T1 rolls back, so T2 holds a "dirty" value.
 
 **(b) Unrepeatable Read Problem (R-W Conflict)**
+
 - Happens when a transaction **reads the same item twice and gets different values**, because another transaction **modified and committed** it between the two reads.
 - Example: T1 reads A = 100, T2 updates A = 200 and commits, then T1 reads A again and gets 200.
 
@@ -1502,11 +1578,13 @@ Multiple granularity locking with intention locks is implemented in **Microsoft 
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - **No log overhead** in a single-user environment.
 - **Very fast recovery**, because no undo or redo is needed. Reverting to the shadow table is enough.
 - Simple **atomic commit** using a single pointer switch.
 
 *Disadvantages*
+
 - **Commit overhead:** the entire page table must be written at commit, which is costly for large databases.
 - **Data fragmentation:** updated pages move to new locations, so related pages are no longer **contiguous**.
 - **Garbage collection** is needed to reclaim old pages after commit.
@@ -1542,18 +1620,21 @@ Shadow paging is used in **System R (early IBM RDBMS)**, the **SQLite rollback j
 **3. Core Explanation / Working**
 
 *(a) Log Record Types*
+
 - `<Ti start>`: transaction Ti has started.
 - `<Ti, X, V_old, V_new>`: Ti changed item X from V_old to V_new.
 - `<Ti commit>`: Ti has committed.
 - `<Ti abort>`: Ti has aborted.
 
 *(b) Deferred Database Modification (NO-UNDO / REDO)*
+
 - All writes are **postponed until the transaction commits**. They are recorded only in the log and a local buffer.
 - Log records hold **only the new value**: `<Ti, X, V_new>`.
 - After `<Ti commit>` is written to the log, the updates are applied to the database.
 - **Recovery:** REDO(Ti) if the log has both `<Ti start>` and `<Ti commit>`. Otherwise ignore Ti. **UNDO is never needed.**
 
 *(c) Immediate Database Modification (UNDO / REDO)*
+
 - Writes may be applied to the database **before the transaction commits**, as long as the log record is written first (the WAL rule).
 - Log records hold **both old and new values**: `<Ti, X, V_old, V_new>`.
 - **Recovery:**
@@ -1578,6 +1659,7 @@ Shadow paging is used in **System R (early IBM RDBMS)**, the **SQLite rollback j
 ```
 
 *(e) Checkpointing*
+
 - **Problem without checkpoints:** the whole log must be scanned, and many already-saved transactions get redone needlessly.
 - **Steps to take a checkpoint:**
   1. Write all log records in main memory to **stable storage**.
@@ -1604,11 +1686,13 @@ Shadow paging is used in **System R (early IBM RDBMS)**, the **SQLite rollback j
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - Logs make sure the **Atomicity and Durability** properties of ACID survive crashes.
 - Checkpoints **reduce recovery time** sharply by limiting the log scan.
 - Deferred modification is **simple** (no undo). Immediate modification gives **better performance** and concurrency.
 
 *Disadvantages*
+
 - Log writing adds **I/O overhead** to every update.
 - Taking a checkpoint **briefly pauses** transaction processing (unless fuzzy checkpoints are used).
 - Deferred modification needs **large buffers** for long transactions.
@@ -1661,6 +1745,7 @@ A **B-Tree of order m** is a **self-balancing multi-way search tree** in which e
 **3. Core Explanation / Working**
 
 *(a) Properties of a B-Tree of order m*
+
 - Every node has at most **m children** and **m − 1 keys**.
 - Every internal node (except the root) has at least **⌈m/2⌉ children**, that is **⌈m/2⌉ − 1 keys**.
 - The root has at least **2 children** (if it is not a leaf).
@@ -1668,6 +1753,7 @@ A **B-Tree of order m** is a **self-balancing multi-way search tree** in which e
 - The keys in each node are kept in **sorted order**.
 
 *(b) Insertion Algorithm*
+
 1. Search for the correct **leaf** node for the new key.
 2. If the leaf has fewer than m − 1 keys, **insert in sorted order**. Done.
 3. If the leaf **overflows** (it now has m keys), **split** it:
@@ -1729,11 +1815,13 @@ A **B-Tree of order m** is a **self-balancing multi-way search tree** in which e
 **5. Advantages & Disadvantages**
 
 *Advantages*
+
 - **Balanced height**, so search, insert and delete take **O(log n)** time.
 - **Few disk I/Os**, because large nodes match disk block size.
 - The B+ Tree supports **efficient range queries and sequential access**.
 
 *Disadvantages*
+
 - Insertions and deletions need **splits and merges**, which are complex to implement.
 - Nodes may be only **half full**, which wastes space.
 - The B+ Tree stores keys **twice** (in internal nodes and leaves).
@@ -1747,6 +1835,7 @@ B+ Trees are the **default index structure** in MySQL InnoDB, Oracle, PostgreSQL
 ### Q4. Short Definitions (2 Marks Each)
 
 **(a) Write-Ahead Logging (WAL)**
+
 - A rule that says **the log record for a change must be written to stable storage before** the changed data page is written to disk.
 - In addition, all log records of a transaction, including `<Ti commit>`, must be on stable storage **before the transaction is declared committed**.
 - This makes **UNDO and REDO** possible after a crash. It is used in PostgreSQL, SQLite and others.
@@ -1761,8 +1850,1301 @@ B+ Trees are the **default index structure** in MySQL InnoDB, Oracle, PostgreSQL
 | Example: `h(K) = K mod 10` | Example: **Extendible hashing**, Linear hashing |
 
 **(c) Primary vs. Clustering vs. Secondary Index**
+
 - **Primary index:** built on the **ordering key field** (primary key) of a **sorted** file. It is **sparse**, with one entry per block. There is only one per file.
 - **Clustering index:** built on an **ordering non-key field** (which can repeat) of a sorted file. There is one entry per **distinct value**.
 - **Secondary index:** built on a **non-ordering field**. The file is not sorted on this field, so the index must be **dense**. A file can have **many** secondary indexes.
+
+---
+
+# Web Technology (BCS-502)
+
+---
+
+## Unit 1: Web Foundations, HTML & XML
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) Define HTTP and mention its three basic features.**
+
+- **HTTP (HyperText Transfer Protocol)** is an **application-layer, request-response protocol** used to transfer hypertext (HTML, images, data) between a web **client (browser)** and a **web server**. It runs over TCP, on **port 80** by default (HTTPS uses port 443).
+- **Three basic features:**
+  1. **Connectionless:** the client sends a request, the server responds, and the connection is closed. A new connection is used for the next request (in HTTP/1.0).
+  2. **Stateless:** the server keeps **no memory** of previous requests. Each request is independent, so cookies and sessions are used to keep state.
+  3. **Media independent:** any type of data (text, image, video, JSON) can be sent, as long as both sides understand the **MIME type** given in the `Content-Type` header.
+
+**(b) Differentiate between HTML and XML.**
+
+| Basis | HTML | XML |
+|---|---|---|
+| Full form | HyperText Markup Language | eXtensible Markup Language |
+| Purpose | **Displays** data (presentation) | **Stores and transports** data |
+| Tags | **Predefined** (`<p>`, `<h1>`) | **User-defined** (`<book>`, `<author>`) |
+| Case sensitivity | Not case sensitive | **Case sensitive** |
+| Closing tags | Some optional (`<br>`, `<li>`) | **Mandatory** for every element |
+| Error handling | Lenient (browser ignores errors) | **Strict** (must be well-formed) |
+| Whitespace | Not preserved | Preserved |
+
+**(c) Difference between Client-Server and Peer-to-Peer paradigms.**
+
+| Client-Server | Peer-to-Peer (P2P) |
+|---|---|
+| A **dedicated server** provides services and clients request them | **Every node (peer)** acts as both client and server |
+| **Centralised** control and data | **Decentralised**, with data distributed among peers |
+| The server is a **single point of failure** | **No single point of failure** |
+| Easy to secure and back up | Hard to secure and manage |
+| Costly (needs server hardware) | Cheap (uses peers' resources) |
+| Example: Web (browser to Apache), email | Example: BitTorrent, blockchain, Skype (early) |
+
+---
+
+### Q2. Explain web development strategies and the web development process using a block diagram. (7 Marks)
+
+**1. Introduction / Definition**
+
+**Web development** is the process of building, testing and maintaining websites and web applications. A **web development strategy** is the planned approach (goals, audience, technology and methodology) followed to deliver a site that is **usable, scalable and secure**. The **web development process** is the step-by-step life cycle from planning to maintenance.
+
+**2. Block Diagram - Web Development Life Cycle**
+
+```
+   +------------------------------+
+   | 1. Information Gathering /   |  Goals, target audience, purpose
+   |    Requirement Analysis      |
+   +--------------+---------------+
+                  |
+   +--------------v---------------+
+   | 2. Planning                  |  Sitemap, technology stack,
+   |    (Sitemap & Wireframe)     |  wireframes, timeline
+   +--------------+---------------+
+                  |
+   +--------------v---------------+
+   | 3. Design                    |  UI/UX, layout, colour,
+   |    (Mock-ups / Prototype)    |  typography, client review
+   +--------------+---------------+
+                  |
+   +--------------v---------------+
+   | 4. Content Writing &         |  Text, images, SEO keywords
+   |    Assembly                  |
+   +--------------+---------------+
+                  |
+   +--------------v---------------+       +---------------------+
+   | 5. Development (Coding)      |<----->| Front end: HTML,    |
+   |                              |       | CSS, JavaScript     |
+   +--------------+---------------+       | Back end: Node/JSP, |
+                  |                       | DB: MySQL/MongoDB   |
+   +--------------v---------------+       +---------------------+
+   | 6. Testing & Review          |  Functional, cross-browser,
+   |                              |  performance, security tests
+   +--------------+---------------+
+                  |       ^  bugs found
+                  |       +-------------- back to step 5
+   +--------------v---------------+
+   | 7. Deployment / Launch       |  Hosting, domain, upload (FTP/CI)
+   +--------------+---------------+
+                  |
+   +--------------v---------------+
+   | 8. Maintenance & Updates     |  Monitoring, backups, new features
+   +------------------------------+
+```
+
+**3. Core Explanation / Working**
+
+*(a) Web Development Strategies*
+
+- **Define goals and audience:** decide what the site must achieve (sales, information, service) and for whom.
+- **Choose an architecture:** a static site, a dynamic site (server-side rendering), or a **single-page application (SPA)**.
+- **Mobile-first / responsive design:** design for small screens first, then scale up with CSS media queries.
+- **Choose a methodology:**
+  - **Waterfall:** sequential phases, suited to fixed requirements.
+  - **Agile / Scrum:** short iterative sprints with frequent client feedback.
+  - **Rapid prototyping:** build a quick model, take feedback, refine.
+- **Technology stack selection:** for example **MERN** (MongoDB, Express, React, Node) or **LAMP** (Linux, Apache, MySQL, PHP).
+- **SEO, accessibility and security** are planned from the start, not added at the end.
+
+*(b) Web Development Process (as in the diagram)*
+
+1. **Information gathering:** understand the purpose, the audience and the content needed.
+2. **Planning:** build a **sitemap** (page hierarchy) and **wireframes** (page skeletons). Choose tools.
+3. **Design:** create the visual layout and UI mock-ups, and get approval.
+4. **Content creation:** write text, collect media, optimise for SEO.
+5. **Development:** code the front end (HTML, CSS, JS) and the back end (server logic, database, APIs).
+6. **Testing:** check links, forms, browser compatibility, responsiveness, load and security.
+7. **Deployment:** upload to a web server or cloud, and configure the domain and SSL.
+8. **Maintenance:** fix bugs, update content and monitor performance.
+
+**4. Key Characteristics - Waterfall vs. Agile Strategy**
+
+| Basis | Waterfall | Agile |
+|---|---|---|
+| Flow | Linear, sequential | Iterative, incremental |
+| Client feedback | At the end | After every sprint |
+| Change handling | Difficult and costly | Easy |
+| Delivery | One final release | Frequent working releases |
+| Best for | Small, fixed-scope sites | Large, evolving web apps |
+
+**5. Advantages & Disadvantages** (of following a structured process)
+
+*Advantages*
+
+- **Clear planning** reduces cost overruns and missed deadlines.
+- Early testing gives a **higher-quality**, bug-free product.
+- A responsive, SEO-friendly design improves **user reach**.
+
+*Disadvantages*
+
+- A structured process takes **more time** at the start (planning, documentation).
+- With Waterfall, **late requirement changes** are expensive.
+
+**6. Conclusion / Application**
+
+This process is followed by every web agency and product team, for example when building an **e-commerce site like Flipkart** or a **college ERP portal**.
+
+---
+
+### Q3. Write the HTML code to create a comprehensive user registration form (using various input types and action attributes). (7 Marks)
+
+**1. Introduction / Definition**
+
+An **HTML form** collects user input and sends it to a server for processing. It is created with the `<form>` element. The **`action`** attribute gives the **URL** that will process the data, and the **`method`** attribute (`GET` or `POST`) decides **how** the data is sent.
+
+**2. Block Diagram - Form Layout and Data Flow**
+
+```
+  +-----------------------------------------------+
+  |           USER REGISTRATION FORM              |
+  +-----------------------------------------------+
+  | Full Name     : [ text            ]           |
+  | Email         : [ email           ]           |
+  | Password      : [ password        ]           |
+  | Date of Birth : [ date            ]           |
+  | Mobile        : [ tel             ]           |
+  | Gender        : (o) Male  ( ) Female ( ) Other|  <- radio
+  | Course        : [ B.Tech CSE   v ]            |  <- select
+  | Skills        : [x] HTML [ ] CSS [x] JS       |  <- checkbox
+  | Photo         : [ Choose File ]               |  <- file
+  | Address       : [ textarea               ]    |
+  |                 [                        ]    |
+  | [x] I agree to the terms                      |
+  |          [ Register ]   [ Reset ]             |  <- submit / reset
+  +-----------------------+-----------------------+
+                          | method="POST"
+                          v action="/register"
+             +--------------------------+
+             |  Web Server (Servlet/    |
+             |  Node.js) processes data |
+             +--------------------------+
+```
+
+**3. Core Explanation / Working - HTML Code**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Registration</title>
+</head>
+<body>
+  <h2>User Registration Form</h2>
+
+  <form action="/register" method="post" enctype="multipart/form-data">
+    <fieldset>
+      <legend>Personal Details</legend>
+
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" name="fullname"
+             placeholder="Enter full name" maxlength="50" required><br><br>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required><br><br>
+
+      <label for="pwd">Password:</label>
+      <input type="password" id="pwd" name="password"
+             minlength="8" required><br><br>
+
+      <label for="dob">Date of Birth:</label>
+      <input type="date" id="dob" name="dob"><br><br>
+
+      <label for="mob">Mobile:</label>
+      <input type="tel" id="mob" name="mobile"
+             pattern="[0-9]{10}" title="10-digit number"><br><br>
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" min="17" max="60"><br><br>
+
+      Gender:
+      <input type="radio" id="m" name="gender" value="male" checked>
+      <label for="m">Male</label>
+      <input type="radio" id="f" name="gender" value="female">
+      <label for="f">Female</label>
+      <input type="radio" id="o" name="gender" value="other">
+      <label for="o">Other</label><br><br>
+    </fieldset>
+
+    <fieldset>
+      <legend>Academic Details</legend>
+
+      <label for="course">Course:</label>
+      <select id="course" name="course">
+        <option value="cse">B.Tech CSE</option>
+        <option value="it">B.Tech IT</option>
+        <option value="ece">B.Tech ECE</option>
+      </select><br><br>
+
+      Skills:
+      <input type="checkbox" name="skills" value="html"> HTML
+      <input type="checkbox" name="skills" value="css"> CSS
+      <input type="checkbox" name="skills" value="js"> JavaScript<br><br>
+
+      <label for="photo">Upload Photo:</label>
+      <input type="file" id="photo" name="photo" accept="image/*"><br><br>
+
+      <label for="site">Portfolio URL:</label>
+      <input type="url" id="site" name="website"><br><br>
+
+      <label for="addr">Address:</label><br>
+      <textarea id="addr" name="address" rows="4" cols="40"></textarea><br><br>
+
+      <input type="hidden" name="source" value="college_portal">
+      <input type="checkbox" id="agree" name="agree" required>
+      <label for="agree">I agree to the terms and conditions</label><br><br>
+    </fieldset>
+
+    <input type="submit" value="Register">
+    <input type="reset" value="Reset">
+  </form>
+</body>
+</html>
+```
+
+*Explanation of the key attributes*
+
+- `action="/register"`: the server URL that receives the form data.
+- `method="post"`: sends the data in the **request body**, which is secure for passwords. `get` would append it to the URL.
+- `enctype="multipart/form-data"`: **required** for file uploads.
+- `name`: the key under which each value is sent (for example `email=abc@x.com`).
+- `required`, `pattern`, `min`, `max`, `maxlength`: built-in **HTML5 validation**.
+- `<fieldset>` and `<legend>` group related fields. `<label for>` links a label to its input.
+
+**4. Key Characteristics - Input Types Used**
+
+| Input Type | Purpose | Built-in Validation |
+|---|---|---|
+| `text` | Single-line text | maxlength, pattern |
+| `email` | Email address | Checks the @ format |
+| `password` | Hidden characters | minlength |
+| `date` | Date picker | Valid date |
+| `tel` | Phone number | pattern |
+| `number` | Numeric input | min, max |
+| `radio` | Choose one option | Same `name` groups them |
+| `checkbox` | Choose many options | - |
+| `file` | Upload file | accept |
+| `url` | Web address | Checks URL format |
+| `hidden` | Value sent without display | - |
+| `submit` / `reset` | Send / clear the form | - |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- HTML5 input types give **built-in validation** and suitable keyboards on mobile.
+- Forms are a **standard, browser-independent** way to collect user data.
+- `POST` with `multipart/form-data` supports **secure and binary (file)** submissions.
+
+*Disadvantages*
+
+- Client-side validation can be **bypassed**, so server-side validation is still required.
+- Older browsers may **not support** newer input types like `date`.
+
+**6. Conclusion / Application**
+
+Registration forms like this are used on every **sign-up page**, for example college admission portals, Gmail sign-up and e-commerce account creation.
+
+---
+
+### Q4. Write an XML file to store library book information and design a valid XML DTD or XML Schema for it. (7 Marks)
+
+**1. Introduction / Definition**
+
+**XML (eXtensible Markup Language)** stores and transports data in a **self-describing, hierarchical** format with user-defined tags. A **DTD (Document Type Definition)** or an **XML Schema (XSD)** defines the **legal structure** of an XML document: its elements, attributes, order and data types. A document that follows its DTD or XSD is called **valid**.
+
+**2. Block Diagram - XML Tree Structure**
+
+```
+                      +-----------+
+                      |  library  |   (root element)
+                      +-----+-----+
+               +------------+-------------+
+          +----v----+                +----v----+
+          |  book   | id="B101"      |  book   | id="B102"
+          +----+----+ category=...   +----+----+
+     +-------+-+------+------+--------+
+     |       |        |      |        |
+  +--v--+ +--v---+ +--v--+ +-v---+ +--v-----+
+  |title| |author| |isbn | |year | | price  |
+  +-----+ +------+ +-----+ +-----+ +--------+
+
+   XML file ---> validated against ---> DTD / XSD ---> "Valid XML"
+```
+
+**3. Core Explanation / Working**
+
+*(a) XML File: `library.xml`* (with an internal DTD)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE library [
+  <!ELEMENT library (book+)>
+  <!ELEMENT book (title, author+, publisher, isbn, year, price, copies)>
+  <!ELEMENT title     (#PCDATA)>
+  <!ELEMENT author    (#PCDATA)>
+  <!ELEMENT publisher (#PCDATA)>
+  <!ELEMENT isbn      (#PCDATA)>
+  <!ELEMENT year      (#PCDATA)>
+  <!ELEMENT price     (#PCDATA)>
+  <!ELEMENT copies    (#PCDATA)>
+  <!ATTLIST book id       ID    #REQUIRED
+                 category CDATA #IMPLIED>
+  <!ATTLIST price currency CDATA "INR">
+]>
+<library>
+  <book id="B101" category="Database">
+    <title>Database System Concepts</title>
+    <author>Abraham Silberschatz</author>
+    <author>Henry F. Korth</author>
+    <publisher>McGraw Hill</publisher>
+    <isbn>9780073523323</isbn>
+    <year>2019</year>
+    <price currency="INR">850</price>
+    <copies>12</copies>
+  </book>
+  <book id="B102" category="Web">
+    <title>Web Technologies</title>
+    <author>Uttam K. Roy</author>
+    <publisher>Oxford</publisher>
+    <isbn>9780198066224</isbn>
+    <year>2018</year>
+    <price currency="INR">560</price>
+    <copies>8</copies>
+  </book>
+</library>
+```
+
+*DTD symbols used*
+
+- `book+`: one or more book elements. (`*` means zero or more, `?` means zero or one.)
+- `#PCDATA`: parsed character data (text).
+- `ID #REQUIRED`: a unique, mandatory attribute. `#IMPLIED` means optional. `"INR"` is the default value.
+
+*(b) Equivalent XML Schema: `library.xsd`*
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="library">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="book" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="title"     type="xs:string"/>
+              <xs:element name="author"    type="xs:string" maxOccurs="unbounded"/>
+              <xs:element name="publisher" type="xs:string"/>
+              <xs:element name="isbn"      type="xs:string"/>
+              <xs:element name="year"      type="xs:gYear"/>
+              <xs:element name="price">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:decimal">
+                      <xs:attribute name="currency" type="xs:string" default="INR"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="copies" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+            <xs:attribute name="id"       type="xs:ID"     use="required"/>
+            <xs:attribute name="category" type="xs:string" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+```
+
+*Linking the XSD to the XML file (instead of the internal DTD):*
+
+```xml
+<library xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="library.xsd">
+```
+
+**4. Key Characteristics - DTD vs. XML Schema**
+
+| Basis | DTD | XML Schema (XSD) |
+|---|---|---|
+| Syntax | Non-XML (special syntax) | Written **in XML** itself |
+| Data types | Only text (#PCDATA, CDATA) | **44+ built-in types** (int, date, decimal) |
+| Namespaces | Not supported | Supported |
+| Occurrence control | `?`, `*`, `+` only | `minOccurs`, `maxOccurs` (exact numbers) |
+| Extensibility | Not extensible | Extensible (inheritance of types) |
+| Complexity | Simple | More verbose and complex |
+
+**5. Advantages & Disadvantages**
+
+*Advantages (of XML with DTD/XSD)*
+
+- **Platform independent**, so data can be exchanged between different systems.
+- **Validation** catches structural errors before processing.
+- **Self-describing** and human readable.
+
+*Disadvantages*
+
+- **Verbose**: the tags make files large compared with JSON.
+- Parsing and validation need **extra processing time**.
+
+**6. Conclusion / Application**
+
+XML with schemas is used in **library management systems, SOAP web services, Android layouts and configuration files** (for example `web.xml` in Java web applications).
+
+---
+
+## Unit 2: Cascading Style Sheets (CSS)
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) Three different ways to integrate CSS**
+
+1. **Inline CSS:** written in the `style` attribute of an individual HTML element. It has the **highest priority**.
+   `<p style="color: blue; font-size: 16px;">Hello</p>`
+2. **Internal (Embedded) CSS:** written inside a `<style>` tag in the `<head>` section. It applies to **one page**.
+   ```html
+   <head>
+     <style> p { color: blue; } </style>
+   </head>
+   ```
+3. **External CSS:** written in a separate `.css` file and linked with `<link>`. It applies to **many pages** and is the best for maintenance.
+   `<link rel="stylesheet" href="style.css">`
+- **Priority (cascade):** Inline > Internal / External (whichever comes later in the code) > Browser default.
+
+**(b) CSS syntax to remove the underline from a hyperlink**
+
+```css
+a {
+    text-decoration: none;
+}
+/* Optional: show the underline again only on hover */
+a:hover {
+    text-decoration: underline;
+}
+```
+
+---
+
+### Q2. Illustrate the CSS Box Model with a proper block diagram, explaining margins, borders, padding and content. (7 Marks)
+
+**1. Introduction / Definition**
+
+The **CSS Box Model** says that **every HTML element is a rectangular box** made of four layers: **content, padding, border and margin**, from the inside out. It decides the **size, spacing and layout** of elements on a web page.
+
+**2. Block Diagram**
+
+```
+ +-------------------------------------------------------------+
+ |                        MARGIN (transparent)                 |
+ |     +-----------------------------------------------+       |
+ |     |                BORDER (visible line)          |       |
+ |     |     +-----------------------------------+     |       |
+ |     |     |      PADDING (takes background)   |     |       |
+ |     |     |     +-----------------------+     |     |       |
+ |     |     |     |                       |     |     |       |
+ |     |     |     |        CONTENT        |     |     |       |
+ |     |     |     |   (text / image)      |     |     |       |
+ |     |     |     |   width x height      |     |     |       |
+ |     |     |     |                       |     |     |       |
+ |     |     |     +-----------------------+     |     |       |
+ |     |     |                                   |     |       |
+ |     |     +-----------------------------------+     |       |
+ |     |                                               |       |
+ |     +-----------------------------------------------+       |
+ |                                                             |
+ +-------------------------------------------------------------+
+   Outside  <------------------------------------------>  Inside
+   Margin  ->  Border  ->  Padding  ->  Content
+```
+
+**3. Core Explanation / Working**
+
+- **Content:**
+  - The innermost area, where text, images or child elements are shown.
+  - Its size is set by `width` and `height`.
+- **Padding:**
+  - The space **between the content and the border**.
+  - It is **transparent but shows the element's background colour**.
+  - Properties: `padding-top`, `padding-right`, `padding-bottom`, `padding-left`, or the shorthand `padding: 10px 20px;`.
+- **Border:**
+  - The line that wraps around the padding and content.
+  - Properties: `border-width`, `border-style` (solid, dashed, dotted), `border-color`, or the shorthand `border: 2px solid black;`.
+- **Margin:**
+  - The outermost space, **between this element and its neighbours**.
+  - It is **fully transparent** (no background).
+  - It can be **negative**, and `margin: auto` centres a block horizontally.
+  - **Margin collapsing:** the vertical margins of adjacent block elements merge into the larger of the two.
+
+*Example and size calculation*
+
+```css
+div {
+    width: 300px;
+    height: 100px;
+    padding: 20px;
+    border: 5px solid black;
+    margin: 30px;
+}
+```
+
+- **Total width** = width + left/right padding + left/right border + left/right margin
+  = 300 + 2(20) + 2(5) + 2(30) = **410 px**
+- **Total height** = 100 + 2(20) + 2(5) + 2(30) = **210 px**
+
+*The `box-sizing` property*
+
+- `box-sizing: content-box` (default): `width` covers the content only.
+- `box-sizing: border-box`: `width` includes **content + padding + border**, so the box stays at the declared width. This makes responsive layouts easier.
+
+**4. Key Characteristics - Padding vs. Margin**
+
+| Basis | Padding | Margin |
+|---|---|---|
+| Position | Inside the border | Outside the border |
+| Background | Shows element background | Always transparent |
+| Negative values | Not allowed | Allowed |
+| Collapsing | Never collapses | Vertical margins collapse |
+| Click area | Part of the element | Not part of the element |
+| Use | Space inside the box | Space between boxes |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- Gives **precise control** over element size and spacing.
+- Applies **uniformly to all elements**, so layouts are predictable.
+- `border-box` makes **responsive design** simpler.
+
+*Disadvantages*
+
+- With the default `content-box`, total size calculations can **confuse beginners** (the declared width is not the real width).
+- **Margin collapsing** can cause unexpected gaps.
+
+**6. Conclusion / Application**
+
+The box model is the **foundation of every CSS layout**, including Flexbox and Grid, and is used to design cards, buttons and page sections on all websites.
+
+---
+
+### Q3. Explain CSS positioning properties (static, relative, absolute, fixed) in detail. (7 Marks)
+
+**1. Introduction / Definition**
+
+The CSS **`position`** property decides **how an element is placed** in the document. It works together with the **offset properties** `top`, `right`, `bottom` and `left`. The main values are **static, relative, absolute and fixed** (and `sticky` in CSS3).
+
+**2. Block Diagram**
+
+```
+ VIEWPORT (browser window)
+ +-------------------------------------------------------------+
+ |  [FIXED]  <- stays here even when the page scrolls          |
+ |                                                             |
+ |  +------------- Parent (position: relative) -------------+  |
+ |  |                                                       |  |
+ |  |  [ static box 1 ]   <- normal flow                    |  |
+ |  |                                                       |  |
+ |  |  [ static box 2 ]                                     |  |
+ |  |         [ RELATIVE box ]  <- moved from its own       |  |
+ |  |  .....  (gap left where it originally was)            |  |
+ |  |                                       +------------+  |  |
+ |  |  [ static box 3 ]                     | ABSOLUTE   |  |  |
+ |  |                                       | top:10px;  |  |  |
+ |  |                                       | right:10px |  |  |
+ |  |                                       +------------+  |  |
+ |  |       ^ removed from flow, placed relative to parent  |  |
+ |  +-------------------------------------------------------+  |
+ +-------------------------------------------------------------+
+```
+
+**3. Core Explanation / Working**
+
+*(a) `position: static`* (default)
+
+- The element follows the **normal document flow** (top to bottom, left to right).
+- `top`, `left`, `right`, `bottom` and `z-index` have **no effect**.
+
+```css
+p { position: static; }
+```
+
+*(b) `position: relative`*
+
+- The element is positioned **relative to its own normal position**.
+- The offset moves the element, but its **original space is kept** (other elements do not move into the gap).
+- Often used as a **container (reference point)** for absolutely positioned children.
+
+```css
+.box { position: relative; top: 20px; left: 30px; }
+/* moves 20px down and 30px right from where it would normally be */
+```
+
+*(c) `position: absolute`*
+
+- The element is **removed from the normal flow**. Other elements act as if it does not exist.
+- It is placed relative to its **nearest positioned ancestor** (an ancestor that is not static). If there is none, it is placed relative to the `<html>` element (initial containing block).
+- It **scrolls with the page**.
+
+```css
+.parent { position: relative; }
+.badge  { position: absolute; top: 10px; right: 10px; }
+```
+
+*(d) `position: fixed`*
+
+- **Removed from the normal flow** and positioned relative to the **browser viewport**.
+- It **does not move** when the page is scrolled.
+- Used for sticky headers, "back to top" buttons and chat widgets.
+
+```css
+.navbar { position: fixed; top: 0; left: 0; width: 100%; }
+```
+
+*(e) `position: sticky`* (CSS3, extra marks)
+
+- Acts as **relative** until a scroll threshold is reached, then acts as **fixed**.
+  `th { position: sticky; top: 0; }`
+
+*(f) `z-index`*
+
+- Controls the **stacking order** of positioned elements. A higher value appears in front.
+
+**4. Key Characteristics - Comparison**
+
+| Property | In normal flow? | Positioned relative to | Scrolls with page? | Offsets work? |
+|---|---|---|---|---|
+| static | Yes | Normal flow | Yes | No |
+| relative | Yes (space kept) | Its own normal position | Yes | Yes |
+| absolute | **No** | Nearest positioned ancestor | Yes | Yes |
+| fixed | **No** | **Viewport** | **No** | Yes |
+| sticky | Yes | Scroll container (threshold) | Until threshold | Yes |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- Gives **precise placement** of elements like tooltips, badges and modals.
+- `fixed` keeps **important navigation always visible**.
+- `relative` combined with `absolute` makes building **overlay components** easy.
+
+*Disadvantages*
+
+- Absolute and fixed elements are **removed from the flow**, so they can **overlap** other content.
+- Too much positioning makes layouts **hard to keep responsive**. Flexbox and Grid are better for page layout.
+
+**6. Conclusion / Application**
+
+Positioning is used for **fixed navigation bars, dropdown menus, notification badges, modal pop-ups and sticky table headers** on modern websites.
+
+---
+
+### Q4. Discuss different types of CSS selectors and pseudo-classes with examples. (7 Marks)
+
+**1. Introduction / Definition**
+
+A **CSS selector** is a pattern that **selects the HTML elements** to which a style rule applies. A **pseudo-class** is a keyword added to a selector (with a single colon `:`) that selects elements in a **special state** (like `:hover`) or **position** (like `:first-child`).
+
+**2. Block Diagram - Classification of Selectors**
+
+```
+                         +------------------+
+                         |  CSS SELECTORS   |
+                         +--------+---------+
+        +-----------+-----------+-+---------+-------------+--------------+
+        |           |           |           |             |              |
+   +----v----+ +----v----+ +----v----+ +----v-----+ +-----v-----+ +------v------+
+   | Simple  | |Combinator| |Attribute| | Pseudo-  | |  Pseudo-  | |  Grouping / |
+   |         | |          | |         | | class    | |  element  | |  Universal  |
+   +---------+ +----------+ +---------+ +----------+ +-----------+ +-------------+
+   | element | | A B      | | [type]  | | :hover   | | ::before  | |  *          |
+   | .class  | | A > B    | | [a="v"] | | :focus   | | ::after   | |  h1, h2, p  |
+   | #id     | | A + B    | | [a^="v"]| | :nth-    | | ::first-  | |             |
+   |         | | A ~ B    | |         | |  child() | |   letter  | |             |
+   +---------+ +----------+ +---------+ +----------+ +-----------+ +-------------+
+```
+
+**3. Core Explanation / Working**
+
+*(a) Simple (Basic) Selectors*
+
+- **Universal selector (`*`):** selects all elements.
+  `* { margin: 0; padding: 0; }`
+- **Element (type) selector:** selects all elements of one type.
+  `p { color: gray; }`
+- **Class selector (`.`):** selects elements with a given class. It can be reused on many elements.
+  `.highlight { background: yellow; }`, used as `<p class="highlight">`
+- **ID selector (`#`):** selects the **one unique** element with that id.
+  `#header { height: 60px; }`, used as `<div id="header">`
+- **Grouping selector (`,`):** applies the same style to several selectors.
+  `h1, h2, h3 { font-family: Arial; }`
+
+*(b) Combinator Selectors*
+
+- **Descendant (`A B`):** any B inside A. `div p { color: blue; }`
+- **Child (`A > B`):** only direct children. `ul > li { list-style: square; }`
+- **Adjacent sibling (`A + B`):** the B immediately after A. `h1 + p { font-weight: bold; }`
+- **General sibling (`A ~ B`):** every B after A with the same parent. `h1 ~ p { color: green; }`
+
+*(c) Attribute Selectors*
+
+- `[type]`: elements that have the attribute.
+- `input[type="text"]`: the attribute equals a value.
+- `a[href^="https"]`: the value **starts with**.
+- `a[href$=".pdf"]`: the value **ends with**.
+- `img[alt*="logo"]`: the value **contains**.
+
+*(d) Pseudo-classes (single colon `:`)*
+
+| Pseudo-class | Selects | Example |
+|---|---|---|
+| `:link` | Unvisited link | `a:link { color: blue; }` |
+| `:visited` | Visited link | `a:visited { color: purple; }` |
+| `:hover` | Element under the mouse | `a:hover { color: red; }` |
+| `:active` | Element being clicked | `a:active { color: orange; }` |
+| `:focus` | Element with keyboard focus | `input:focus { border: 2px solid blue; }` |
+| `:first-child` | First child of its parent | `li:first-child { font-weight: bold; }` |
+| `:last-child` | Last child | `li:last-child { border: none; }` |
+| `:nth-child(n)` | The nth child | `tr:nth-child(even) { background: #eee; }` |
+| `:not(sel)` | Elements not matching sel | `p:not(.intro) { font-size: 14px; }` |
+| `:checked` | Checked checkbox/radio | `input:checked + label { color: green; }` |
+
+- **LVHA order rule:** link styles must be written in the order `:link`, `:visited`, `:hover`, `:active`, or they will override each other.
+
+*(e) Pseudo-elements (double colon `::`)*
+
+- `p::first-letter { font-size: 200%; }`
+- `p::first-line { font-weight: bold; }`
+- `h2::before { content: "> "; }` and `h2::after { content: " <"; }`
+- `::selection { background: yellow; }`
+
+*(f) Specificity (which rule wins)*
+
+- **Inline (1000) > ID (100) > Class / attribute / pseudo-class (10) > Element / pseudo-element (1)**. `!important` overrides all of these.
+
+**4. Key Characteristics - Class vs. ID Selector, Pseudo-class vs. Pseudo-element**
+
+| Basis | Class Selector | ID Selector |
+|---|---|---|
+| Symbol | `.` | `#` |
+| Reusability | Many elements | One element per page |
+| Specificity | 10 | 100 |
+
+| Basis | Pseudo-class | Pseudo-element |
+|---|---|---|
+| Syntax | Single colon `:hover` | Double colon `::before` |
+| Targets | A **state** of an existing element | A **part** of an element, or generated content |
+| Example | `:focus`, `:nth-child()` | `::first-letter`, `::after` |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- Selectors give **fine-grained targeting** without adding classes to every element.
+- Pseudo-classes add **interactivity** (hover, focus) **without JavaScript**.
+- Grouping and reusable classes **reduce code repetition**.
+
+*Disadvantages*
+
+- Complex selectors and specificity conflicts make CSS **hard to debug**.
+- Deep descendant selectors are **slower to match** and fragile when the HTML structure changes.
+
+**6. Conclusion / Application**
+
+Selectors and pseudo-classes are used in every stylesheet, for example **zebra-striped tables (`:nth-child`), hover effects on navigation menus, and focus highlights on form fields**.
+
+---
+
+## Unit 3: JavaScript, AJAX & Networking
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) What is AJAX and what is its primary advantage for dynamic webpages?**
+
+- **AJAX (Asynchronous JavaScript And XML)** is a technique that uses the **`XMLHttpRequest` object (or the `fetch()` API)** to exchange data with the server **in the background**, without reloading the whole web page. The data can be XML, JSON or plain text.
+- **Primary advantage:** **partial page update**. Only the needed part of the page is refreshed, so the page is **faster, uses less bandwidth and gives a smoother user experience**.
+- Example: Google search suggestions, the Gmail inbox refresh, and "like" buttons.
+
+**(b) Differentiate between Java and JavaScript.**
+
+| Basis | Java | JavaScript |
+|---|---|---|
+| Type | Object-oriented **programming language** | Object-based **scripting language** |
+| Execution | Compiled to bytecode and run on the **JVM** | **Interpreted / JIT** in the browser (or Node.js) |
+| Typing | **Statically typed** (`int x`) | **Dynamically typed** (`let x`) |
+| Developer | Sun Microsystems (James Gosling) | Netscape (Brendan Eich) |
+| Used for | Desktop, Android, enterprise back end | Web front end, Node.js back end |
+| Concurrency | Multi-threaded | Single-threaded event loop |
+| File extension | `.java` / `.class` | `.js` |
+
+**(c) Define a Datagram and its characteristics.**
+
+- A **datagram** is an **independent, self-contained packet** of data sent over a network **without first setting up a connection**. It carries the full source and destination address. In Java it is used through the `DatagramPacket` and `DatagramSocket` classes (UDP).
+- **Characteristics:**
+  - **Connectionless:** no handshake is needed before sending.
+  - **Unreliable:** delivery, order and duplicate removal are **not guaranteed**.
+  - **Fast with low overhead:** no acknowledgements or retransmission.
+  - **Fixed maximum size:** each packet is limited (about 64 KB for UDP).
+
+---
+
+### Q2. Explain the JavaScript Document Object Model (DOM). (7 Marks)
+
+**1. Introduction / Definition**
+
+The **Document Object Model (DOM)** is a **W3C standard, platform- and language-independent programming interface** that represents an HTML or XML document as a **tree of objects (nodes)**. JavaScript uses the DOM to **access, change, add or delete** elements, attributes, styles and content **dynamically**, without reloading the page.
+
+**2. Block Diagram - DOM Tree**
+
+```
+   HTML source:
+   <html>
+     <head><title>My Page</title></head>
+     <body>
+       <h1 id="head">Hello</h1>
+       <a href="x.html">Link</a>
+     </body>
+   </html>
+
+                     +----------------+
+                     |    document    |   (root object)
+                     +-------+--------+
+                             |
+                     +-------v--------+
+                     |    <html>      |   Element node
+                     +---+--------+---+
+                +--------+        +---------+
+          +-----v-----+                +----v-----+
+          |  <head>   |                |  <body>  |
+          +-----+-----+                +--+----+--+
+                |                   +-----+    +-----+
+          +-----v-----+        +----v-----+   +------v------+
+          |  <title>  |        |   <h1>   |   |    <a>      |
+          +-----+-----+        | id="head"|   | href="x..." | <- Attribute node
+                |              +----+-----+   +------+------+
+          +-----v-----+        +----v-----+   +------v------+
+          | "My Page" |        | "Hello"  |   |   "Link"    |  <- Text nodes
+          +-----------+        +----------+   +-------------+
+```
+
+**3. Core Explanation / Working**
+
+*(a) Types of DOM Nodes*
+
+- **Document node:** the entire document (`document` object).
+- **Element nodes:** HTML tags like `<body>` and `<p>`.
+- **Attribute nodes:** attributes like `id` and `href`.
+- **Text nodes:** the text inside elements.
+- **Comment nodes:** `<!-- -->` comments.
+
+*(b) Accessing (Selecting) Elements*
+
+```javascript
+document.getElementById("head");          // single element by id
+document.getElementsByClassName("item");  // HTMLCollection
+document.getElementsByTagName("p");       // HTMLCollection
+document.querySelector(".item");          // first CSS-selector match
+document.querySelectorAll("ul > li");     // NodeList of all matches
+```
+
+*(c) Modifying Content, Attributes and Styles*
+
+```javascript
+let h = document.getElementById("head");
+h.innerHTML = "<i>Welcome</i>";           // change HTML content
+h.textContent = "Welcome";                // change text only
+h.setAttribute("class", "title");         // change attribute
+h.style.color = "blue";                   // change CSS style
+```
+
+*(d) Creating and Deleting Nodes*
+
+```javascript
+let p = document.createElement("p");      // create element
+p.textContent = "New paragraph";
+document.body.appendChild(p);             // add to the tree
+document.body.removeChild(p);             // remove from the tree
+```
+
+*(e) Traversing the Tree*
+
+- `parentNode`, `childNodes`, `children`, `firstChild`, `lastChild`, `nextSibling`, `previousSibling`.
+
+*(f) DOM Events (Event Handling)*
+
+```javascript
+let btn = document.getElementById("btn");
+btn.addEventListener("click", function () {
+    alert("Button clicked!");
+});
+```
+
+- Common events: `click`, `submit`, `load`, `change`, `keyup`, `mouseover`.
+- **Event propagation:** capturing (top-down), then target, then **bubbling** (bottom-up).
+
+*(g) DOM Levels*
+
+- **Level 0:** the original browser-specific model.
+- **Level 1:** the core and HTML DOM.
+- **Level 2:** events, styles, traversal.
+- **Level 3:** keyboard events, XPath, load/save.
+
+**4. Key Characteristics - `innerHTML` vs. `textContent`, HTML DOM vs. BOM**
+
+| Basis | `innerHTML` | `textContent` |
+|---|---|---|
+| Reads / writes | HTML markup | Plain text only |
+| Parses tags | Yes | No (tags shown as text) |
+| Security | Risk of **XSS** with user input | Safe |
+| Speed | Slower | Faster |
+
+| Basis | DOM (Document Object Model) | BOM (Browser Object Model) |
+|---|---|---|
+| Represents | The **page content** | The **browser window** |
+| Root object | `document` | `window` |
+| Standard | W3C standard | No formal standard |
+| Examples | `getElementById`, `createElement` | `alert()`, `location`, `history`, `navigator` |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- Makes web pages **dynamic and interactive** without reloading.
+- **Language and platform independent** (usable from JavaScript, Python, Java).
+- It is the basis of **AJAX, SPAs and frameworks** (React uses a virtual DOM).
+
+*Disadvantages*
+
+- Frequent DOM changes cause **reflow and repaint**, which is **slow** for large documents.
+- Careless use of `innerHTML` with user input leads to **XSS vulnerabilities**.
+
+**6. Conclusion / Application**
+
+The DOM powers every interactive web feature, such as **live form validation, image sliders, dropdown menus and dynamic content loading** on sites like YouTube and Gmail.
+
+---
+
+### Q3. Write a JavaScript program for client-side form validation (e.g., verifying a password field or empty inputs). (7 Marks)
+
+**1. Introduction / Definition**
+
+**Client-side form validation** means checking user input **in the browser, using JavaScript, before the form is sent** to the server. It gives users **instant feedback** and reduces needless server requests. Validation is attached to the form's **`onsubmit`** event, and returning `false` stops the submission.
+
+**2. Flowchart - Validation Logic**
+
+```
+               +---------------------------+
+               |  User clicks "Register"   |
+               +-------------+-------------+
+                             | onsubmit = validateForm()
+               +-------------v-------------+
+               |  Name field empty?        |--- Yes --> Show error, return false
+               +-------------+-------------+
+                             | No
+               +-------------v-------------+
+               |  Email format valid?      |--- No  --> Show error, return false
+               |  (regex test)             |
+               +-------------+-------------+
+                             | Yes
+               +-------------v-------------+
+               |  Password >= 8 chars,     |--- No  --> Show error, return false
+               |  has digit + uppercase +  |
+               |  special character?       |
+               +-------------+-------------+
+                             | Yes
+               +-------------v-------------+
+               | Password == Confirm Pwd?  |--- No  --> Show error, return false
+               +-------------+-------------+
+                             | Yes
+               +-------------v-------------+
+               | Mobile = 10 digits?       |--- No  --> Show error, return false
+               +-------------+-------------+
+                             | Yes
+               +-------------v-------------+
+               |  return true              |
+               |  -> Form sent to server   |
+               +---------------------------+
+```
+
+**3. Core Explanation / Working - Program**
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Form Validation</title>
+  <style>
+    .error { color: red; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <h2>Registration</h2>
+  <form name="regForm" action="/register" method="post"
+        onsubmit="return validateForm()">
+    Name: <input type="text" id="name">
+    <span class="error" id="nameErr"></span><br><br>
+
+    Email: <input type="text" id="email">
+    <span class="error" id="emailErr"></span><br><br>
+
+    Password: <input type="password" id="pwd">
+    <span class="error" id="pwdErr"></span><br><br>
+
+    Confirm Password: <input type="password" id="cpwd">
+    <span class="error" id="cpwdErr"></span><br><br>
+
+    Mobile: <input type="text" id="mobile">
+    <span class="error" id="mobErr"></span><br><br>
+
+    <input type="submit" value="Register">
+  </form>
+
+  <script>
+    function validateForm() {
+      // Read and trim the values
+      let name   = document.getElementById("name").value.trim();
+      let email  = document.getElementById("email").value.trim();
+      let pwd    = document.getElementById("pwd").value;
+      let cpwd   = document.getElementById("cpwd").value;
+      let mobile = document.getElementById("mobile").value.trim();
+      let valid  = true;
+
+      // Clear old error messages
+      document.querySelectorAll(".error")
+              .forEach(function (e) { e.textContent = ""; });
+
+      // 1. Empty-field check
+      if (name === "") {
+        document.getElementById("nameErr").textContent = "Name is required";
+        valid = false;
+      }
+
+      // 2. Email format check
+      let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailPattern.test(email)) {
+        document.getElementById("emailErr").textContent = "Enter a valid email";
+        valid = false;
+      }
+
+      // 3. Password strength check: min 8 chars, 1 uppercase,
+      //    1 digit, 1 special character
+      let pwdPattern = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/;
+      if (!pwdPattern.test(pwd)) {
+        document.getElementById("pwdErr").textContent =
+          "Min 8 chars with 1 uppercase, 1 digit and 1 special char";
+        valid = false;
+      }
+
+      // 4. Confirm password check
+      if (pwd !== cpwd) {
+        document.getElementById("cpwdErr").textContent = "Passwords do not match";
+        valid = false;
+      }
+
+      // 5. Mobile number check (exactly 10 digits)
+      if (!/^[0-9]{10}$/.test(mobile)) {
+        document.getElementById("mobErr").textContent = "Enter a 10-digit number";
+        valid = false;
+      }
+
+      return valid;   // false stops the form submission
+    }
+  </script>
+</body>
+</html>
+```
+
+*Working*
+
+- `onsubmit="return validateForm()"` runs the function **before** the form is sent.
+- `.value.trim()` reads the input and removes extra spaces.
+- `RegExp.test()` checks the format (email, password strength, mobile).
+- Error messages appear in `<span>` elements through `textContent`, next to the wrong field.
+- If any check fails, the function returns **`false`** and the submission is **cancelled**.
+
+**4. Key Characteristics - Client-side vs. Server-side Validation**
+
+| Basis | Client-side Validation | Server-side Validation |
+|---|---|---|
+| Runs on | Browser (JavaScript) | Web server (Servlet, Node.js) |
+| Speed | **Instant** feedback | Needs a round trip |
+| Security | **Can be bypassed** (JS can be disabled) | **Secure** and mandatory |
+| Server load | Reduced | Increased |
+| Purpose | User convenience | Data integrity and security |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- **Immediate feedback** improves the user experience.
+- **Reduces server load** and network traffic by catching errors early.
+- Regular expressions allow **flexible format checks**.
+
+*Disadvantages*
+
+- It can be **bypassed** by disabling JavaScript or editing requests, so server checks are still needed.
+- Validation logic is **visible** in the page source.
+
+**6. Conclusion / Application**
+
+Client-side validation is used on every **login, sign-up, payment and contact form**, for example checking the password strength on a Gmail or bank account registration page.
+
+---
+
+### Q4. Explain TCP/IP client sockets and write the constructor and methods used to create a client socket. (7 Marks)
+
+**1. Introduction / Definition**
+
+A **socket** is one **endpoint of a two-way communication link** between two programs on a network, identified by an **IP address and a port number**. A **TCP/IP client socket** (Java class **`java.net.Socket`**) connects to a server socket and gives a **reliable, connection-oriented, stream-based** link using TCP.
+
+**2. Block Diagram - TCP Client-Server Socket Communication**
+
+```
+          CLIENT                                        SERVER
+  +------------------------+                  +------------------------+
+  |                        |                  | ServerSocket ss =      |
+  |                        |                  |  new ServerSocket(5000)|
+  |                        |                  +-----------+------------+
+  |                        |                              |
+  |                        |                  +-----------v------------+
+  |                        |                  | Socket s = ss.accept() |
+  |                        |                  |   (waits / blocks)     |
+  +-----------+------------+                  +-----------+------------+
+              |                                           ^
+  +-----------v------------+   1. Connection request      |
+  | Socket s = new Socket( |------ (3-way handshake) -----+
+  |  "localhost", 5000)    |
+  +-----------+------------+
+              |
+  +-----------v------------+   2. Request data            +------------------------+
+  | s.getOutputStream()    |----------------------------->| s.getInputStream()     |
+  |   write request        |                              |   read request         |
+  +-----------+------------+                              +-----------+------------+
+              |                                                       |
+  +-----------v------------+   3. Response data           +-----------v------------+
+  | s.getInputStream()     |<-----------------------------| s.getOutputStream()    |
+  |   read response        |                              |   write response       |
+  +-----------+------------+                              +-----------+------------+
+              |                                                       |
+  +-----------v------------+   4. Connection close        +-----------v------------+
+  |      s.close()         |<---------------------------->|      s.close()         |
+  +------------------------+                              +------------------------+
+```
+
+**3. Core Explanation / Working**
+
+*(a) Steps to Create a TCP Client*
+
+1. Create a `Socket` object with the server's **host name or IP** and **port**. This starts the TCP connection (three-way handshake).
+2. Get the **input and output streams** from the socket.
+3. **Send** a request through the output stream and **receive** the response through the input stream.
+4. **Close** the streams and the socket.
+
+*(b) Constructors of the `Socket` Class*
+
+| Constructor | Description |
+|---|---|
+| `Socket(String host, int port)` | Connects to the given host name and port. Throws `UnknownHostException` or `IOException`. |
+| `Socket(InetAddress address, int port)` | Connects using an `InetAddress` object and port. |
+| `Socket(String host, int port, InetAddress localAddr, int localPort)` | Connects and also binds to a given **local** address and port. |
+| `Socket(InetAddress addr, int port, InetAddress localAddr, int localPort)` | Same, using an InetAddress for the server. |
+| `Socket()` | Creates an **unconnected** socket. Call `connect()` later. |
+
+*(c) Important Methods of the `Socket` Class*
+
+| Method | Purpose |
+|---|---|
+| `InputStream getInputStream()` | Returns the stream for **reading** data from the server |
+| `OutputStream getOutputStream()` | Returns the stream for **writing** data to the server |
+| `InetAddress getInetAddress()` | IP address of the **remote** host |
+| `int getPort()` | Remote port number |
+| `int getLocalPort()` | Local port the socket is bound to |
+| `InetAddress getLocalAddress()` | Local IP address |
+| `void connect(SocketAddress ep, int timeout)` | Connects an unconnected socket, with a timeout |
+| `void setSoTimeout(int ms)` | Sets the read timeout |
+| `boolean isConnected()` / `isClosed()` | Checks the connection state |
+| `void close()` | Closes the socket and releases resources |
+
+*(d) Program - TCP Client in Java*
+
+```java
+import java.io.*;
+import java.net.*;
+
+public class TCPClient {
+    public static void main(String[] args) {
+        try {
+            // 1. Create the client socket (connects to the server)
+            Socket s = new Socket("localhost", 5000);
+            System.out.println("Connected to " + s.getInetAddress()
+                               + " on port " + s.getPort());
+
+            // 2. Get the I/O streams
+            PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(
+                                new InputStreamReader(s.getInputStream()));
+
+            // 3. Send a request and read the response
+            out.println("Hello Server");
+            String reply = in.readLine();
+            System.out.println("Server says: " + reply);
+
+            // 4. Close the resources
+            in.close();
+            out.close();
+            s.close();
+        } catch (UnknownHostException e) {
+            System.out.println("Host not found: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("I/O error: " + e.getMessage());
+        }
+    }
+}
+```
+
+*Matching server, in short:* `ServerSocket ss = new ServerSocket(5000); Socket s = ss.accept();`, then read with `s.getInputStream()` and reply with `s.getOutputStream()`.
+
+**4. Key Characteristics - TCP Socket vs. UDP Datagram Socket**
+
+| Basis | TCP (`Socket`, `ServerSocket`) | UDP (`DatagramSocket`, `DatagramPacket`) |
+|---|---|---|
+| Connection | **Connection-oriented** | **Connectionless** |
+| Reliability | Guaranteed delivery and order | Not guaranteed |
+| Data unit | Continuous byte **stream** | Independent **packets** |
+| Speed | Slower (handshake, ACKs) | Faster |
+| Header size | 20 bytes | 8 bytes |
+| Use case | HTTP, FTP, email, chat | Video streaming, DNS, online games |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- **Reliable, ordered** delivery with error checking (TCP).
+- The **stream-based API** makes reading and writing as easy as file I/O.
+- **Platform independent** in Java.
+
+*Disadvantages*
+
+- **Connection set-up overhead** (three-way handshake) makes it slower than UDP.
+- `accept()` and `read()` **block**, so threads are needed for many clients.
+
+**6. Conclusion / Application**
+
+TCP client sockets are the basis of **web browsers, chat applications, FTP clients and database drivers (JDBC)**, which all open a socket to talk to their servers.
 
 ---
