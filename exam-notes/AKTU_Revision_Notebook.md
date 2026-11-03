@@ -8563,19 +8563,8 @@ The **Data Analytics Lifecycle** (the EMC / Dell model) is a **six-phase, iterat
 
 **2. Block Diagram**
 
-```{.dot caption="Data Analytics Lifecycle (iterative; dashed arrows show going back)" width="70%"}
-digraph G { layout=circo; mindist=1.25;
-  node [shape=box, style=rounded, width=1.9, height=0.75];
-  D1 [label="1. Discovery\n(Is there enough\ninformation?)"];
-  D2 [label="2. Data\nPreparation\n(Is data good enough?)"];
-  D3 [label="3. Model\nPlanning\n(Good idea for model?)"];
-  D4 [label="4. Model\nBuilding\n(Is model robust?)"];
-  D5 [label="5. Communicate\nResults"];
-  D6 [label="6. Operationalize"];
-  D1 -> D2 -> D3 -> D4 -> D5 -> D6 -> D1;
-  D2 -> D1 [style=dashed, constraint=false]; D3 -> D2 [style=dashed, constraint=false]; D4 -> D3 [style=dashed, constraint=false];
-}
-```
+![Data Analytics Lifecycle: solid arrows show the normal flow, dashed arrows show going back to an earlier phase](figures/da_lifecycle.svg){width=66%}
+
 
 **3. Core Explanation / Working**
 
@@ -9687,23 +9676,24 @@ These algorithms are used for **market-basket analysis on retail data at Walmart
 ![Hadoop ecosystem (layered view)](figures/da_hadoop_ecosystem.svg){width=92%}
 
 
-```{.dot caption="HDFS architecture (block size 128 MB, replication factor 3)" width="95%"}
-digraph G { rankdir=TB; nodesep=0.5; ranksep=0.7;
+```{.dot caption="HDFS architecture (block size 128 MB, replication factor 3)" width="100%"}
+digraph G { rankdir=TB; nodesep=0.45; ranksep=0.6;
   C [label="HDFS Client"];
-  NN [label="NameNode (Master)\nmetadata: file → blocks → DataNodes\nnamespace, permissions", width=3.2];
-  SNN [label="Secondary NameNode\n(checkpoints: fsimage + edit log)", style="rounded,dashed"];
-  subgraph cluster_r1 { label="Rack 1"; style=dashed; D1 [label="DataNode 1\n[B1] [B2]"]; D2 [label="DataNode 2\n[B1] [B3]"]; }
-  subgraph cluster_r2 { label="Rack 2"; style=dashed; D3 [label="DataNode 3\n[B1] [B2] [B3]"]; D4 [label="DataNode 4\n[B2] [B3]"]; }
-  C -> NN [label=" 1. metadata ops\n (open, locate blocks)"];
+  NN [label="NameNode (Master)\nmetadata: file → blocks → DataNodes", width=3];
+  SNN [label="Secondary NameNode\n(checkpoints fsimage + edit log)", style="rounded,dashed"];
+  {rank=same; NN; SNN}
+  D1 [label="DataNode 1\nB1  B2"]; D2 [label="DataNode 2\nB1  B3"]; D3 [label="DataNode 3\nB2  B3"]; D4 [label="DataNode 4\nB1  B2  B3"];
+  {rank=same; D1; D2; D3; D4}
+  C -> NN [label=" 1. ask for block\n locations"];
   NN -> SNN [dir=none, style=dashed];
-  C -> D1 [label=" 2. read / write\n blocks directly", style=bold];
-  NN -> {D1 D2 D3 D4} [label="", style=dotted, arrowhead=none];
-  D1 -> D2 [label=" replication\n pipeline", fontsize=10];
-  {D1 D2 D3 D4} -> NN [style=dotted, constraint=false, label=""];
-  lbl [shape=plaintext, label="Dotted lines: heartbeats and block reports (every 3 s)"];
-  D3 -> lbl [style=invis];
+  NN -> {D1 D2 D3 D4} [dir=back, style=dotted, label=""];
+  C -> D1 [label=" 2. read / write\n data directly", style=bold, constraint=false];
+  D1 -> D2 [label=" replicate", constraint=false]; D2 -> D3 [label=" replicate", constraint=false];
 }
 ```
+
+*(Dotted arrows: heartbeats and block reports from each DataNode to the NameNode every 3 seconds.)*
+
 
 **3. Core Explanation / Working**
 
@@ -10435,6 +10425,1492 @@ $$C_3 = \left(\frac{2 + 1}{2},\; \frac{5 + 2}{2}\right) = (1.5,\; 3.5)$$
 - **Cluster 3 = {A2, A7}**, centre **(1.5, 3.5)**
 
 ![Final three clusters (x = final centre)](figures/da_kmeans8.svg){width=52%}
+
+---
+
+
+
+# Constitution of India, Law & Engineering
+
+---
+
+## Unit 1: Constitution & Fundamental Rights
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) State the objectives of the Directive Principles of State Policy (DPSP).**
+
+- The DPSPs are in **Part IV (Articles 36 to 51)**. The idea was borrowed from the **Irish Constitution**. They are **guidelines to the State** for making laws and policies. They are **non-justiciable** (Article 37), which means no court can enforce them, but they are "**fundamental in the governance of the country**".
+- **Objectives:**
+  1. To establish a **welfare state** and **social and economic democracy** (Article 38).
+  2. To secure an **adequate livelihood, equal pay for equal work, and fair distribution of resources** (Article 39).
+  3. To promote **Gandhian ideals**: village panchayats (Article 40), cottage industries (Article 43), prohibition (Article 47), protection of cows (Article 48).
+  4. To provide **free legal aid** (Article 39A), **uniform civil code** (Article 44), **protection of the environment** (Article 48A), **separation of judiciary from executive** (Article 50) and **international peace** (Article 51).
+
+**(b) Explain constitutionalism and the unitary bias of the Indian Constitution.**
+
+- **Constitutionalism** is the principle that **government power is limited by a constitution**. It rests on the **rule of law, separation of powers, judicial review, fundamental rights and accountable government**. It prevents arbitrary rule.
+- **Unitary bias:** India is a federation with a **strong Centre**, which is why it is called **"quasi-federal"** (K.C. Wheare). Features that show the unitary bias:
+  - India is a "**Union of States**" (Article 1). States cannot secede.
+  - **Single constitution, single citizenship**, an **integrated judiciary** and **All-India Services**.
+  - **Parliament can change state boundaries** (Article 3). **Residuary powers** belong to the Union (Article 248).
+  - **Emergency provisions** (Articles 352, 356, 360) convert the federation into an almost unitary system.
+  - **Governors are appointed by the Centre**, and the **Rajya Sabha has unequal representation** of states.
+
+**(c) What are Fundamental Duties?**
+
+- **Fundamental Duties** are **moral obligations of every citizen**, listed in **Part IV-A, Article 51A**. They were added by the **42nd Amendment, 1976**, on the recommendation of the **Swaran Singh Committee**. The idea was borrowed from the **former USSR**.
+- There were originally **10 duties**. The **11th** was added by the **86th Amendment, 2002**: parents must provide education to children aged 6 to 14 years.
+- *Examples:* respect the Constitution, the National Flag and the Anthem; uphold the sovereignty and unity of India; protect the environment; develop a scientific temper; safeguard public property; strive for excellence.
+- They are **non-justiciable**, but courts use them when interpreting laws.
+
+---
+
+### Q2. Discuss the historical background and the formation of the Constituent Assembly. (7 Marks)
+
+**1. Introduction / Definition**
+
+The **Constituent Assembly** was the body elected to **frame the Constitution of India**. It was formed in **1946 under the Cabinet Mission Plan**. It met for the first time on **9 December 1946** and adopted the Constitution on **26 November 1949**. The Constitution came into force on **26 January 1950**. Its framing was the result of almost two centuries of constitutional development under British rule.
+
+**2. Diagram - Timeline of Constitutional Development**
+
+```{.dot caption="From British rule to the Constitution of India" width="96%"}
+digraph G { rankdir=LR; nodesep=0.2; ranksep=0.28; node [width=1.15, height=0.75, fontsize=11];
+  a [label="1773\nRegulating\nAct"]; b [label="1858\nGovt. of\nIndia Act"]; c [label="1909\nMorley-Minto\nReforms"]; d [label="1919\nMontagu-\nChelmsford\n(dyarchy)"];
+  e [label="1935\nGovt. of\nIndia Act"]; f [label="1946\nCabinet\nMission"]; g [label="9 Dec 1946\nFirst\nmeeting"]; h [label="26 Nov 1949\nConstitution\nadopted"]; i [label="26 Jan 1950\nCame into\nforce", penwidth=2];
+  a -> b -> c -> d -> e -> f -> g -> h -> i;
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) Historical background (British period)*
+
+- **Regulating Act, 1773:** the first step to control the East India Company. It created the Governor-General of Bengal and a Supreme Court at Calcutta.
+- **Pitt's India Act, 1784** and the **Charter Acts (1793 to 1853):** increased British Parliamentary control. The 1833 Act made the Governor-General of Bengal the **Governor-General of India**.
+- **Government of India Act, 1858:** after the 1857 revolt, power passed from the Company to the **British Crown**. A Secretary of State for India was created.
+- **Indian Councils Acts, 1861, 1892 and 1909 (Morley-Minto):** Indians entered the legislative councils. The 1909 Act introduced **separate electorates** for Muslims.
+- **Government of India Act, 1919 (Montagu-Chelmsford):** introduced **dyarchy** in the provinces and a **bicameral** central legislature.
+- **Simon Commission (1927)** and the **Nehru Report (1928):** the Nehru Report was the first Indian attempt to draft a constitution.
+- **Government of India Act, 1935:** the most detailed Act. It proposed an **All-India Federation**, **provincial autonomy**, a **Federal Court** and three lists of subjects. **Much of the present Constitution is based on it.**
+
+*(b) Demand for a Constituent Assembly*
+
+- The idea was first put forward by **M.N. Roy in 1934**. The **Indian National Congress** officially demanded it in **1935**.
+- The British accepted the idea in the **August Offer (1940)** and the **Cripps Mission (1942)**.
+
+*(c) Formation under the Cabinet Mission Plan, 1946*
+
+- **Total strength: 389 members.** 296 came from British India (292 provinces + 4 Chief Commissioner's provinces) and 93 from the princely states.
+- Members were **indirectly elected** by the provincial legislative assemblies, roughly **one seat per 10 lakh population**. The seats were divided among Muslims, Sikhs and General communities.
+- **Elections were held in July-August 1946.** Congress won 208 seats and the Muslim League 73.
+- After **Partition (1947)**, the strength fell to **299** members.
+
+*(d) Working of the Assembly*
+
+- **First meeting: 9 December 1946.** Dr. Sachchidananda Sinha was the temporary President. **Dr. Rajendra Prasad** was elected **permanent President** on 11 December 1946. **H.C. Mukherjee** was Vice-President.
+- **Objectives Resolution:** moved by **Jawaharlal Nehru** on **13 December 1946** and adopted on **22 January 1947**. It later became the **Preamble**.
+- **Drafting Committee:** set up on **29 August 1947**, with **Dr. B.R. Ambedkar as Chairman** (7 members). **B.N. Rau** was the Constitutional Adviser.
+- The Assembly worked through **committees**: Union Powers (Nehru), Provincial Constitution (Patel), Fundamental Rights and Minorities (Patel), Rules of Procedure (Rajendra Prasad).
+- It held **11 sessions** over **2 years, 11 months and 18 days**.
+- The Constitution was **adopted on 26 November 1949** (now celebrated as Constitution Day). Some provisions, such as citizenship and elections, came into force immediately.
+- The Constitution came **fully into force on 26 January 1950** (Republic Day). The Assembly also acted as the **provisional Parliament** until 1952.
+- The **original Constitution** had **395 Articles, 22 Parts and 8 Schedules**.
+
+**4. Key Characteristics - Summary of the Constituent Assembly**
+
+| Item | Detail |
+|---|---|
+| Formed under | Cabinet Mission Plan, 1946 |
+| Total members | 389 (299 after Partition) |
+| Method of selection | Indirect election by provincial assemblies + nominations from princely states |
+| First meeting | 9 December 1946 |
+| President | Dr. Rajendra Prasad |
+| Drafting Committee Chairman | Dr. B.R. Ambedkar |
+| Constitutional Adviser | Sir B.N. Rau |
+| Time taken | 2 years, 11 months, 18 days |
+| Adopted | 26 November 1949 |
+| Came into force | 26 January 1950 |
+
+**5. Advantages & Disadvantages (criticisms)**
+
+*Strengths*
+
+- It was **broadly representative**: it included all communities, women, and members from many regions and ideologies.
+- Its **deliberations were detailed**, with thorough debates on every article, which produced a lasting document.
+
+*Criticisms*
+
+- It was **not directly elected** by adult franchise, so some called it unrepresentative.
+- It was **dominated by the Congress** and by **lawyers**. The Constitution borrows heavily from the 1935 Act and is very lengthy.
+
+**6. Conclusion / Application**
+
+The Constituent Assembly gave India the **world's longest written constitution**. It has guided Indian democracy since 1950 and has been amended more than 100 times without losing its basic structure.
+
+---
+
+### Q3. Explain Fundamental Rights and how they differ from other legal rights. (7 Marks)
+
+**1. Introduction / Definition**
+
+**Fundamental Rights (FRs)** are the **basic rights guaranteed by the Constitution** to individuals, in **Part III (Articles 12 to 35)**. They were inspired by the **US Bill of Rights**. They are **justiciable**: a person can approach the **Supreme Court directly under Article 32** (or a High Court under Article 226) if they are violated. They protect individuals against the **arbitrary use of State power**.
+
+**2. Diagram - The Six Fundamental Rights**
+
+```{.dot caption="Classification of Fundamental Rights (Part III)" width="98%"}
+digraph G { nodesep=0.12; ranksep=0.5; node [width=1.25, height=0.75, fontsize=11];
+  FR [label="Fundamental Rights\n(Part III, Art. 12-35)", width=2.4];
+  e [label="Right to\nEquality\n(Art. 14-18)"]; f [label="Right to\nFreedom\n(Art. 19-22)"]; x [label="Right against\nExploitation\n(Art. 23-24)"];
+  r [label="Freedom of\nReligion\n(Art. 25-28)"]; c [label="Cultural &\nEducational\n(Art. 29-30)"]; k [label="Constitutional\nRemedies\n(Art. 32)"];
+  FR -> {e f x r c k};
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) The six Fundamental Rights*
+
+1. **Right to Equality (Articles 14 to 18)**
+   - Equality before the law and equal protection of the laws (14).
+   - No discrimination on grounds of religion, race, caste, sex or place of birth (15).
+   - Equality of opportunity in public employment (16).
+   - **Abolition of untouchability** (17) and of titles (18).
+2. **Right to Freedom (Articles 19 to 22)**
+   - **Article 19** gives six freedoms: speech and expression, assembly, association, movement, residence, and profession.
+   - Protection in respect of conviction for offences (20).
+   - **Protection of life and personal liberty** (21).
+   - **Right to education** for ages 6 to 14 (21A, added by the 86th Amendment).
+   - Protection against arbitrary arrest and detention (22).
+3. **Right against Exploitation (Articles 23 and 24)**
+   - Ban on human trafficking and **forced labour (begar)** (23).
+   - Ban on **child labour** below 14 years in factories and hazardous work (24).
+4. **Right to Freedom of Religion (Articles 25 to 28)**
+   - Freedom of conscience, and freedom to profess, practise and propagate religion (25).
+   - Freedom to manage religious affairs (26).
+   - No tax for promoting any religion (27).
+   - No religious instruction in State-funded institutions (28).
+5. **Cultural and Educational Rights (Articles 29 and 30)**
+   - Protection of the language, script and culture of minorities (29).
+   - Right of minorities to establish and administer educational institutions (30).
+6. **Right to Constitutional Remedies (Article 32)**
+   - The right to move the Supreme Court to enforce FRs through **five writs**:
+     - **Habeas Corpus:** produce the detained person before the court.
+     - **Mandamus:** an order to a public official to perform a duty.
+     - **Prohibition:** stops a lower court from exceeding its jurisdiction.
+     - **Certiorari:** quashes an order of a lower court.
+     - **Quo Warranto:** asks by what authority a person holds a public office.
+   - **Dr. Ambedkar called Article 32 the "heart and soul" of the Constitution.**
+
+*(b) Important points*
+
+- The **Right to Property** (Article 31) was **removed by the 44th Amendment (1978)**. It is now only a **legal right** under **Article 300A**.
+- FRs are **not absolute**. The State can impose **reasonable restrictions** (for example under Article 19(2)).
+- Some FRs are available **only to citizens** (15, 16, 19, 29, 30). Others are available to **all persons**, including foreigners (14, 20, 21, 25).
+- During a National Emergency, FRs can be suspended, **except Articles 20 and 21** (44th Amendment).
+- **Parliament can amend FRs**, but **not the basic structure** (Kesavananda Bharati case, 1973).
+
+*(c) How Fundamental Rights differ from other legal rights*
+
+**4. Key Characteristics - Fundamental Rights vs. Ordinary Legal Rights**
+
+| Basis | Fundamental Rights | Ordinary Legal Rights |
+|---|---|---|
+| Source | **Constitution** (Part III) | **Ordinary laws** passed by the legislature (for example the Contract Act, the Consumer Protection Act) |
+| Remedy | Can go **directly to the Supreme Court** (Article 32) or a High Court (Article 226) | Must go through the **ordinary courts** (civil suits) |
+| Change | Can be changed only by a **constitutional amendment** (Article 368), and not the basic structure | Can be changed or repealed by an **ordinary law** |
+| Protected against | Mainly the **State** (Article 12) | Mainly **private individuals** and other persons |
+| Nature | Basic, essential for human dignity | Specific to a subject (property, contract, consumer) |
+| Suspension | Only during an emergency (not Articles 20 and 21) | Depends on the law |
+| Example | Right to equality, right to life (Article 21) | Right to property (Article 300A), right to compensation under the Motor Vehicles Act |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- They **protect individual liberty and dignity** against misuse of State power.
+- They **promote equality**, protect **minorities** and strengthen **democracy and the rule of law**.
+
+*Criticisms*
+
+- **Too many exceptions and restrictions**, so they are said to be given with one hand and taken back with the other.
+- They contain **no social and economic rights** (those are in the DPSPs), and some are **suspended during emergencies**.
+
+**6. Conclusion / Application**
+
+Through judicial interpretation, especially of **Article 21**, FRs have grown to include the **right to privacy (Puttaswamy, 2017), the right to a clean environment, the right to livelihood and the right to a speedy trial**.
+
+---
+
+### Q4. Discuss the Preamble of the Indian Constitution. (7 Marks)
+
+**1. Introduction / Definition**
+
+The **Preamble** is the **introductory statement** of the Constitution. It states the **source of authority, the nature of the Indian State, its objectives and the date of adoption**. It is based on the **Objectives Resolution** moved by Jawaharlal Nehru (1946). It has been **amended only once**, by the **42nd Amendment (1976)**, which added the words **"Socialist", "Secular" and "Integrity"**.
+
+**2. Diagram - Structure of the Preamble**
+
+```{.dot caption="Four components of the Preamble" width="96%"}
+digraph G { nodesep=0.2; ranksep=0.45; node [fontsize=11];
+  P [label="PREAMBLE", width=2];
+  s [label="1. Source of authority\n\"We, the people of India\""];
+  n [label="2. Nature of the State\nSovereign, Socialist, Secular,\nDemocratic, Republic"];
+  o [label="3. Objectives\nJustice, Liberty,\nEquality, Fraternity"];
+  d [label="4. Date of adoption\n26 November 1949"];
+  P -> {s n o d};
+}
+```
+
+**Text of the Preamble**
+
+> WE, THE PEOPLE OF INDIA, having solemnly resolved to constitute India into a SOVEREIGN SOCIALIST SECULAR DEMOCRATIC REPUBLIC and to secure to all its citizens:
+> JUSTICE, social, economic and political;
+> LIBERTY of thought, expression, belief, faith and worship;
+> EQUALITY of status and of opportunity; and to promote among them all
+> FRATERNITY assuring the dignity of the individual and the unity and integrity of the Nation;
+> IN OUR CONSTITUENT ASSEMBLY this twenty-sixth day of November, 1949, do HEREBY ADOPT, ENACT AND GIVE TO OURSELVES THIS CONSTITUTION.
+
+**3. Core Explanation / Working**
+
+*(a) Key words in the Preamble*
+
+- **We, the people of India:** the **people are the ultimate source** of authority (popular sovereignty).
+- **Sovereign:** India is **independent**. No external power controls it, internally or externally.
+- **Socialist** (added in 1976): **democratic socialism**, a mixed economy that aims to end poverty and inequality.
+- **Secular** (added in 1976): the State has **no official religion** and treats all religions **equally** (positive secularism).
+- **Democratic:** power rests with the people, exercised through **elected representatives** chosen by **universal adult franchise**.
+- **Republic:** the **head of state (the President) is elected**, not hereditary.
+- **Justice:** social (no discrimination), economic (fair distribution of wealth) and political (equal political rights). This idea comes from the **Russian Revolution**.
+- **Liberty:** of thought, expression, belief, faith and worship.
+- **Equality:** of status and of opportunity.
+- **Fraternity:** a sense of brotherhood that ensures the **dignity of the individual** and the **unity and integrity** of the nation ("Integrity" was added in 1976). Liberty, equality and fraternity come from the **French Revolution**.
+
+*(b) Is the Preamble a part of the Constitution?*
+
+- **Berubari Union case (1960):** the Supreme Court held that the Preamble is **not a part** of the Constitution, but it is a **key to understanding** it.
+- **Kesavananda Bharati case (1973):** the Court **reversed** this. The Preamble **is a part of the Constitution** and **can be amended**, but **not its basic structure**.
+- **LIC of India case (1995):** reaffirmed that it is an integral part.
+- The Preamble is **neither a source of power nor a limit on power**, and it is **non-justiciable**.
+
+*(c) Significance*
+
+- It is called the **"identity card" of the Constitution** (N.A. Palkhivala). K.M. Munshi called it the "horoscope" of our sovereign democratic republic.
+- It helps courts **interpret ambiguous provisions**.
+- It reflects the **philosophy and dreams** of the founding fathers.
+
+**4. Key Characteristics - Sources of the Ideals in the Preamble**
+
+| Ideal | Source / Inspiration |
+|---|---|
+| The idea of a Preamble ("We the people") | US Constitution |
+| Liberty, Equality, Fraternity | French Revolution |
+| Social, economic and political Justice | Russian Revolution |
+| Republic | French Constitution |
+| Socialist, Secular, Integrity | Added by the 42nd Amendment, 1976 |
+
+**5. Advantages & Disadvantages**
+
+*Significance (advantages)*
+
+- It sets out the **goals and values** of the nation in a few words.
+- It **guides interpretation** of the Constitution and protects the **basic structure**.
+
+*Limitations*
+
+- It is **not enforceable** in a court of law.
+- The words "socialist" and "secular" are **not defined** in the Constitution, which leaves room for debate.
+
+**6. Conclusion / Application**
+
+The Preamble is the **soul of the Constitution**. Courts regularly use it to read the values of **justice, liberty, equality and fraternity** into laws and government policies.
+
+---
+
+
+
+## Unit 2: Union & State Executive
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) Define the terms Union Executive and State Executive.**
+
+- **Union Executive (Part V, Articles 52 to 78):** the body that **implements the laws and policies of the Union Government**. It consists of the **President, the Vice-President, the Prime Minister and the Council of Ministers, and the Attorney General of India**. The **President is the nominal (constitutional) head**. The **Prime Minister with the Council of Ministers is the real executive**.
+- **State Executive (Part VI, Articles 153 to 167):** the executive of each State. It consists of the **Governor, the Chief Minister and the Council of Ministers, and the Advocate General**. The **Governor is the nominal head** (appointed by the President). The **Chief Minister and the Council of Ministers are the real executive**.
+
+**(b) Explain the concept of Judicial Review.**
+
+- **Judicial review** is the **power of the courts to examine the laws made by the legislature and the actions of the executive**, and to **declare them void if they violate the Constitution**.
+- **Basis in the Constitution:** Article 13 (laws inconsistent with FRs are void), Articles 32 and 226 (writs), and Articles 131 to 136 and 143.
+- The idea comes from the **US case Marbury v. Madison (1803)**.
+- The Supreme Court has held that **judicial review is part of the basic structure** (Kesavananda Bharati 1973, Minerva Mills 1980, L. Chandra Kumar 1997), so it **cannot be removed even by an amendment**.
+
+---
+
+### Q2. Compare the powers of the President of India with the President of the United States. (7 Marks)
+
+**1. Introduction / Definition**
+
+India has a **parliamentary system**, so the **President is the constitutional (nominal) head of State**, and real power lies with the Prime Minister and the Council of Ministers. The USA has a **presidential system**, so the **President is the real head of both State and Government** and holds the actual executive power.
+
+**2. Diagram**
+
+```{.dot caption="Parliamentary system (India) vs. presidential system (USA)" width="92%"}
+digraph G { nodesep=0.4; ranksep=0.5; node [fontsize=11];
+  subgraph cluster_in { label="INDIA (parliamentary)"; style=dashed;
+    ip [label="People"]; il [label="Parliament\n(Lok Sabha)"]; ipm [label="PM + Council\nof Ministers\n(REAL executive)"]; ipr [label="President\n(NOMINAL head)"];
+    ip -> il [label=" elect"]; il -> ipm [label=" PM from majority,\n responsible to LS"]; ipm -> ipr [label=" aid & advise\n (Art. 74)"]; }
+  subgraph cluster_us { label="USA (presidential)"; style=dashed;
+    up [label="People"]; uc [label="Congress"]; upr [label="President\n(REAL executive)"]; ucab [label="Cabinet\n(secretaries)"];
+    up -> uc [label=" elect"]; up -> upr [label=" elect (Electoral\n College)"]; upr -> ucab [label=" appoints"]; }
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) President of India*
+
+- **Election:** indirect, by an **electoral college** of the **elected members of both Houses of Parliament** and of the **Legislative Assemblies of the States and of the UTs of Delhi and Puducherry** (Articles 54 and 55). It uses proportional representation with a single transferable vote.
+- **Term:** **5 years**. Re-election is allowed, with no limit (Article 56).
+- **Executive powers:** all executive actions are taken in their name. They appoint the PM, the ministers, the Governors, the judges, the CAG and the Election Commissioners.
+- **Bound by ministerial advice:** under **Article 74 (as amended by the 42nd and 44th Amendments)**, the President **must act on the advice of the Council of Ministers**. They can send the advice back **once** for reconsideration.
+- **Legislative powers:**
+  - Summons and prorogues Parliament, and dissolves the Lok Sabha.
+  - Assents to bills. Has an **absolute, suspensive and pocket veto**.
+  - Issues **ordinances (Article 123)**.
+- **Financial powers:** money bills need their prior recommendation. They cause the budget to be laid. They control the Contingency Fund.
+- **Judicial powers:** pardon (Article 72), and can seek the advice of the Supreme Court (Article 143).
+- **Emergency powers:** Articles 352, 356 and 360.
+- **Removal:** **impeachment for "violation of the Constitution"** (Article 61), by a **two-thirds majority of the total membership of each House**.
+
+*(b) President of the United States*
+
+- **Election:** chosen through the **Electoral College**, whose members are themselves elected by the people of each state. In practice this is close to a direct election.
+- **Term:** **4 years**, with **at most two terms** (22nd Amendment).
+- **Real executive:** heads the government. Appoints the **Cabinet secretaries** (who are not members of Congress) with Senate approval.
+- **Legislative:** cannot dissolve Congress or introduce bills directly. Has a **qualified veto**, which Congress can **override by a two-thirds vote in both Houses**. Has a pocket veto.
+- **Other powers:** Commander-in-Chief with real war powers, and makes treaties (with two-thirds Senate approval). Issues **executive orders** but has **no ordinance power**.
+- **No emergency provisions** like India's Articles 352, 356 and 360.
+- **Removal:** **impeachment** by the House of Representatives (simple majority) and **conviction by the Senate (two-thirds)** for "**treason, bribery, or other high crimes and misdemeanors**".
+
+**4. Key Characteristics - Comparison Table**
+
+| Basis | President of India | President of USA |
+|---|---|---|
+| System | Parliamentary | Presidential |
+| Position | **Nominal / constitutional head** | **Real executive** (head of State + head of Government) |
+| Election | Indirect: electoral college of elected MPs and MLAs | Electoral College chosen by voters (near-direct) |
+| Term | 5 years, no limit on re-election | 4 years, **maximum 2 terms** |
+| Advice of ministers | **Binding** (Article 74) | Not binding; the Cabinet advises only |
+| Ministers | PM + ministers who are **members of Parliament** | Secretaries, **not** members of Congress |
+| Dissolution of the legislature | Can dissolve the Lok Sabha (on the PM's advice) | Cannot dissolve Congress |
+| Veto | Absolute, suspensive, pocket | Qualified (can be overridden by a 2/3 vote), pocket |
+| Ordinance | **Yes** (Article 123) | No (executive orders only) |
+| Emergency powers | **Yes** (Articles 352, 356, 360) | No such provisions |
+| Removal | Impeachment for violation of the Constitution (2/3 of each House) | Impeachment by the House + 2/3 Senate conviction for treason, bribery or high crimes |
+
+**5. Advantages & Disadvantages**
+
+*Indian model*
+
+- *Advantages:* **responsible government** (the executive answers to Parliament); the President is a **neutral guardian** above party politics.
+- *Disadvantages:* the President's **real powers are limited**, and in practice they are often a "rubber stamp".
+
+*US model*
+
+- *Advantages:* **stable fixed term**; strong, quick decisions; clear **separation of powers**.
+- *Disadvantages:* risk of **deadlock** between the President and Congress, and less accountability during the term.
+
+**6. Conclusion / Application**
+
+The Indian President is like the **British Crown**: they "**reign but do not rule**". The US President both reigns and rules, so is often described as the most powerful elected official in the world.
+
+---
+
+### Q3. Explain the legislative and financial powers of the Lok Sabha. (7 Marks)
+
+**1. Introduction / Definition**
+
+The **Lok Sabha (House of the People)** is the **lower, popular house of Parliament** (Article 81). It is **directly elected** by the people, with a **maximum strength of 550** (530 from the states and 20 from the UTs; there are currently 543 elected seats) for a **term of 5 years**. Because it represents the people directly, it has **greater powers than the Rajya Sabha**, especially in **financial matters and control over the executive**.
+
+**2. Diagram - Passage of Bills**
+
+```{.dot caption="Ordinary bill vs. money bill: role of the Lok Sabha" width="96%"}
+digraph G { nodesep=0.35; ranksep=0.42; node [fontsize=11];
+  subgraph cluster_o { label="ORDINARY BILL (Art. 107-108)"; style=dashed;
+    o1 [label="Introduced in\neither House"]; o2 [label="Passed by both Houses\n(simple majority)"]; o3 [label="Deadlock?", shape=diamond];
+    o4 [label="JOINT SITTING (Art. 108)\npresided by the Speaker;\nLS numbers usually win"]; o5 [label="President's assent"];
+    o1 -> o2 -> o3; o3 -> o4 [label=" yes"]; o3 -> o5 [label=" no"]; o4 -> o5; }
+  subgraph cluster_m { label="MONEY BILL (Art. 109-110)"; style=dashed;
+    m1 [label="Introduced ONLY in\nLok Sabha (President's\nrecommendation)"]; m2 [label="Speaker certifies\nit as a money bill"];
+    m3 [label="Rajya Sabha: only\nrecommends within 14 days"]; m4 [label="LS may accept or reject\nthe recommendations"]; m5 [label="President's assent\n(cannot return it)"];
+    m1 -> m2 -> m3 -> m4 -> m5; }
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) Legislative powers*
+
+- **Ordinary bills:** can be introduced in **either House** and must be passed by **both**. If they disagree, the President calls a **joint sitting (Article 108)**, **presided over by the Speaker**. The **Lok Sabha's larger numbers** (about 543 against 245) usually decide the result.
+- **Constitutional amendments (Article 368):** need a **special majority in both Houses separately**. There is no joint sitting, so the Lok Sabha and the Rajya Sabha are **equal** here.
+- **Ordinances:** an ordinance must be approved by Parliament within **six weeks** of Parliament reassembling.
+- **Making laws on the State List**, together with the Rajya Sabha, in special situations such as an emergency.
+- **Electoral functions:** elects the **Speaker and Deputy Speaker**. Takes part in electing the **President and Vice-President**.
+
+*(b) Financial powers (where the Lok Sabha is supreme)*
+
+- **Money bills (Article 110)** can be **introduced only in the Lok Sabha**, on the President's recommendation.
+  - The **Speaker's decision** on whether a bill is a money bill is **final**.
+  - The **Rajya Sabha cannot reject or amend** a money bill. It can only **make recommendations within 14 days**, which the Lok Sabha is free to accept or reject.
+  - If the Rajya Sabha does not return it within 14 days, it is **deemed passed**.
+- **Budget (Annual Financial Statement, Article 112):** presented in both Houses, but the **demands for grants are voted only by the Lok Sabha** (Article 113).
+- **Appropriation Bill (Article 114)** and **Finance Bill** (tax proposals) are passed by the Lok Sabha.
+- **Cut motions:**
+  - Policy cut (reduce to Re 1).
+  - Economy cut (reduce by a specific amount).
+  - Token cut (reduce by Rs 100).
+- **Vote on account** (Article 116): grants money for part of the year until the budget is passed.
+- **Committees:** the **Estimates Committee** (all members from the Lok Sabha), the **Public Accounts Committee** and the **Committee on Public Undertakings** scrutinise spending.
+
+*(c) Control over the executive*
+
+- The **Council of Ministers is collectively responsible to the Lok Sabha** (Article 75(3)).
+- A **No-Confidence Motion** can be moved **only in the Lok Sabha**. If it is passed, the government must resign.
+- Other tools: question hour, zero hour, adjournment motions, calling-attention motions and censure motions.
+
+**4. Key Characteristics - Lok Sabha vs. Rajya Sabha Powers**
+
+| Power | Lok Sabha | Rajya Sabha |
+|---|---|---|
+| Money bill introduction | **Only here** | Cannot introduce |
+| Money bill amendment / rejection | Full power | Only recommends within 14 days |
+| Voting on demands for grants | **Yes** | No |
+| No-confidence motion | **Yes** | No |
+| Ordinary bills | Equal (but wins at a joint sitting) | Equal |
+| Constitutional amendments | Equal | Equal |
+| Joint sitting presided by | **Speaker** | - |
+| Special powers | - | Article 249 (State List law), Article 312 (new All-India Service) |
+| Dissolution | Can be dissolved | **Permanent house** (one-third retire every 2 years) |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- **Popular control over public money** and the government, following the principle of "**no taxation without representation**".
+- Ensures **accountable, responsible government**.
+
+*Disadvantages*
+
+- **Money bill certification** can be misused to bypass the Rajya Sabha (a debated issue).
+- Frequent **disruptions** reduce the time spent on budget debates, and many demands are passed without discussion (the "guillotine").
+
+**6. Conclusion / Application**
+
+The Lok Sabha's **"power of the purse"** and its power to remove the government make it the **most powerful house** of the Indian Parliament.
+
+---
+
+### Q4. Discuss the powers of the Prime Minister and the Chief Minister. (7 Marks)
+
+**1. Introduction / Definition**
+
+The **Prime Minister (PM)** is the **head of the Union Council of Ministers** and the **real executive authority** at the Centre (Articles 74, 75 and 78). The **Chief Minister (CM)** is the **head of the State Council of Ministers** and the **real executive head of a State** (Articles 163, 164 and 167). Both are appointed by the nominal head (the President or the Governor) and are **responsible to the popularly elected house**.
+
+**2. Diagram**
+
+```{.dot caption="Position of the PM and the CM in the executive" width="85%"}
+digraph G { nodesep=0.5; ranksep=0.45; node [fontsize=11];
+  subgraph cluster_u { label="UNION"; style=dashed;
+    pr [label="President\n(nominal head)"]; pm [label="PRIME MINISTER\n(real head)", penwidth=2]; com [label="Union Council of Ministers\n(Cabinet, MoS, Deputy)"]; ls [label="Lok Sabha"];
+    pr -> pm [label=" appoints (Art. 75)", dir=both, arrowtail=none]; pm -> com [label=" heads, allocates\n portfolios"]; com -> ls [label=" collectively\n responsible"]; pm -> pr [label=" communicates\n (Art. 78)", style=dashed, constraint=false]; }
+  subgraph cluster_s { label="STATE"; style=dashed;
+    gv [label="Governor\n(nominal head)"]; cm [label="CHIEF MINISTER\n(real head)", penwidth=2]; scom [label="State Council of Ministers"]; vs [label="Vidhan Sabha"];
+    gv -> cm [label=" appoints (Art. 164)", dir=both, arrowtail=none]; cm -> scom [label=" heads"]; scom -> vs [label=" collectively\n responsible"]; cm -> gv [label=" communicates\n (Art. 167)", style=dashed, constraint=false]; }
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) Powers of the Prime Minister*
+
+1. **In relation to the Council of Ministers:**
+   - **Recommends the names** of ministers to the President, and **allocates and reshuffles portfolios**.
+   - Can ask a minister to **resign**, or advise the President to dismiss them.
+   - **Presides over Cabinet meetings** and guides the ministers.
+   - **The PM's resignation or death dissolves the whole Council of Ministers.**
+2. **In relation to the President:**
+   - Is the **principal channel of communication** between the President and the Cabinet (**Article 78**).
+   - Advises on the appointment of the Attorney General, the CAG, the Election Commissioners, the UPSC chairman and others.
+3. **In relation to Parliament:**
+   - Is the **leader of the Lower House** (if a member).
+   - Advises the President on **summoning, proroguing and dissolving the Lok Sabha**.
+   - Announces government policies on the floor of the House.
+4. **Other roles:**
+   - **Chairperson of NITI Aayog**, the National Development Council, the National Integration Council and the NDMA.
+   - **Chief spokesperson of foreign policy**, leader of the ruling party, and **crisis manager-in-chief** during emergencies.
+
+*(b) Powers of the Chief Minister*
+
+1. **In relation to the State Council of Ministers:**
+   - Recommends the ministers to the **Governor** and allocates portfolios.
+   - Presides over the Council meetings.
+   - **The CM's resignation dissolves the whole Council of Ministers.**
+2. **In relation to the Governor:**
+   - Is the **channel of communication** between the Governor and the Council (**Article 167**).
+   - Advises on the appointment of the Advocate General, the State PSC members and the State Election Commissioner.
+3. **In relation to the State Legislature:**
+   - Is the **leader of the House**.
+   - Advises the Governor on summoning and proroguing it, and on **dissolving the Vidhan Sabha**.
+4. **Other roles:**
+   - **Member of the Inter-State Council and the NITI Aayog Governing Council**.
+   - Chairs the **Zonal Council** by rotation. Is the political head of the State's administration.
+
+**4. Key Characteristics - PM vs. CM**
+
+| Basis | Prime Minister | Chief Minister |
+|---|---|---|
+| Level | Union | State |
+| Appointed by | President (Article 75) | Governor (Article 164) |
+| Responsible to | Lok Sabha | Legislative Assembly (Vidhan Sabha) |
+| Duty to communicate | Article 78 (to the President) | Article 167 (to the Governor) |
+| Leads | Union Council of Ministers | State Council of Ministers |
+| Planning body role | **Chairman** of NITI Aayog | **Member** of the NITI Aayog Governing Council |
+| Emergency impact | Leads the national crisis response | The CM's government can be dismissed under Article 356 |
+| Can advise dissolution of | Lok Sabha | Vidhan Sabha |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- A **single real leader** gives **unity, coordination and quick decisions**.
+- **Accountability** to the elected house keeps the leader responsive to the people.
+
+*Disadvantages*
+
+- Concentration of power can create a "**PM-centric**" or "**CM-centric**" government that weakens Cabinet collective decision-making.
+- Coalition politics can make the PM or CM **weak** and dependent on allies.
+
+**6. Conclusion / Application**
+
+Dr. Ambedkar compared the PM to the **US President** in terms of real power. The PM and the CM are the **pivots of the parliamentary executive** at the Union and State levels.
+
+---
+
+### Q5. Evaluate the independence of the Supreme Court and the judge appointment process. (7 Marks)
+
+**1. Introduction / Definition**
+
+The **Supreme Court of India** (Articles 124 to 147) is the **highest court**, the **guardian of the Constitution** and the **protector of Fundamental Rights**. It currently has **34 judges, including the Chief Justice of India (CJI)**. **Judicial independence** means the judiciary is free from pressure by the executive and the legislature. It is part of the **basic structure** of the Constitution.
+
+**2. Diagram - Appointment of Supreme Court Judges (Collegium System)**
+
+```{.dot caption="Appointment process under the collegium system (Memorandum of Procedure)" width="78%"}
+digraph G { node [width=3.6, fontsize=11];
+  a [label="Vacancy arises in the Supreme Court"];
+  b [label="COLLEGIUM: CJI + 4 senior-most judges\nrecommend a name"];
+  c [label="Union Law Ministry\n(IB background check, inputs)"];
+  d [label="Prime Minister advises the President"];
+  e [label="Government may return it ONCE\nfor reconsideration", style="rounded,dashed"];
+  f [label="If the collegium REITERATES,\nthe government must appoint"];
+  g [label="President issues the warrant of appointment\n(Article 124(2))", penwidth=2];
+  a -> b -> c -> d -> g; c -> e [style=dashed]; e -> f [style=dashed]; f -> g [style=dashed];
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) Appointment process*
+
+- **Article 124(2):** judges are appointed by the **President after consultation with** the CJI and the other judges, as the President thinks necessary.
+- **Qualifications:** an Indian citizen and either (i) a **High Court judge for 5 years**, (ii) a **High Court advocate for 10 years**, or (iii) a **distinguished jurist** in the President's opinion.
+- **Evolution through the "Judges cases":**
+  - **First Judges case (S.P. Gupta, 1981):** "consultation" does not mean "concurrence". The **executive had primacy**.
+  - **Second Judges case (1993):** **the collegium system was created**. The CJI's opinion has **primacy**, formed with the 2 senior-most judges.
+  - **Third Judges case (1998):** the collegium was expanded to the **CJI + 4 senior-most judges**.
+  - **NJAC (99th Amendment, 2014):** replaced the collegium with a National Judicial Appointments Commission. It was **struck down in 2015** (Fourth Judges case) as violating judicial independence. **The collegium continues.**
+- **The CJI** is normally the **senior-most judge** of the Supreme Court.
+
+*(b) Constitutional safeguards for independence*
+
+1. **Security of tenure:** a judge serves until **65 years** of age and can be removed **only by an order of the President** after an address passed by **each House with a special majority** (a majority of the total membership and two-thirds of those present and voting), on grounds of **proved misbehaviour or incapacity** (Article 124(4)). The procedure is set out in the Judges (Inquiry) Act, 1968.
+2. **Fixed salaries and service conditions:** fixed by Parliament and **charged on the Consolidated Fund of India** (not voted). They **cannot be reduced to their disadvantage** after appointment, except during a **financial emergency**.
+3. **Ban on practice after retirement:** a retired judge cannot plead in any court in India (Article 124(7)).
+4. **The judges' conduct cannot be discussed** in Parliament or the State Legislatures, except during a removal motion (Article 121).
+5. **Power to punish for contempt** of itself (Article 129).
+6. **Freedom to appoint its own staff** (Article 146), and the **jurisdiction cannot be reduced** by Parliament.
+7. **Separation of the judiciary from the executive** (DPSP, Article 50).
+
+*(c) Evaluation (criticisms of the present system)*
+
+- The collegium is **opaque**: there are no written criteria or published reasons, and it is accused of **nepotism ("judges appointing judges")**.
+- **Delays** in appointments because of disagreement between the government and the collegium, and many vacancies.
+- **Post-retirement jobs** (Governor, tribunal posts) may affect independence.
+- **Reforms suggested:** a transparent Memorandum of Procedure, a secretariat for the collegium, and fixed timelines.
+
+**4. Key Characteristics - Collegium vs. NJAC**
+
+| Basis | Collegium (present) | NJAC (struck down in 2015) |
+|---|---|---|
+| Source | Judicial interpretation (Judges cases) | 99th Constitutional Amendment, 2014 |
+| Members | CJI + 4 senior-most SC judges | CJI, 2 senior SC judges, Law Minister, 2 eminent persons |
+| Executive role | Limited (may return a name once) | Significant (Law Minister + veto by any 2 members) |
+| Transparency | Low | Intended to be higher |
+| Judicial independence | Strong | Held to be threatened (basic structure) |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- Strong safeguards let the Court **protect FRs** and **check the government** without fear.
+- **Judicial primacy** in appointments prevents political packing of the Court.
+
+*Disadvantages*
+
+- **Lack of transparency and accountability** in the collegium.
+- **Huge pendency** of cases, and appointment delays.
+
+**6. Conclusion / Application**
+
+An independent Supreme Court delivered landmark judgments such as **Kesavananda Bharati (basic structure), Maneka Gandhi (Article 21) and S.R. Bommai (Article 356)**. These show why judicial independence is vital for democracy.
+
+---
+
+
+
+## Unit 3: Legal System & Workplace Law
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) Key provisions of the Right to Information (RTI) Act, 2005**
+
+- **Purpose:** to promote **transparency and accountability** in government by giving **every citizen the right to obtain information** from **public authorities**. It came into force on **12 October 2005**.
+- **Key provisions:**
+  1. **Section 4:** public authorities must **publish information on their own (suo motu disclosure)**.
+  2. **Section 6:** any citizen can apply, in writing or electronically, to the **Public Information Officer (PIO)** with a fee of **Rs 10**. **BPL applicants pay no fee**. **No reason has to be given.**
+  3. **Section 7:** information must be given **within 30 days**, or **within 48 hours** if it concerns the **life or liberty** of a person.
+  4. **Section 8:** **exemptions**, such as information affecting sovereignty and security, cabinet papers, personal information and trade secrets.
+  5. **Section 19:** a **first appeal** to a senior officer within 30 days. A **second appeal** to the **Central or State Information Commission** within 90 days.
+  6. **Section 20:** a **penalty of Rs 250 per day, up to Rs 25,000**, on a PIO for delay or refusal without reasonable cause.
+
+---
+
+### Q2. Explain the structure of the Indian court system from District Courts to the Supreme Court. (7 Marks)
+
+**1. Introduction / Definition**
+
+India has a **single, integrated and hierarchical judiciary**. One system enforces both Central and State laws. The **Supreme Court** is at the top, the **High Courts** are at the State level, and the **subordinate (district) courts** are at the district and lower levels. Appeals move **upward**, and the decisions of higher courts **bind** the lower courts (Article 141).
+
+**2. Diagram - Hierarchy of Courts**
+
+```{.dot caption="Hierarchy of courts in India" width="90%"}
+digraph G { nodesep=0.25; ranksep=0.4; node [fontsize=11];
+  sc [label="SUPREME COURT OF INDIA\n(Articles 124-147)  ·  CJI + 33 judges  ·  New Delhi", width=4.2, penwidth=2];
+  hc [label="HIGH COURTS (25)\n(Articles 214-231)  ·  one per State / group of States", width=4.2];
+  dj [label="DISTRICT & SESSIONS JUDGE\n(Article 233)", width=4.2];
+  subgraph cluster_c { label="Civil side"; style=dashed;
+    cs [label="Civil Judge\n(Senior Division)"]; cj [label="Civil Judge\n(Junior Division)\n/ Munsif"]; cs -> cj; }
+  subgraph cluster_k { label="Criminal side"; style=dashed;
+    as [label="Sessions Judge /\nAddl. Sessions Judge"]; cjm [label="Chief Judicial\nMagistrate"]; jm [label="Judicial\nMagistrates"]; as -> cjm -> jm; }
+  sc -> hc -> dj; dj -> cs; dj -> as;
+  oth [label="Also: Lok Adalats, Family Courts, Gram Nyayalayas,\nConsumer Commissions, Tribunals (NCLT, NGT, ITAT ...)", shape=note];
+  hc -> oth [style=dashed, arrowhead=none];
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) Supreme Court (the apex court)*
+
+- Established on **28 January 1950**. Its strength is **34 judges including the CJI**.
+- **Jurisdiction:**
+  - **Original (Article 131):** disputes between the Centre and the States, or between States.
+  - **Writ (Article 32):** enforcement of Fundamental Rights.
+  - **Appellate (Articles 132 to 134, and 136 Special Leave Petition):** constitutional, civil and criminal appeals from the High Courts.
+  - **Advisory (Article 143):** gives opinions to the President.
+  - **Court of record (Article 129):** can punish for contempt. **Review** of its own judgments (Article 137).
+- Its **decisions are binding on all courts** (Article 141).
+
+*(b) High Courts*
+
+- The **highest court in a State**. There are **25 High Courts**, and some serve more than one State or UT.
+- **Writ jurisdiction (Article 226)** is **wider** than the Supreme Court's: it covers Fundamental Rights **and other legal rights**.
+- **Supervision** over all the subordinate courts in the State (Article 227). Hears **appeals** from the district courts.
+- Judges are appointed by the President (Article 217) and retire at **62**.
+
+*(c) Subordinate courts (Articles 233 to 237)*
+
+- **District Judge (civil) / Sessions Judge (criminal):** the **principal court of the district**, appointed by the **Governor in consultation with the High Court**. A Sessions Judge can award any sentence, but a **death sentence needs confirmation by the High Court**.
+- **Civil side:** **Civil Judge (Senior Division)** for larger-value suits, and **Civil Judge (Junior Division) / Munsif** for small civil suits.
+- **Criminal side:** **Chief Judicial Magistrate** and **Judicial Magistrates**, who try offences with lesser punishments.
+- **Revenue courts** (Board of Revenue, Collector, Tehsildar) deal with land revenue matters.
+
+*(d) Other judicial bodies*
+
+- **Lok Adalats** (Legal Services Authorities Act, 1987): settle disputes by compromise. There is no court fee, and their awards are **final**.
+- **Family Courts, Gram Nyayalayas** (village-level courts), **Fast Track Courts**.
+- **Tribunals:** NCLT (company law), NGT (environment), ITAT (income tax), CAT (service matters). **Consumer Commissions** at the district, state and national levels.
+
+**4. Key Characteristics - Supreme Court vs. High Court vs. District Court**
+
+| Basis | Supreme Court | High Court | District Court |
+|---|---|---|---|
+| Level | National (apex) | State | District |
+| Constitutional basis | Articles 124 to 147 | Articles 214 to 231 | Articles 233 to 237 |
+| Judges appointed by | President (collegium) | President (collegium) | Governor (with the High Court) |
+| Retirement age | 65 | 62 | Set by State rules (usually 60) |
+| Writ jurisdiction | Article 32 (FRs only) | Article 226 (FRs + other rights) | None |
+| Decisions binding on | All courts in India | Subordinate courts in the State | Parties to the case |
+| Main function | Final appeal, guardian of the Constitution | Appeals, writs, supervision | Original trials (civil and criminal) |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- An **integrated, uniform** system gives **consistent justice** across India.
+- **Multiple levels of appeal** reduce the chance of error, and the courts are **independent** of the executive.
+
+*Disadvantages*
+
+- **Huge pendency** (crores of cases), **delays** and **high litigation costs**.
+- **Shortage of judges** and infrastructure, especially in the lower courts.
+
+**6. Conclusion / Application**
+
+Reforms such as the **e-Courts project, virtual hearings, the National Judicial Data Grid and Lok Adalats** are helping to make this hierarchical system faster and more accessible.
+
+---
+
+### Q3. Define contract law and the essential elements of a valid contract. (7 Marks)
+
+**1. Introduction / Definition**
+
+**Contract law** in India is governed by the **Indian Contract Act, 1872**. Under **Section 2(h)**, a **contract is "an agreement enforceable by law"**. An **agreement** is "every promise and every set of promises forming the consideration for each other" (Section 2(e)). So: **Contract = Agreement + Enforceability by law**. "**All contracts are agreements, but all agreements are not contracts.**"
+
+**2. Diagram - Formation of a Contract**
+
+```{.dot caption="Formation of a contract" width="96%"}
+digraph G { rankdir=LR; nodesep=0.3; node [fontsize=11, width=1.2];
+  of [label="Offer /\nProposal\nSec 2(a)"]; ac [label="Acceptance\nSec 2(b)"]; pr [label="Promise"];
+  co [label="+ Consideration\nSec 2(d)"]; ag [label="Agreement\nSec 2(e)"]; en [label="+ Enforceable\nby law"]; ct [label="CONTRACT\nSec 2(h)", penwidth=2];
+  of -> ac -> pr -> co -> ag -> en -> ct;
+}
+```
+
+**3. Core Explanation / Working**
+
+*Essential elements of a valid contract (Section 10 and related sections)*
+
+1. **Offer and acceptance:** there must be a **lawful offer** by one party and a **lawful acceptance** by the other. The acceptance must be **absolute and unconditional** and must be **communicated** (Sections 2(a), 2(b), 7).
+2. **Intention to create legal relations:** the parties must intend legal consequences. Social or domestic agreements are usually not contracts (*Balfour v. Balfour*).
+3. **Lawful consideration:** **something in return** ("quid pro quo"). It may be past, present or future, but it must be **real and lawful** (Sections 2(d), 23). "No consideration, no contract", with exceptions in Section 25.
+4. **Capacity of the parties (Section 11):** the parties must be **competent**:
+   - **Major** (18 years or older). An agreement with a minor is **void ab initio** (*Mohori Bibee v. Dharmodas Ghose*, 1903).
+   - **Of sound mind** (Section 12).
+   - **Not disqualified by law** (for example foreign enemies or insolvents).
+5. **Free consent (Sections 13 and 14):** consent must be given freely, without:
+   - **Coercion** (Section 15), **undue influence** (Section 16), **fraud** (Section 17), **misrepresentation** (Section 18), or **mistake** (Sections 20 to 22).
+   - Consent caused by coercion, undue influence, fraud or misrepresentation makes the contract **voidable**.
+6. **Lawful object (Section 23):** the purpose must not be illegal, immoral, fraudulent, or opposed to public policy.
+7. **Not expressly declared void (Sections 24 to 30):** for example agreements in **restraint of marriage** (26), **restraint of trade** (27), **restraint of legal proceedings** (28), uncertain agreements (29) and **wagering agreements** (30).
+8. **Certainty of meaning (Section 29):** the terms must be clear.
+9. **Possibility of performance (Section 56):** an agreement to do an impossible act is void.
+10. **Legal formalities:** writing, registration or stamping, where a law requires it (for example the sale of immovable property).
+
+*Types of contracts by validity*
+
+- **Valid:** has all the essential elements.
+- **Void:** not enforceable at all (Section 2(j)).
+- **Voidable:** enforceable at the option of one party (Section 2(i)).
+- **Illegal:** forbidden by law.
+- **Unenforceable:** valid, but cannot be enforced for a technical reason (such as being unstamped).
+
+*Remedies for breach of contract*
+
+- **Damages (Section 73).**
+- **Specific performance** (Specific Relief Act, 1963).
+- **Injunction**, **rescission**, and **quantum meruit** (payment for work done).
+
+**4. Key Characteristics - Void vs. Voidable vs. Illegal Agreements**
+
+| Basis | Void Agreement | Voidable Contract | Illegal Agreement |
+|---|---|---|---|
+| Meaning | Not enforceable by law | Enforceable at the option of one party | Forbidden by law |
+| Validity at the start | Void from the beginning | Valid until it is avoided | Void from the beginning |
+| Cause | Missing an essential element (for example with a minor) | Consent obtained by coercion, fraud or similar | Unlawful object (for example a contract to smuggle) |
+| Collateral transactions | May remain valid | Valid | **Also void** |
+| Example | Wagering agreement | Consent obtained by threat | Contract to commit a crime |
+
+**5. Advantages & Disadvantages**
+
+*Advantages (of contract law)*
+
+- Gives **certainty and trust** in business and trade, and legal **remedies for breach**.
+- **Protects weaker parties** (minors, and people whose consent was not free).
+
+*Limitations*
+
+- The 1872 Act is old, so **e-contracts and smart contracts** need support from the IT Act (Section 10A).
+- **Litigation** to enforce contracts is **slow and costly**.
+
+**6. Conclusion / Application**
+
+Contract law governs **employment offers, software licences, online purchases (click-wrap agreements), service-level agreements (SLAs) and NDAs**, all of which IT professionals deal with daily.
+
+---
+
+### Q4. Discuss employee rights, employer responsibilities and workplace law. (7 Marks)
+
+**1. Introduction / Definition**
+
+**Workplace (labour) law** is the body of laws that governs the **relationship between employers and employees**. It covers **wages, working conditions, safety, social security, industrial relations and protection against discrimination and harassment**. In India it is based on the **Constitution** (Articles 14, 16, 19(1)(c), 21, 23, 24, 39, 41 to 43) and on **labour statutes**, many of which have been **consolidated into four Labour Codes (2019-2020)**.
+
+**2. Diagram**
+
+```{.dot caption="Framework of workplace law in India" width="96%"}
+digraph G { nodesep=0.15; ranksep=0.45; node [fontsize=11];
+  W [label="Workplace Law", width=2];
+  c1 [label="Code on\nWages, 2019\n(min. wages, bonus,\nequal pay)"]; c2 [label="Industrial\nRelations Code,\n2020 (unions,\ndisputes, layoffs)"];
+  c3 [label="Code on Social\nSecurity, 2020\n(PF, ESI, gratuity,\nmaternity)"]; c4 [label="OSH & Working\nConditions Code,\n2020 (safety, hours,\nleave)"];
+  c5 [label="Other laws:\nPOSH Act 2013,\nRPwD Act 2016,\nIT Act / DPDP Act"];
+  W -> {c1 c2 c3 c4 c5};
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) Employee rights*
+
+1. **Right to fair wages:** **minimum wages**, timely payment, **equal pay for equal work** (no gender discrimination), and bonus. *(Code on Wages, 2019; Article 39(d).)*
+2. **Right to a safe and healthy workplace:** safety equipment, clean premises, limits on working hours (usually 8 to 9 hours a day and 48 hours a week), overtime pay and paid leave. *(OSH Code, 2020; Factories Act, 1948.)*
+3. **Right to social security:** **Provident Fund (EPF)**, **Employees' State Insurance (ESI)**, **gratuity** (after 5 years of continuous service), and **maternity benefit of 26 weeks** (Maternity Benefit Amendment, 2017). *(Code on Social Security, 2020.)*
+4. **Right against discrimination:** on grounds of gender, caste, religion or disability (Articles 14 to 16; RPwD Act, 2016).
+5. **Right against sexual harassment:** under the **POSH Act, 2013** (based on the *Vishaka* guidelines, 1997), every workplace with **10 or more employees** must set up an **Internal Committee**.
+6. **Right to form unions** and bargain collectively (Article 19(1)(c); Industrial Relations Code).
+7. **Right against forced and child labour** (Articles 23 and 24).
+8. **Right to notice and compensation** for termination or retrenchment, and the right to raise a grievance or industrial dispute.
+9. **Right to privacy of personal data** (Article 21, Puttaswamy; DPDP Act, 2023).
+
+*(b) Employer responsibilities*
+
+1. Issue a clear **appointment letter or contract** of employment with the terms of service.
+2. **Pay wages on time**, with no illegal deductions, and **deposit statutory contributions** (PF, ESI) and taxes (TDS).
+3. Provide a **safe working environment**, training, and **compliance with health and safety** rules.
+4. Ensure **equal opportunity and a harassment-free workplace**: constitute the **POSH Internal Committee** and hold awareness programmes.
+5. Maintain **registers and records** (attendance, wages, leave) and file returns.
+6. **Respect working hours, leave and holidays**. Follow due process for **discipline and termination** (principles of natural justice).
+7. **Protect employee data** and confidential information.
+8. Provide **reasonable accommodation** for employees with disabilities.
+
+*(c) Workplace law for IT professionals*
+
+- **Employment contracts:** NDAs, non-compete clauses (post-employment non-competes are largely **unenforceable under Section 27** of the Contract Act), and **IP assignment** clauses.
+- **Shops and Establishments Acts** (State laws) apply to IT offices: working hours, holidays, women's night shifts with safety measures.
+- **IT Act Section 43A and the DPDP Act, 2023** govern employee and customer data handling.
+
+**4. Key Characteristics - Employee Rights vs. Employer Responsibilities**
+
+| Area | Employee Right | Employer Responsibility |
+|---|---|---|
+| Wages | Minimum, timely, equal pay | Pay on time; no illegal deductions |
+| Safety | Safe, healthy workplace | Provide safety measures and training |
+| Social security | PF, ESI, gratuity, maternity | Register and deposit contributions |
+| Dignity | Freedom from harassment and discrimination | Form an Internal Committee (POSH); equal-opportunity policy |
+| Hours and leave | Fixed hours, overtime, paid leave | Maintain records; follow limits |
+| Job security | Notice and compensation | Follow the legal process for termination |
+| Grievance | Raise disputes, form unions | Provide a grievance mechanism |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- **Protects workers** from exploitation, and ensures **dignity and fairness**.
+- **Industrial peace** and a productive, motivated workforce. The new Labour Codes **simplify compliance**.
+
+*Disadvantages*
+
+- **Weak enforcement** in the unorganised sector (more than 80% of workers).
+- **Compliance burden** for small businesses, and slow labour dispute resolution.
+
+**6. Conclusion / Application**
+
+Knowing workplace law helps engineers and managers **draft fair employment contracts, run safe workplaces and handle POSH and grievance cases** correctly.
+
+---
+
+### Q5. Explain the Information Technology Act, 2000. (7 Marks)
+
+**1. Introduction / Definition**
+
+The **Information Technology (IT) Act, 2000** is India's **primary law on electronic commerce and cybercrime**. It is based on the **UNCITRAL Model Law on Electronic Commerce (1996)**. It came into force on **17 October 2000** and was **substantially amended in 2008** (in force from 2009). It gives **legal recognition to electronic records and digital signatures**, supports **e-governance**, and defines **cyber offences and penalties**.
+
+**2. Diagram - Structure of the IT Act**
+
+```{.dot caption="Main components of the IT Act, 2000" width="98%"}
+digraph G { nodesep=0.15; ranksep=0.45; node [fontsize=11];
+  A [label="IT Act, 2000\n(amended 2008)", width=2.2];
+  a [label="Legal recognition\nof e-records &\ne-contracts\n(Sec 4, 10A)"]; b [label="Digital / electronic\nsignatures\n(Sec 3, 3A)"];
+  c [label="Certifying\nAuthorities &\nCCA\n(Sec 17-34)"]; d [label="Civil penalties\n(Sec 43, 43A)"];
+  e [label="Cyber offences\n(Sec 65-74)"]; f [label="Intermediary\nliability\n(Sec 79)"]; g [label="Adjudication &\nAppeals\n(Sec 46, 48)"];
+  A -> {a b c d e f g};
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) Objectives*
+
+1. Give **legal recognition** to **electronic records, e-contracts and digital signatures** (paperless transactions).
+2. Facilitate **e-governance**: electronic filing of documents with government agencies.
+3. **Prevent cybercrime** and lay down penalties and punishments.
+4. Amend the **IPC (now BNS), the Evidence Act, the Bankers' Books Evidence Act and the RBI Act** to recognise electronic evidence.
+
+*(b) Key provisions*
+
+- **Section 3:** authentication by a **digital signature** (asymmetric cryptosystem + hash function).
+- **Section 3A:** **electronic signatures** (technology-neutral, added in 2008).
+- **Section 4:** legal recognition of **electronic records**.
+- **Section 10A:** validity of **contracts formed electronically**.
+- **Sections 17 to 34:** the **Controller of Certifying Authorities (CCA)** licenses **Certifying Authorities** that issue Digital Signature Certificates.
+
+*(c) Civil contraventions (compensation)*
+
+- **Section 43:** unauthorised access, downloading, introducing viruses, damage or disruption to a computer system. The offender must pay **compensation** to the affected person.
+- **Section 43A:** a **body corporate** that fails to protect **sensitive personal data** must pay compensation.
+
+*(d) Cyber offences (criminal)*
+
+| Section | Offence | Punishment (maximum) |
+|---|---|---|
+| 65 | Tampering with computer source code | 3 years and/or Rs 2 lakh fine |
+| 66 | Computer-related offences (dishonest hacking under Section 43) | 3 years and/or Rs 5 lakh |
+| 66B | Receiving a stolen computer or device | 3 years and/or Rs 1 lakh |
+| 66C | **Identity theft** (passwords, electronic signatures) | 3 years + Rs 1 lakh |
+| 66D | **Cheating by personation** (phishing, online fraud) | 3 years + Rs 1 lakh |
+| 66E | **Violation of privacy** (capturing or publishing private images) | 3 years and/or Rs 2 lakh |
+| 66F | **Cyber terrorism** | **Life imprisonment** |
+| 67 / 67A / 67B | Publishing obscene / sexually explicit material / child sexual abuse material | 3 to 7 years + fine |
+| 72 | Breach of confidentiality and privacy by an authorised person | 2 years and/or Rs 1 lakh |
+
+- **Section 66A** (offensive messages) was **struck down** as unconstitutional in **Shreya Singhal v. Union of India (2015)**.
+
+*(e) Other provisions*
+
+- **Section 69 / 69A:** government powers to **intercept or decrypt** information and to **block** websites (for example the app bans in 2020).
+- **Section 70B:** **CERT-In** is the national agency for cyber-security incident response.
+- **Section 79:** **safe harbour** for **intermediaries** (ISPs, social media) if they observe due diligence. This is supported by the **IT (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021**.
+- **Adjudication:** an **Adjudicating Officer** (Section 46) handles compensation claims. Appeals go to the Appellate Tribunal (the Cyber Appellate Tribunal was merged into **TDSAT** in 2017), and then to the High Court.
+- **Section 1(4) and the First Schedule:** the Act does **not apply** to negotiable instruments (other than cheques), powers of attorney, trusts, wills or contracts for the sale of immovable property.
+
+**4. Key Characteristics - IT Act 2000 vs. IT (Amendment) Act 2008**
+
+| Basis | IT Act, 2000 | IT (Amendment) Act, 2008 |
+|---|---|---|
+| Signature | Digital signatures only (technology-specific) | **Electronic signatures** (technology-neutral) |
+| Data protection | None | **Section 43A** (body corporate liability), Section 72A |
+| New offences | Limited | Identity theft, phishing, privacy violation, cyber terrorism, child pornography (66B to 66F, 67A, 67B) |
+| Intermediaries | Limited protection | Section 79 safe harbour with due diligence |
+| CERT-In | Not mentioned | Statutory role (Section 70B) |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- Made **e-commerce, online banking and e-governance legally valid**.
+- Provides a **legal framework against cybercrime**, and recognises **electronic evidence**.
+
+*Disadvantages*
+
+- Many offences are **bailable**, with **low penalties** compared with the damage caused, and enforcement is weak.
+- It **does not cover** newer issues such as cryptocurrency, AI misuse and cross-border cybercrime well. Data protection has now moved to the **DPDP Act, 2023**.
+
+**6. Conclusion / Application**
+
+The IT Act underpins **Aadhaar-based e-sign, GST and income-tax e-filing, online banking, MCA21 company filings and action against phishing and identity theft** in India.
+
+---
+
+
+
+## Unit 4: Elections, Emergencies & Amendments
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) Differentiate between an Ordinary Bill and a Constitutional Amendment Bill.**
+
+| Basis | Ordinary Bill | Constitutional Amendment Bill |
+|---|---|---|
+| Governing articles | Articles 107 and 108 | **Article 368** |
+| Purpose | Makes or changes ordinary laws | **Amends the Constitution** |
+| Majority needed | **Simple majority** of members present and voting | **Special majority**: majority of the total membership **and** 2/3 of those present and voting, in **each House** |
+| Deadlock | **Joint sitting** possible (Article 108) | **No joint sitting**; each House must pass it separately |
+| State ratification | Not needed | Needed for **federal provisions** (half of the States) |
+| President | May give assent, withhold it, or return the bill once | **Must give assent** (24th Amendment, 1971) |
+| Prior recommendation of the President | Needed for some bills (for example money bills) | **Not needed** |
+
+**(b) Situations in which a National Emergency can be declared (Article 352)**
+
+- The President can proclaim a National Emergency if satisfied that the **security of India** or any part of it is threatened by:
+  1. **War**
+  2. **External aggression**
+  3. **Armed rebellion** (this replaced "internal disturbance" through the 44th Amendment, 1978)
+- It can be proclaimed **before the actual event**, if there is imminent danger. It needs the **written advice of the Union Cabinet**. It must be **approved by both Houses within one month by a special majority**, and lasts **6 months at a time** (it can be extended).
+- It has been declared **three times**: 1962 (China war), 1971 (Pakistan war) and 1975 ("internal disturbance").
+
+**(c) Types of amendments under Article 368**
+
+1. **By simple majority of Parliament:** these are technically **outside Article 368**. Examples: admission or formation of new States and changes to their boundaries (Articles 2 to 4), citizenship, the quorum of Parliament, and the Fifth and Sixth Schedules.
+2. **By special majority of Parliament:** most provisions, including the **Fundamental Rights and the DPSPs**.
+3. **By special majority of Parliament plus ratification by at least half of the State Legislatures** (by simple majority): **federal provisions**, such as the election of the President, the Supreme Court and High Courts, the distribution of legislative powers (the Seventh Schedule), the representation of States in Parliament, the GST Council, and Article 368 itself.
+
+---
+
+### Q2. Explain the composition, powers and functions of the Election Commission of India. (7 Marks)
+
+**1. Introduction / Definition**
+
+The **Election Commission of India (ECI)** is a **permanent, independent constitutional body** established under **Article 324** on **25 January 1950** (now celebrated as **National Voters' Day**). It is responsible for the **superintendence, direction and control** of elections to the **Parliament, the State Legislatures and the offices of the President and the Vice-President**. Elections to Panchayats and Municipalities are conducted by the **State Election Commissions** (Articles 243K and 243ZA).
+
+**2. Diagram**
+
+```{.dot caption="Structure of election machinery in India" width="82%"}
+digraph G { nodesep=0.3; ranksep=0.42; node [fontsize=11];
+  pr [label="President\n(appoints on the recommendation of a selection committee:\nPM, Leader of Opposition, a Union Minister - 2023 Act)", width=4.6];
+  eci [label="ELECTION COMMISSION OF INDIA\nChief Election Commissioner + 2 Election Commissioners", width=4.6, penwidth=2];
+  ceo [label="Chief Electoral Officer\n(each State / UT)"]; deo [label="District Election Officer\n(usually the Collector)"];
+  ro [label="Returning Officer\n(each constituency)"]; ero [label="Electoral Registration\nOfficer / BLOs"]; po [label="Presiding Officers\n(polling stations)"];
+  pr -> eci -> ceo -> deo; deo -> ro -> po; deo -> ero;
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) Composition*
+
+- **Article 324(2):** the Commission consists of a **Chief Election Commissioner (CEC)** and such number of **Election Commissioners (ECs)** as the President fixes.
+- It was a single-member body until 1989. It became **multi-member** in 1989, was reversed in 1990, and has been multi-member again since **1993**: **1 CEC + 2 ECs**. Decisions are taken **by majority**.
+- **Appointment:** by the **President**, on the recommendation of a **selection committee** made up of the **Prime Minister, the Leader of the Opposition in the Lok Sabha and a Union Cabinet Minister nominated by the PM**. This is laid down in the **CEC and Other ECs (Appointment, Conditions of Service and Term of Office) Act, 2023**.
+- **Term:** **6 years or until the age of 65**, whichever comes first.
+- **Removal:** the **CEC** can be removed only **in the same manner as a Supreme Court judge** (special majority in both Houses for proved misbehaviour or incapacity). The **ECs** can be removed **only on the recommendation of the CEC**.
+- **Service conditions cannot be changed to the CEC's disadvantage** after appointment.
+
+*(b) Powers and functions*
+
+1. **Administrative functions**
+   - **Prepares and updates the electoral rolls** and registers voters. Issues **EPIC (voter ID cards)**.
+   - **Announces the election schedule**: notification, nomination, scrutiny, withdrawal, polling and counting.
+   - **Delimitation:** decides the territorial areas of constituencies on the basis of the Delimitation Commission's orders.
+   - **Recognises political parties** (national and state) and **allots election symbols** (Election Symbols Order, 1968).
+   - Sets up polling stations, deploys staff and security forces, and supervises the use of **EVMs and VVPATs**.
+   - Fixes **limits on election expenditure** and appoints observers.
+2. **Regulatory functions**
+   - Enforces the **Model Code of Conduct (MCC)** from the announcement of the elections until the results.
+   - Issues guidelines on paid news, **opinion and exit polls**, social-media campaigning and criminal records of candidates.
+3. **Quasi-judicial functions**
+   - Settles **disputes about the recognition of parties and the allotment of symbols**.
+   - **Advises the President (Article 103)** and the **Governor (Article 192)** on the **disqualification** of MPs and MLAs. Its advice is **binding**.
+   - Can **cancel polls** in case of booth capturing or rigging, and order a re-poll.
+4. **Advisory functions**
+   - Advises on whether elections can be held during President's Rule. Suggests **electoral reforms** to the government.
+
+**4. Key Characteristics - ECI vs. State Election Commission**
+
+| Basis | Election Commission of India | State Election Commission |
+|---|---|---|
+| Constitutional basis | Article 324 | Articles 243K and 243ZA |
+| Conducts elections to | Parliament, State Legislatures, President, Vice-President | **Panchayats and Municipalities** |
+| Head appointed by | President | **Governor** |
+| Members | CEC + 2 ECs | State Election Commissioner (one person) |
+| Removal | Like a Supreme Court judge (the CEC) | Like a High Court judge |
+
+**5. Advantages & Disadvantages**
+
+*Advantages (strengths)*
+
+- **Independence safeguards** (security of tenure, fixed conditions of service) allow **free and fair elections** in the world's largest democracy.
+- **Technological innovation** (EVMs, VVPAT, the cVIGIL app) and strict enforcement of the MCC.
+
+*Limitations*
+
+- **No power to punish** violations of the MCC (it is not statutory), and **no power to deregister** parties.
+- The **2023 selection committee** has a **government majority**, which raises questions about independence. There is also no fixed staff of its own; it depends on borrowed government staff.
+
+**6. Conclusion / Application**
+
+The ECI has conducted **18 Lok Sabha elections** with nearly **97 crore registered voters** (2024), which makes it a global model for **electoral management**.
+
+---
+
+### Q3. Discuss the three types of emergencies, focusing on the grounds for President's Rule. (7 Marks)
+
+**1. Introduction / Definition**
+
+The **emergency provisions** in **Part XVIII (Articles 352 to 360)** allow the Union Government to **meet extraordinary situations** that threaten the **security, unity, integrity, constitutional order or financial stability** of the country. During an emergency, the Centre becomes very powerful and the federal structure turns **almost unitary**. The idea was borrowed from the **Weimar Constitution of Germany**. There are **three types**: **National Emergency (Article 352), State Emergency / President's Rule (Article 356) and Financial Emergency (Article 360)**.
+
+**2. Diagram**
+
+```{.dot caption="Three types of emergency" width="96%"}
+digraph G { nodesep=0.2; ranksep=0.45; node [fontsize=11];
+  E [label="Emergency Provisions\n(Part XVIII, Art. 352-360)", width=2.8];
+  n [label="NATIONAL\nEMERGENCY\nArt. 352\n\nWar, external aggression,\narmed rebellion\n\nApproval: 1 month,\nspecial majority\nDeclared: 1962, 1971, 1975"];
+  s [label="STATE EMERGENCY\n(PRESIDENT'S RULE)\nArt. 356 / 365\n\nFailure of constitutional\nmachinery in a State\n\nApproval: 2 months,\nsimple majority\nMax 3 years", penwidth=2];
+  f [label="FINANCIAL\nEMERGENCY\nArt. 360\n\nThreat to the financial\nstability or credit of India\n\nApproval: 2 months,\nsimple majority\nNever declared"];
+  E -> {n s f};
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) National Emergency (Article 352)*
+
+- **Grounds:** **war, external aggression or armed rebellion**. It is called "External Emergency" for the first two and "Internal Emergency" for armed rebellion.
+- **Procedure:** proclaimed by the President **only on the written recommendation of the Cabinet** (44th Amendment). It must be **approved by both Houses within 1 month** by a **special majority**. It continues for **6 months**, and can be extended indefinitely with approval every 6 months. It can be revoked if the Lok Sabha passes a resolution to that effect (by simple majority).
+- **Effects:**
+  - The **Centre can give directions** to States and **legislate on State subjects**.
+  - The term of the Lok Sabha can be **extended by 1 year at a time**.
+  - **Article 19 is suspended automatically** in the case of war or external aggression. Other FRs can be suspended under **Article 359**, **except Articles 20 and 21**.
+
+*(b) President's Rule (State Emergency, Articles 356 and 365)*
+
+- **Grounds:**
+  1. **Article 356:** the President, **on the report of the Governor or otherwise**, is satisfied that **the government of the State cannot be carried on in accordance with the provisions of the Constitution** (a failure of the constitutional machinery).
+  2. **Article 365:** the State **fails to comply with directions** given by the Union.
+- **Typical situations:**
+  - A **hung assembly** where no party can form a government.
+  - The **ruling party loses its majority** and no alternative is possible.
+  - A serious **breakdown of law and order**, or a government acting against the Constitution.
+  - **Elections cannot be held** (because of natural calamities or militancy).
+- **Situations that are NOT valid grounds** (Sarkaria Commission and the S.R. Bommai case):
+  - **Maladministration** alone.
+  - Corruption charges against ministers.
+  - A **government that has not had a floor test** to prove whether it has a majority.
+  - Internal party disputes.
+  - Using it for **political reasons** against a State ruled by an opposition party.
+- **Procedure:** it must be **approved by both Houses within 2 months** by a **simple majority**. It continues for **6 months at a time**, up to a **maximum of 3 years**. Beyond **1 year**, it needs (i) a **National Emergency in force** and (ii) **certification by the Election Commission** that elections cannot be held (44th Amendment).
+- **Effects:**
+  - The **President takes over the State's executive functions** (exercised through the Governor and advisers). The State Council of Ministers is **dismissed**.
+  - **Parliament makes laws for the State**. The State Assembly is **suspended or dissolved**.
+  - The **High Court's powers are not affected**.
+- **S.R. Bommai v. Union of India (1994):**
+  - The proclamation is subject to **judicial review**.
+  - **The floor of the Assembly is the only test of majority.**
+  - The Assembly should be **only suspended** until Parliament approves the proclamation.
+  - **Secularism is part of the basic structure**.
+- It was **first imposed in Punjab (1951)**, and has been imposed **more than 100 times**.
+
+*(c) Financial Emergency (Article 360)*
+
+- **Ground:** the **financial stability or credit of India** or any part of it is threatened.
+- **Approval** within **2 months** by a simple majority. It **continues indefinitely** until revoked.
+- **Effects:**
+  - The Centre can direct States to follow **financial propriety**.
+  - **Salaries of all government servants, including Supreme Court and High Court judges, can be reduced**.
+  - **Money bills of the States** can be reserved for the President.
+- It has **never been declared** (it was considered in the 1991 crisis).
+
+**4. Key Characteristics - Comparison of the Three Emergencies**
+
+| Basis | National (Article 352) | President's Rule (Article 356) | Financial (Article 360) |
+|---|---|---|---|
+| Ground | War, external aggression, armed rebellion | Failure of constitutional machinery in a State | Threat to financial stability or credit |
+| Approval period | **1 month** | **2 months** | **2 months** |
+| Majority needed | **Special** | Simple | Simple |
+| Maximum duration | No limit (6-month renewals) | **3 years** | No limit |
+| Effect on FRs | Can be suspended (not Articles 20 and 21) | No effect | No effect |
+| Effect on the State | Centre and State share power; the Centre dominates | **State executive and legislature taken over** | Financial control by the Centre |
+| Times used | 3 | 100+ | Never |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- They **protect the unity, integrity and security** of the nation in a crisis.
+- They **restore constitutional government** in a State and give **financial discipline** when needed.
+
+*Disadvantages*
+
+- **Misuse for political purposes**, especially of Article 356 against opposition-ruled States. Dr. Ambedkar hoped it would remain a "**dead letter**".
+- **Suspension of FRs** (as in the 1975 Emergency) can lead to authoritarianism. Safeguards were added by the **44th Amendment**.
+
+**6. Conclusion / Application**
+
+After the **44th Amendment (1978)** and the **S.R. Bommai judgment (1994)**, the use of emergency powers is now subject to **strong checks**, including the Cabinet's written advice, special majorities and judicial review.
+
+---
+
+
+
+## Unit 5: Business Organizations & E-Governance
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) What is a sole trader?**
+
+- A **sole trader (sole proprietorship)** is a business that is **owned, managed and controlled by one person**, who **takes all the profits and bears all the risks**.
+- **Features:**
+  - **Easy and cheap to form**, with few legal formalities (only licences such as GST or Shops Act registration).
+  - **Unlimited liability**: the owner's personal property can be used to pay business debts.
+  - **No separate legal entity**, so the business and the owner are the same.
+  - **No continuity**: the business ends with the owner's death or insolvency.
+  - Quick decisions and full secrecy.
+- *Examples:* a local kirana store, a freelance web developer, a small repair shop.
+
+**(b) What are the different types of shares a company can issue?**
+
+- Under **Section 43 of the Companies Act, 2013**, share capital is of **two kinds**:
+  1. **Equity shares:** the owners of the company. They have **voting rights** and receive **dividends only after the preference shareholders**. They bear the highest risk. They can be issued **with normal voting rights** or **with differential voting rights (DVR)**.
+  2. **Preference shares:** get a **preference in dividend** (at a fixed rate) and in **repayment of capital** on winding up. They usually have no voting rights. **Types:** cumulative / non-cumulative, participating / non-participating, convertible / non-convertible, and **redeemable** (companies cannot issue irredeemable preference shares, Section 55).
+- **Other special issues:**
+  - **Bonus shares** (Section 63): free shares from reserves.
+  - **Rights shares** (Section 62): offered first to existing shareholders.
+  - **Sweat equity shares** (Section 54): issued to employees or directors for their know-how.
+  - **ESOPs**: employee stock options.
+
+---
+
+### Q2. Explain the formation of a company under the Companies Act. (7 Marks)
+
+**1. Introduction / Definition**
+
+A **company** is an **artificial person created by law** (Section 2(20) of the **Companies Act, 2013**). It has a **separate legal entity**, **perpetual succession**, **limited liability** and a **common seal**. Its formation goes through **promotion, incorporation (registration) and commencement of business**. Today it is done **online through the MCA21 portal using the SPICe+ form**.
+
+**2. Diagram - Stages of Formation**
+
+```{.dot caption="Stages in the formation of a company" width="70%"}
+digraph G { node [width=4.2, fontsize=11];
+  p [label="1. PROMOTION\nidea, feasibility study, promoters arrange\ncapital, people, MOA/AOA drafts"];
+  d [label="2. DSC + DIN for proposed directors\n(Digital Signature Certificate, Director Identification Number)"];
+  n [label="3. NAME RESERVATION\nSPICe+ Part A (RUN) - name approval by ROC"];
+  f [label="4. FILE INCORPORATION (SPICe+ Part B)\nMOA, AOA, declarations (INC-8, INC-9),\nproof of office, PAN/TAN, EPFO, ESIC, GSTIN"];
+  c [label="5. CERTIFICATE OF INCORPORATION (Sec 7)\nwith CIN, issued by the Registrar of Companies", penwidth=2];
+  b [label="6. COMMENCEMENT OF BUSINESS (Sec 10A)\nfile INC-20A within 180 days\n(declaration that subscription money is received)"];
+  p -> d -> n -> f -> c -> b;
+}
+```
+
+**3. Core Explanation / Working**
+
+*Stage 1: Promotion*
+
+- **Promoters** (Section 2(69)) find the business opportunity, do the **feasibility study**, arrange the finance and people, choose the **type of company** and a name, and prepare the documents.
+- **Types of company:**
+  - **Private company:** minimum **2 members and 2 directors**, at most 200 members.
+  - **Public company:** minimum **7 members and 3 directors**.
+  - **One Person Company (OPC):** **1 member and 1 director**.
+
+*Stage 2: Incorporation (registration)*
+
+1. **Obtain a DSC** (Digital Signature Certificate) for the proposed directors and subscribers, because all filings are signed electronically.
+2. **Director Identification Number (DIN)**, applied for within the SPICe+ form.
+3. **Name reservation** through **SPICe+ Part A / RUN**. The name must not be identical or undesirable (Section 4).
+4. **Prepare the charter documents:**
+   - **Memorandum of Association (MOA, Section 4):** the **charter** of the company. It has the name, registered office, **objects**, liability, capital and subscription clauses. The company **cannot act beyond it** (*ultra vires*).
+   - **Articles of Association (AOA, Section 5):** the **internal rules** for management (meetings, directors' powers, transfer of shares).
+5. **File SPICe+ Part B** with the Registrar of Companies (ROC), together with the **e-MOA (INC-33), e-AOA (INC-34)**, the **declaration of compliance (INC-8)**, the **declarations by subscribers and directors (INC-9)**, proof of the registered office, identity proofs and the fees and stamp duty. The **PAN, TAN, EPFO, ESIC, GSTIN and bank account** are obtained through the same integrated form.
+6. **Certificate of Incorporation (Section 7):** the ROC issues it with a **Corporate Identity Number (CIN)**. **From this date the company is a legal person.** The certificate is **conclusive evidence** of incorporation.
+
+*Stage 3: Commencement of business*
+
+- Under **Section 10A** (introduced in 2019), a company with share capital must file **INC-20A** **within 180 days** of incorporation, declaring that every subscriber has **paid for their shares**.
+- It must verify its **registered office** (INC-22) within 30 days.
+- A **public company** raising money from the public issues a **prospectus** and follows SEBI rules.
+
+**4. Key Characteristics - Private vs. Public vs. One Person Company**
+
+| Basis | Private Company | Public Company | One Person Company |
+|---|---|---|---|
+| Minimum members | 2 | 7 | 1 |
+| Maximum members | 200 | No limit | 1 |
+| Minimum directors | 2 | 3 | 1 |
+| Name ends with | "Private Limited" | "Limited" | "(OPC) Private Limited" |
+| Share transfer | Restricted | Freely transferable | Restricted |
+| Raising funds from the public | Not allowed | Allowed (IPO) | Not allowed |
+| Prospectus | Not required | Required (for a public issue) | Not required |
+
+**5. Advantages & Disadvantages**
+
+*Advantages (of the company form)*
+
+- **Limited liability** for members, a **separate legal entity** and **perpetual succession**.
+- It is easy to **raise large capital** and to **transfer shares** (in public companies). Online SPICe+ makes incorporation quick (often within days).
+
+*Disadvantages*
+
+- **Many legal formalities**, compliance costs and annual filings (AOC-4, MGT-7), and audit requirements.
+- **Less secrecy** (public disclosures), and separation of ownership from management can cause conflicts.
+
+**6. Conclusion / Application**
+
+Most IT start-ups in India register as **private limited companies** through SPICe+ to get **limited liability, investor funding (equity, ESOPs) and DPIIT start-up recognition**.
+
+---
+
+### Q3. Discuss the role of IT professionals and engineers in e-governance and the judiciary. (7 Marks)
+
+**1. Introduction / Definition**
+
+**E-governance** is the **use of Information and Communication Technology (ICT) to deliver government services, exchange information and integrate systems** between government and citizens (G2C), businesses (G2B), employees (G2E) and other governments (G2G). **IT professionals and engineers** design, build, secure and maintain these systems, including the digital systems of the **judiciary (e-Courts)**.
+
+**2. Diagram**
+
+```{.dot caption="IT professionals at the centre of e-governance and e-judiciary" width="95%"}
+digraph G { nodesep=0.2; ranksep=0.5; node [fontsize=11];
+  IT [label="IT PROFESSIONALS\n& ENGINEERS", width=2.4, penwidth=2];
+  subgraph cluster_g { label="E-GOVERNANCE (Digital India)"; style=dashed;
+    g1 [label="Aadhaar, UPI,\nDigiLocker"]; g2 [label="UMANG, GeM,\ne-Office"]; g3 [label="GSTN, Income-tax\ne-filing, MCA21"]; }
+  subgraph cluster_j { label="E-JUDICIARY (e-Courts Mission)"; style=dashed;
+    j1 [label="e-Filing &\ne-Payment"]; j2 [label="Virtual hearings\n& live streaming"]; j3 [label="NJDG, CIS,\nAI tools (SUVAS)"]; }
+  IT -> {g1 g2 g3}; IT -> {j1 j2 j3};
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) Role in e-governance*
+
+1. **System design and development:** build scalable portals and apps such as **UMANG, DigiLocker, GeM (procurement), CoWIN, e-Hospital and Passport Seva**.
+2. **Digital public infrastructure:**
+   - Design and run **Aadhaar** (digital identity), **UPI** (payments), **e-KYC and e-Sign**.
+   - Run the **India Stack** APIs.
+3. **Cybersecurity:**
+   - Protect citizens' data with encryption, **PKI and digital signatures**.
+   - Carry out **security audits**, and handle incidents with **CERT-In**. Follow the **IT Act and the DPDP Act, 2023**.
+4. **Data analytics and AI:**
+   - Use government data for **policy-making** (open data portals, dashboards), fraud detection in subsidy schemes (DBT), and smart-city analytics.
+5. **Networking and cloud:** set up **NIC networks, State Data Centres, the State Wide Area Network (SWAN), MeghRaj (GI cloud)** and BharatNet for rural connectivity.
+6. **Accessibility and inclusion:** multilingual, mobile-first, accessible interfaces (Bhashini for Indian languages). Bridge the **digital divide** through Common Service Centres.
+7. **Interoperability and standards:** open APIs, e-governance standards, and integration between departments.
+
+*(b) Role in the judiciary (e-Courts)*
+
+1. **e-Courts Mission Mode Project** (Phases I to III, by the Supreme Court e-Committee and the Department of Justice):
+   - **Computerise all the courts**: the **Case Information System (CIS)** and the **National Judicial Data Grid (NJDG)**, which shows the pendency of cases in real time.
+2. **e-Filing and e-payment** of court fees. **Electronic summons** (NSTEP).
+3. **Virtual courts and video-conferencing hearings**, used widely during COVID-19. **Live streaming** of Constitution Bench hearings.
+4. **AI tools:**
+   - **SUVAS**, which translates judgments into regional languages.
+   - **SUPACE**, which assists judges with research.
+5. **Digitisation of records**, e-Sewa Kendras at court complexes, and **ICJS** (Interoperable Criminal Justice System), which links police, courts, prisons and forensics.
+6. **Cyber forensics and expert evidence:** engineers help with **electronic evidence** (Section 63 of the BSA, 2023, formerly Section 65B of the Evidence Act), digital forensics, and investigations of cybercrime.
+
+*(c) Ethical and legal responsibilities*
+
+- **Privacy by design**, data minimisation, secure coding, and transparency of algorithms (no bias).
+- Follow the IT Act, the DPDP Act and the CERT-In guidelines. Maintain integrity and avoid conflicts of interest in public projects.
+
+**4. Key Characteristics - Traditional Governance vs. E-Governance**
+
+| Basis | Traditional Governance | E-Governance |
+|---|---|---|
+| Service delivery | Physical offices, paperwork | **Online, 24 × 7**, anywhere |
+| Speed | Slow, many visits | **Fast**, real-time tracking |
+| Transparency | Low (scope for corruption) | **High** (audit trails, dashboards) |
+| Cost | High for citizens and government | Lower |
+| Records | Paper files | Digital, searchable databases |
+| Courts | Physical filing and hearings | e-Filing, virtual hearings, NJDG |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- **Transparency, efficiency and less corruption**, and faster delivery of services and justice.
+- **Citizen empowerment** through easy access to information and services.
+
+*Disadvantages / challenges*
+
+- The **digital divide** (rural areas, low digital literacy) and language barriers.
+- **Cybersecurity threats and privacy risks**, and the high initial cost and maintenance of the systems.
+
+**6. Conclusion / Application**
+
+Through projects like **Digital India, Aadhaar, UPI and e-Courts**, IT professionals and engineers have become key builders of **transparent, citizen-centric governance and accessible justice**.
+
+---
+
+### Q4. Discuss Digital Signature Certificates and cyber regulations. (7 Marks)
+
+**1. Introduction / Definition**
+
+A **digital signature** is an **electronic method of authenticating** a document or message using **asymmetric (public-key) cryptography and a hash function**. It is legally recognised under **Section 3 of the IT Act, 2000**. A **Digital Signature Certificate (DSC)** is the **electronic credential** that binds a person's **identity to their public key**. It is issued by a **Certifying Authority (CA)** licensed by the **Controller of Certifying Authorities (CCA)**. **Cyber regulations** are the laws and rules that govern online activity, data and cybercrime.
+
+**2. Diagram - Creating and Verifying a Digital Signature**
+
+```{.dot caption="Digital signature process (sender signs with the private key, receiver verifies with the public key)" width="98%"}
+digraph G { rankdir=LR; nodesep=0.3; ranksep=0.45; node [fontsize=11];
+  subgraph cluster_s { label="SENDER (signing)"; style=dashed;
+    m [label="Message /\nDocument"]; h1 [label="Hash function\n(SHA-256)"]; d1 [label="Message\ndigest"]; e [label="Encrypt with\nSENDER's PRIVATE key"]; sg [label="Digital\nsignature", penwidth=2];
+    m -> h1 -> d1 -> e -> sg; }
+  subgraph cluster_r { label="RECEIVER (verification)"; style=dashed;
+    h2 [label="Hash the\nreceived message"]; d2 [label="Digest A"]; dc [label="Decrypt signature with\nSENDER's PUBLIC key\n(from DSC)"]; d3 [label="Digest B"]; cmp [label="A = B ?\nvalid & unaltered", shape=diamond];
+    h2 -> d2 -> cmp; dc -> d3 -> cmp; }
+  m -> h2 [label=" message sent", style=dashed]; sg -> dc [label=" signature sent", style=dashed];
+}
+```
+
+**3. Core Explanation / Working**
+
+*(a) How a digital signature works*
+
+1. The sender passes the document through a **hash function** to get a fixed-length **message digest**.
+2. The digest is **encrypted with the sender's private key**. The result is the **digital signature**.
+3. The document, the signature and the **DSC (which contains the public key)** are sent to the receiver.
+4. The receiver **decrypts the signature with the sender's public key** and **hashes the received document again**.
+5. **If the two digests match**, the signature is **valid**. This proves:
+   - **Authenticity:** who signed it.
+   - **Integrity:** the document has not been changed.
+   - **Non-repudiation:** the signer cannot deny signing it.
+
+*(b) Digital Signature Certificate (DSC)*
+
+- **Contents:** the owner's name, **public key**, serial number, **validity period**, issuing CA's name, and the **CA's own digital signature**. It follows the **X.509** standard.
+- **Issued by:** licensed **Certifying Authorities** (for example eMudhra, Sify, (n)Code, Capricorn) under the **CCA** (Sections 17 to 34 of the IT Act).
+- **Classes (current):**
+  - **Class 3:** for individuals and organisations, used for e-tendering, MCA, GST and income-tax filings. Class 2 was discontinued in 2021.
+  - **DGFT DSC:** for import and export filings.
+- **Types:** **signing**, **encryption**, and **combined** (sign + encrypt).
+- **Validity:** usually **1 to 3 years**. It is stored on a **FIPS-certified USB crypto token**. **Aadhaar e-Sign** is an online alternative.
+- **Uses:** company filings (MCA21), **income-tax and GST returns**, e-tenders (GeM, CPP portal), e-court filings, signing PDFs and contracts.
+- **Legal points:**
+  - **Section 5:** digital signatures are legally equal to handwritten ones.
+  - **Section 73:** publishing a false DSC is an offence.
+  - **Section 71:** misrepresentation to obtain a DSC is punishable.
+  - **Section 38:** a CA can **revoke or suspend** a DSC.
+
+*(c) Cyber regulations in India*
+
+1. **IT Act, 2000 (amended 2008):** e-records, signatures, cyber offences (Sections 43, 65 to 67, 72).
+2. **IT (Reasonable Security Practices and Sensitive Personal Data) Rules, 2011:** data protection by bodies corporate (Section 43A).
+3. **IT (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021:** due diligence, grievance officers and the traceability rule for social media and OTT platforms.
+4. **CERT-In Directions, 2022:** **cyber incidents must be reported within 6 hours**, and logs must be kept for 180 days.
+5. **Digital Personal Data Protection (DPDP) Act, 2023:** consent-based processing, the rights of data principals, the duties of data fiduciaries, and the **Data Protection Board**. Penalties go **up to Rs 250 crore**.
+6. **Bharatiya Nyaya Sanhita, 2023** (replaced the IPC): covers cheating, forgery, defamation and organised cybercrime. The **Bharatiya Sakshya Adhiniyam, 2023** covers electronic evidence.
+7. **National Cyber Security Policy, 2013**, and sector regulators such as **RBI** (digital payment security), **SEBI** and **IRDAI**.
+
+**4. Key Characteristics - Digital Signature vs. Electronic Signature vs. Handwritten Signature**
+
+| Basis | Handwritten | Electronic Signature (Section 3A) | Digital Signature (Section 3) |
+|---|---|---|---|
+| Technology | Ink on paper | Any reliable technique (OTP, e-Sign, biometrics) | **PKI**: asymmetric crypto + hash |
+| Certificate | None | May use an Aadhaar-based e-Sign certificate | **DSC from a licensed CA** |
+| Integrity check | No | Depends on the method | **Yes** (any change breaks the signature) |
+| Forgery resistance | Low | Medium | **Very high** |
+| Legal validity | Yes | Yes (if reliable and listed in Schedule II) | **Yes** (Section 5) |
+| Example use | Paper contracts | Aadhaar e-Sign on loan papers | MCA, GST, e-tender filings |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+
+- Gives **authenticity, integrity and non-repudiation**, so **paperless, secure transactions** become possible.
+- Saves **time and cost**, works anywhere, and is **legally valid**. Cyber laws protect users and their data.
+
+*Disadvantages*
+
+- **Loss or theft of the token** or private key, the cost of the DSC, and the need for renewal.
+- Cyber laws face **enforcement gaps**, **cross-border jurisdiction** problems and fast-changing threats.
+
+**6. Conclusion / Application**
+
+DSCs are **mandatory for company filings on MCA21, GST and income-tax e-filing, and e-procurement**, while cyber regulations like the **IT Act and the DPDP Act** keep India's digital ecosystem secure.
 
 ---
 
