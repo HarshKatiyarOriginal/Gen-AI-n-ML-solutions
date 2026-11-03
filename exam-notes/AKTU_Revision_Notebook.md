@@ -3148,3 +3148,766 @@ public class TCPClient {
 TCP client sockets are the basis of **web browsers, chat applications, FTP clients and database drivers (JDBC)**, which all open a socket to talk to their servers.
 
 ---
+
+## Unit 4: Java Beans & Enterprise Java Beans (EJB)
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) What exactly is a Java Bean?**
+- A **Java Bean** is a **reusable software component** written in Java that can be **visually manipulated in builder tools** (such as NetBeans). It follows the JavaBeans API conventions.
+- **Rules (conventions) a class must follow:**
+  1. It must have a **public no-argument constructor**.
+  2. Its properties must be **private**, accessed through public **getter/setter** methods (`getName()`, `setName()`, and `isActive()` for booleans).
+  3. It should implement **`java.io.Serializable`**, so its state can be saved and restored.
+
+```java
+public class Student implements java.io.Serializable {
+    private String name;
+    public Student() { }                          // no-arg constructor
+    public String getName() { return name; }      // getter
+    public void setName(String n) { name = n; }   // setter
+}
+```
+
+**(b) What is the role of introspection in a Java Bean?**
+- **Introspection** is the process by which a builder tool **automatically discovers a bean's properties, methods and events at run time**, without seeing its source code.
+- It is done with the **`java.beans.Introspector`** class, which uses **Java Reflection** and the **naming conventions** (get/set/is), or an explicit **`BeanInfo`** class supplied by the developer.
+- Role: it lets IDEs **show and edit bean properties visually** and **connect events**, which makes beans truly reusable "plug-and-play" components.
+  `BeanInfo info = Introspector.getBeanInfo(Student.class);`
+
+---
+
+### Q2. Explain the complete EJB Architecture. (7 Marks)
+
+**1. Introduction / Definition**
+
+**Enterprise JavaBeans (EJB)** is a **server-side, component-based architecture** (part of Jakarta EE / Java EE) for building **distributed, transactional, secure and scalable** business applications. Business logic is written in **enterprise beans**, and these run inside an **EJB container**. The container automatically provides system-level services like transactions, security and persistence.
+
+**2. Block Diagram - EJB Architecture**
+
+```
+  +-----------------+        +-------------------------------------------------+
+  |    CLIENTS      |        |              EJB SERVER (App Server)            |
+  |                 |        |      e.g. GlassFish, WildFly, WebLogic          |
+  | +-------------+ |  RMI/  |  +-------------------------------------------+  |
+  | | Web Client  | |  IIOP  |  |               EJB CONTAINER               |  |
+  | |(Servlet/JSP)| +------->|  |                                           |  |
+  | +-------------+ |  JNDI  |  |  +---------------+   +-----------------+  |  |
+  | +-------------+ | lookup |  |  | Remote/Local  |-->|  Session Bean   |  |  |
+  | | Java App    | +------->|  |  |  Interface    |   | (Business logic)|  |  |
+  | | Client      | |        |  |  +---------------+   +-----------------+  |  |
+  | +-------------+ |        |  |                      +-----------------+  |  |
+  | +-------------+ |  JMS   |  |  JMS Queue/Topic --->| Message-Driven  |  |  |
+  | | Messaging   | +------->|  |                      | Bean (MDB)      |  |  |
+  | | Client      | |        |  |                      +-----------------+  |  |
+  | +-------------+ |        |  |                      +-----------------+  |  |
+  +-----------------+        |  |                      | Entity (JPA)    |  |  |
+                             |  |                      +--------+--------+  |  |
+                             |  |  Container Services:          |           |  |
+                             |  |  Transactions (JTA) |Security |           |  |
+                             |  |  Life cycle |Pooling|JNDI|    |           |  |
+                             |  |  Concurrency | Persistence    |           |  |
+                             |  +-------------------------------+-----------+  |
+                             +----------------------------------+--------------+
+                                                                |  JDBC
+                                                       +--------v--------+
+                                                       |    DATABASE     |
+                                                       +-----------------+
+```
+
+**3. Core Explanation / Working**
+
+*(a) Components of the EJB Architecture*
+- **EJB Server:** the application server that provides the **run-time environment** and hosts one or more containers. Examples: GlassFish, JBoss/WildFly, WebLogic.
+- **EJB Container:** a layer inside the server that **manages enterprise beans**. The client never talks to the bean directly. Every call goes **through the container**, which adds its services.
+- **Enterprise Beans:** the components that hold the **business logic**.
+  - **Session Beans:** do tasks for a client (stateless, stateful, singleton).
+  - **Message-Driven Beans (MDB):** process **asynchronous JMS messages**.
+  - **Entity Beans:** represent persistent data. In EJB 3.x they are replaced by **JPA entities**.
+- **Interfaces:**
+  - **Remote interface (`@Remote`):** for clients in **another JVM**, using RMI-IIOP.
+  - **Local interface (`@Local`):** for clients in the **same JVM**, which is faster.
+  - **Home interface** (EJB 2.x): a factory for creating and finding beans. It is no longer needed in EJB 3.x.
+- **Deployment Descriptor (`ejb-jar.xml`) or annotations:** configure transactions, security and resources.
+- **JNDI (Java Naming and Directory Interface):** clients **look up** beans by name.
+
+*(b) Services Provided by the Container*
+- **Transaction management (JTA):** automatic commit/rollback (`@TransactionAttribute`).
+- **Security:** role-based access control (`@RolesAllowed`).
+- **Life-cycle management and instance pooling:** creates, pools and destroys beans.
+- **Concurrency control:** thread safety.
+- **Persistence:** through JPA.
+- **Remote access and location transparency.**
+
+*(c) Working (request flow)*
+1. The client **looks up** the bean through **JNDI**, or gets it through `@EJB` injection.
+2. The container returns a **proxy (stub)** that implements the business interface.
+3. The client calls a business method on the proxy.
+4. The container **intercepts** the call, starts a transaction, checks security and gets a bean instance from the **pool**.
+5. The bean runs the logic (and may use the database through JPA/JDBC).
+6. The container **commits** the transaction and returns the result to the client.
+
+*(d) Example (EJB 3.x)*
+
+```java
+@Stateless
+public class BankBean implements BankRemote {
+    public double getBalance(int accNo) { /* business logic */ return 5000.0; }
+}
+
+@Remote
+public interface BankRemote { double getBalance(int accNo); }
+```
+
+**4. Key Characteristics - Types of Enterprise Beans**
+
+| Basis | Session Bean | Message-Driven Bean | Entity (JPA) |
+|---|---|---|---|
+| Purpose | Business logic / tasks | Asynchronous message processing | Persistent data |
+| Invocation | Synchronous (method call) | Asynchronous (JMS message) | Through EntityManager |
+| Client state | Stateful or stateless | Stateless | Represents a DB row |
+| Annotation | `@Stateless`, `@Stateful`, `@Singleton` | `@MessageDriven` | `@Entity` |
+| Survives server crash | No | No | **Yes** (stored in DB) |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+- The developer writes **only business logic**. The container handles transactions, security and pooling.
+- **Scalable and distributed**: beans can be accessed remotely and clustered.
+- **Portable** across any Java EE-compliant application server.
+
+*Disadvantages*
+- Needs a **heavyweight application server**, which uses more resources.
+- **Complex** compared with lightweight frameworks like Spring Boot, with a steeper learning curve.
+- Remote calls add **network overhead**.
+
+**6. Conclusion / Application**
+
+EJB is used in **banking, insurance, airline reservation and large enterprise ERP systems**, which need distributed transactions and high security.
+
+---
+
+### Q3. Differentiate between a Java Bean and an Enterprise Java Bean (EJB). (7 Marks)
+
+**1. Introduction / Definition**
+
+A **Java Bean** is a simple, **client-side or general-purpose reusable component** that follows naming conventions and is used mainly in builder tools and for data transfer. An **Enterprise Java Bean (EJB)** is a **server-side, distributed business component** that runs inside an **EJB container**, which provides transaction, security and life-cycle services.
+
+**2. Block Diagram - Where Each Runs**
+
+```
+   JAVA BEAN                                ENTERPRISE JAVA BEAN
+   +------------------------------+         +----------------------------------+
+   |  Any JVM (Desktop / Web app) |         |   Application Server (JVM)       |
+   |  +------------------------+  |         |  +----------------------------+  |
+   |  |  Student Bean          |  |         |  |       EJB CONTAINER        |  |
+   |  |  - private fields      |  |         |  |  +----------------------+  |  |
+   |  |  - get/set methods     |  |         |  |  | BankBean (@Stateless)|  |  |
+   |  |  - no-arg constructor  |  |         |  |  +----------------------+  |  |
+   |  |  - Serializable        |  |         |  |  Transactions | Security   |  |
+   |  +------------------------+  |         |  |  Pooling | JNDI | Remote   |  |
+   |   Used directly with `new`   |         |  +----------------------------+  |
+   +------------------------------+         +---------------^------------------+
+                                                            | RMI-IIOP / JNDI
+                                                    +-------+--------+
+                                                    | Remote Clients |
+                                                    +----------------+
+```
+
+**3. Core Explanation / Working**
+
+*Java Bean*
+- A **plain Java class** that follows conventions: a no-arg constructor, private properties with getters/setters, and `Serializable`.
+- Created directly with `new`, or with `<jsp:useBean>` in JSP.
+- Used for **GUI components (Swing/AWT)**, **data holders (DTOs)** and **JSP form beans**.
+- Supports **properties, events, introspection, customization and persistence**.
+
+*Enterprise Java Bean*
+- A **managed component**. It is **never created with `new`** by the client. The **container** creates, pools and destroys it.
+- It is accessed through **business interfaces** (local or remote) using **JNDI lookup** or `@EJB` injection.
+- Types: **Session beans** (stateless, stateful, singleton) and **Message-Driven beans**.
+- Gets **declarative services**: transactions, security, concurrency and remoting.
+
+**4. Key Characteristics - Comparison Table**
+
+| Basis | Java Bean | Enterprise Java Bean (EJB) |
+|---|---|---|
+| Nature | Simple reusable component | Distributed **server-side** business component |
+| Runs in | Any JVM (no container needed) | Only inside an **EJB container** (application server) |
+| Created by | Programmer (`new`) or builder tool | **Container** |
+| API / package | `java.beans` | `javax.ejb` / `jakarta.ejb` |
+| Interfaces needed | None | Business interface (`@Local` / `@Remote`) |
+| Remote access | Not supported | Supported (RMI-IIOP) |
+| Transactions and security | Must be coded manually | **Provided by the container** (declarative) |
+| Persistence | Through serialization | Through JPA / database |
+| Visual (GUI) use | Yes (builder tools) | No visual representation |
+| Examples | Swing button, Student DTO | Banking service bean, order-processing bean |
+| Complexity | Low | High |
+
+**5. Advantages & Disadvantages**
+
+*Java Bean*
+- *Advantages:* **simple and lightweight**; reusable in any Java application; easy to use in JSP and IDEs.
+- *Disadvantages:* **no built-in enterprise services** (transactions, security); cannot be called remotely.
+
+*EJB*
+- *Advantages:* **container-managed services**; supports **distributed and scalable** applications.
+- *Disadvantages:* needs a **heavy application server**; **more complex** to develop and deploy.
+
+**6. Conclusion / Application**
+
+Java Beans are used as **data and UI components in desktop and JSP applications**, while EJBs implement **core business services in enterprise banking and e-commerce back ends**.
+
+---
+
+### Q4. Explain session beans and detail their various types (Stateful vs. Stateless). (7 Marks)
+
+**1. Introduction / Definition**
+
+A **session bean** is an enterprise bean that **performs business tasks for a client** during a session, such as calculations, bank transfers or order processing. It is **not persistent**: it does not represent data in the database and it is lost when the server shuts down. There are three types: **Stateless, Stateful and Singleton**.
+
+**2. Block Diagram - Session Bean Types**
+
+```
+   STATELESS (@Stateless)              STATEFUL (@Stateful)             SINGLETON (@Singleton)
+   +-----------------------+           +----------------------+         +----------------------+
+   |   Instance POOL       |           | Client A -> Bean A   |         | Client A --+         |
+   | +----+ +----+ +----+  |           |   (cart: 3 items)    |         | Client B --+--> ONE  |
+   | | B1 | | B2 | | B3 |  |           | Client B -> Bean B   |         | Client C --+   Bean  |
+   | +----+ +----+ +----+  |           |   (cart: 1 item)     |         |  (shared state,      |
+   |   ^      ^      ^     |           |                      |         |   one per app)       |
+   +---+------+------+-----+           | One bean per client, |         +----------------------+
+       |      |      |                 | keeps conversational |
+    Any client gets any free           | state across calls   |
+    instance; no state kept            +----------------------+
+    between calls
+```
+
+*Life cycle of a Stateful Session Bean*
+
+```
+                     @PostConstruct
+ +----------------+ -----------------> +---------+   @PrePassivate    +-----------+
+ | Does Not Exist |                    |  READY  | -----------------> |  PASSIVE  |
+ +----------------+ <----------------- +---------+ <----------------- | (on disk) |
+                  @Remove / @PreDestroy                @PostActivate  +-----------+
+
+ Stateless bean: only "Does Not Exist" <-> "Ready (pooled)"; there is no Passive state.
+```
+
+**3. Core Explanation / Working**
+
+*(a) Stateless Session Bean (`@Stateless`)*
+- Keeps **no conversational state** for the client between method calls.
+- Any free instance from the **pool** can serve any client, so instances are **shared**.
+- **Highly scalable**, because a few instances serve thousands of clients.
+- Life cycle: Does Not Exist, then Method-Ready Pool. Callbacks: `@PostConstruct`, `@PreDestroy`.
+- Example: currency converter, tax calculator, sending email.
+
+```java
+@Stateless
+public class CalculatorBean {
+    public int add(int a, int b) { return a + b; }
+}
+```
+
+*(b) Stateful Session Bean (`@Stateful`)*
+- Keeps **conversational state** for **one specific client** across many method calls.
+- There is **one instance per client**, and the instances are not shared.
+- If the bean is idle, the container can **passivate** it (save its state to disk) and **activate** it later.
+- It ends when the client calls a method marked `@Remove`, or after a timeout.
+- Callbacks: `@PostConstruct`, `@PrePassivate`, `@PostActivate`, `@PreDestroy`.
+- Example: **shopping cart**, online exam session, multi-step booking.
+
+```java
+@Stateful
+public class CartBean {
+    private List<String> items = new ArrayList<>();
+    public void addItem(String item) { items.add(item); }
+    public List<String> getItems() { return items; }
+    @Remove
+    public void checkout() { /* place order, bean is removed */ }
+}
+```
+
+*(c) Singleton Session Bean (`@Singleton`)* (EJB 3.1)
+- **Only one instance per application**, shared by all clients.
+- Used for **shared application state**: cache, configuration, counters.
+- Concurrency is controlled with `@Lock(READ)` and `@Lock(WRITE)`. With `@Startup` it is created when the application starts.
+
+**4. Key Characteristics - Stateful vs. Stateless**
+
+| Basis | Stateless Session Bean | Stateful Session Bean |
+|---|---|---|
+| Conversational state | **Not kept** between calls | **Kept** for one client |
+| Instance-to-client | Shared from a pool | **One instance per client** |
+| Scalability | **Very high** | Lower (more memory) |
+| Passivation / activation | Not needed | Supported |
+| Life-cycle states | Does Not Exist, Ready | Does Not Exist, Ready, **Passive** |
+| Annotation | `@Stateless` | `@Stateful` (+ `@Remove`) |
+| Performance | Faster | Slower |
+| Example | Tax calculator, email sender | Shopping cart, booking wizard |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+- Business logic is **separated** from the presentation layer.
+- The container provides **transactions, security and pooling** automatically.
+- **Stateless beans scale** very well. **Stateful beans make multi-step workflows simple**.
+
+*Disadvantages*
+- Stateful beans use **more memory** and passivation adds **I/O overhead**.
+- Session beans are **not persistent**, so their data is lost on a crash unless it is saved to a database.
+
+**6. Conclusion / Application**
+
+Stateless beans implement **payment and calculation services**, while stateful beans implement **shopping carts on e-commerce sites and step-by-step ticket booking** in reservation systems.
+
+---
+
+## Unit 5: Modern Backend (Servlets, JSP, Node.js & MongoDB)
+
+### Q1. Short Definitions (2 Marks Each)
+
+**(a) What is Node.js and what is its primary use case?**
+- **Node.js** is an **open-source, cross-platform JavaScript run-time environment** built on Google Chrome's **V8 engine**. It lets JavaScript run **on the server**, outside the browser. It uses a **single-threaded, event-driven, non-blocking I/O** model.
+- **Primary use case:** building **fast, scalable network applications that handle many requests at once and spend most of their time on I/O**, such as **REST APIs, real-time chat apps (Socket.io), streaming services and microservices**.
+
+**(b) What is the purpose of the `HttpServletRequest` interface?**
+- `javax.servlet.http.HttpServletRequest` (it extends `ServletRequest`) **represents the client's HTTP request**. The servlet container creates it and passes it to the servlet's `service()` / `doGet()` / `doPost()` methods.
+- **Purpose:** it lets the servlet **read everything the client sent**:
+  - Form parameters: `getParameter("name")`, `getParameterValues()`
+  - Headers: `getHeader("User-Agent")`
+  - Cookies and session: `getCookies()`, `getSession()`
+  - Request information: `getMethod()`, `getRequestURI()`, `getRemoteAddr()`
+  - Request attributes for forwarding: `setAttribute()`, `getAttribute()`
+
+---
+
+### Q2. Discuss the compilation process of JSP files into Servlets and how they are executed by the container. (7 Marks)
+
+**1. Introduction / Definition**
+
+**JSP (JavaServer Pages)** is a server-side technology for creating dynamic web pages by **embedding Java code in HTML**. A JSP page is **not run directly**. The **JSP container (for example Tomcat's Jasper engine)** first **translates it into a Java Servlet**, **compiles** that servlet into bytecode, and then **runs** it like any other servlet.
+
+**2. Block Diagram - JSP Processing / Life Cycle**
+
+```
+  +-----------+  1. HTTP Request (hello.jsp)   +--------------------------------------+
+  |  Browser  |------------------------------->|        WEB SERVER / CONTAINER        |
+  |  (Client) |                                |             (Tomcat)                 |
+  +-----^-----+                                |                                      |
+        |                                      |   +------------------------------+   |
+        |                                      |   | First request or JSP changed?|   |
+        |                                      |   +-------+--------------+-------+   |
+        |                                      |       Yes |              | No        |
+        |                                      |   +-------v-------+      |           |
+        |                                      |   | 2. TRANSLATION|      |           |
+        |                                      |   | hello.jsp ->  |      |           |
+        |                                      |   | hello_jsp.java|      |           |
+        |                                      |   +-------+-------+      |           |
+        |                                      |   +-------v-------+      |           |
+        |                                      |   | 3. COMPILATION|      |           |
+        |                                      |   | -> hello_jsp  |      |           |
+        |                                      |   |    .class     |      |           |
+        |                                      |   +-------+-------+      |           |
+        |                                      |   +-------v-------+      |           |
+        |                                      |   | 4. LOADING &  |      |           |
+        |                                      |   | INSTANTIATION |      |           |
+        |                                      |   +-------+-------+      |           |
+        |                                      |   +-------v-------+      |           |
+        |                                      |   | 5. jspInit()  |      |           |
+        |                                      |   +-------+-------+      |           |
+        |                                      |   +-------v--------------v-------+   |
+        |     7. HTTP Response (HTML)          |   | 6. _jspService(req, res)     |   |
+        +--------------------------------------+---|  (runs on EVERY request)     |   |
+                                               |   +------------------------------+   |
+                                               |   | 8. jspDestroy() (on undeploy)|   |
+                                               |   +------------------------------+   |
+                                               +--------------------------------------+
+```
+
+**3. Core Explanation / Working**
+
+*Phase 1 - Translation*
+- On the **first request** (or after the JSP file changes), the JSP engine **parses** `hello.jsp` and creates the Java source file `hello_jsp.java`.
+- The generated class extends `HttpJspBase`, which implements the `HttpJspPage` interface.
+- Mapping of JSP elements to servlet code:
+  - Static HTML becomes `out.write("...")` statements.
+  - Scriptlet `<% code %>` is copied into `_jspService()`.
+  - Expression `<%= expr %>` becomes `out.print(expr)`.
+  - Declaration `<%! int x; %>` becomes a class-level field or method.
+  - Directive `<%@ page import="java.util.*" %>` becomes `import` statements and settings.
+
+*Phase 2 - Compilation*
+- The container compiles `hello_jsp.java` with the Java compiler into **`hello_jsp.class`** (bytecode).
+- Syntax errors in the JSP appear at this stage as compilation errors.
+
+*Phase 3 - Class Loading and Instantiation*
+- The class loader **loads** `hello_jsp.class`, and the container creates **one instance** of it.
+
+*Phase 4 - Initialization: `jspInit()`*
+- Called **once**, to set up resources like database connections. It can be overridden in a declaration.
+
+*Phase 5 - Request Processing: `_jspService(request, response)`*
+- Called for **every request**, each in a **separate thread**. It produces the dynamic HTML response.
+- **Implicit objects** are available here: `request`, `response`, `out`, `session`, `application`, `config`, `pageContext`, `page`, `exception`.
+- It **cannot be overridden** (the underscore marks it as container-generated).
+
+*Phase 6 - Destruction: `jspDestroy()`*
+- Called **once** when the JSP is removed or the server shuts down, to release resources.
+
+*Example*
+
+```jsp
+<%@ page contentType="text/html" %>
+<html><body>
+  <% String user = request.getParameter("name"); %>
+  <h2>Welcome, <%= user %>!</h2>
+</body></html>
+```
+
+*The generated servlet (simplified):*
+
+```java
+public final class hello_jsp extends HttpJspBase {
+  public void _jspService(HttpServletRequest request, HttpServletResponse response)
+        throws IOException, ServletException {
+    JspWriter out = pageContext.getOut();
+    out.write("<html><body>\n");
+    String user = request.getParameter("name");
+    out.write("<h2>Welcome, ");
+    out.print(user);
+    out.write("!</h2>\n</body></html>");
+  }
+}
+```
+
+- **Later requests skip translation and compilation.** The already-loaded instance runs `_jspService()` directly, so only the first request is slow.
+
+**4. Key Characteristics - JSP vs. Servlet**
+
+| Basis | JSP | Servlet |
+|---|---|---|
+| Code style | Java inside HTML | HTML inside Java (`out.println`) |
+| Best for | **Presentation (View)** | **Business logic (Controller)** |
+| Translation step | Yes (JSP to Servlet) | No |
+| First request | Slower (translate + compile) | Faster |
+| Recompile on change | **Automatic** | Manual recompile and redeploy |
+| Implicit objects | Available (`request`, `out`, `session`) | Must be obtained manually |
+| Life-cycle methods | `jspInit`, `_jspService`, `jspDestroy` | `init`, `service`, `destroy` |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+- **Easier to write and maintain** than servlets for HTML-heavy pages.
+- **Automatic recompilation** when the JSP changes.
+- Supports **tag libraries (JSTL)** and Expression Language, which reduce Java code in pages.
+
+*Disadvantages*
+- The **first request is slow**, because of translation and compilation.
+- Mixing Java and HTML makes pages **hard to debug and maintain** if scriptlets are overused.
+
+**6. Conclusion / Application**
+
+JSP is used as the **View layer in MVC web applications** (with servlets as controllers), for example in **online banking portals and college result systems** running on Apache Tomcat.
+
+---
+
+### Q3. Explain the Servlet lifecycle methods (`init`, `service`, `destroy`). (7 Marks)
+
+**1. Introduction / Definition**
+
+A **Servlet** is a server-side Java class that **handles HTTP requests and generates dynamic responses** inside a **servlet container** (for example Apache Tomcat). The **servlet life cycle** is the sequence of stages from the servlet's **creation to its destruction**. The container controls it through the three methods of the `javax.servlet.Servlet` interface: **`init()`, `service()` and `destroy()`**.
+
+**2. Block Diagram - Servlet Life Cycle**
+
+```
+                   +-------------------------------------+
+                   |  1. LOADING the servlet class       |   (first request or
+                   |     (Class.forName by container)    |    load-on-startup)
+                   +------------------+------------------+
+                                      |
+                   +------------------v------------------+
+                   |  2. INSTANTIATION                   |   Only ONE object
+                   |     (no-arg constructor called)     |
+                   +------------------+------------------+
+                                      |
+                   +------------------v------------------+
+                   |  3. init(ServletConfig config)      |   Called ONCE
+                   |     - read config, open DB conn     |
+                   +------------------+------------------+
+                                      |
+                                      v
+                   +-------------------------------------+
+     Request 1 --->|  4. service(ServletRequest,         |   Called for EVERY
+     Request 2 --->|            ServletResponse)         |   request, each in
+     Request n --->|     -> doGet() / doPost() /         |   a NEW THREAD
+                   |        doPut() / doDelete()         |
+                   +------------------+------------------+
+                                      |  (server shutdown /
+                                      |   undeploy / reload)
+                   +------------------v------------------+
+                   |  5. destroy()                       |   Called ONCE
+                   |     - close DB conn, release memory |
+                   +------------------+------------------+
+                                      |
+                   +------------------v------------------+
+                   |  6. Garbage Collection              |
+                   +-------------------------------------+
+```
+
+**3. Core Explanation / Working**
+
+*Step 1 & 2 - Loading and Instantiation*
+- The container **loads** the servlet class when the **first request** arrives, or at **server start-up** if `<load-on-startup>` is set in `web.xml`.
+- It creates **exactly one instance** using the public no-arg constructor.
+
+*Step 3 - `init()` Method*
+- Signature: `public void init(ServletConfig config) throws ServletException`
+- Called **only once**, right after instantiation and **before any request** is handled.
+- Used for **one-time set-up**: reading init parameters, opening database connections, loading configuration.
+- If it throws `ServletException`, the servlet is not put into service.
+
+*Step 4 - `service()` Method*
+- Signature: `public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException`
+- Called **for every client request**. The container creates a **new thread** for each request, all on the **same instance**, so shared fields must be thread-safe.
+- In `HttpServlet`, `service()` checks the HTTP method and **dispatches** to `doGet()`, `doPost()`, `doPut()`, `doDelete()` and so on.
+- Developers usually override `doGet()` and `doPost()`, not `service()`.
+
+*Step 5 - `destroy()` Method*
+- Signature: `public void destroy()`
+- Called **only once**, when the servlet is taken out of service (server shutdown, application undeploy or reload).
+- Used to **release resources**: close connections, stop threads, save state.
+- After this, the instance is **garbage-collected**.
+
+*Example Program*
+
+```java
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class LifeCycleServlet extends HttpServlet {
+
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        System.out.println("init(): servlet initialized (called once)");
+    }
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        String name = req.getParameter("name");
+        out.println("<h2>Hello, " + name + "</h2>");   // runs per request
+    }
+
+    public void destroy() {
+        System.out.println("destroy(): servlet destroyed (called once)");
+    }
+}
+```
+
+*Deployment descriptor (`web.xml`)*
+
+```xml
+<servlet>
+  <servlet-name>life</servlet-name>
+  <servlet-class>LifeCycleServlet</servlet-class>
+  <load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+  <servlet-name>life</servlet-name>
+  <url-pattern>/hello</url-pattern>
+</servlet-mapping>
+```
+
+(Alternatively, use the annotation `@WebServlet("/hello")` in Servlet 3.0+.)
+
+**4. Key Characteristics - Life-Cycle Methods**
+
+| Basis | `init()` | `service()` | `destroy()` |
+|---|---|---|---|
+| Called by | Container | Container | Container |
+| How many times | **Once** | **Once per request** | **Once** |
+| When | After instantiation | On each client request | Before removal |
+| Parameters | `ServletConfig` | `ServletRequest`, `ServletResponse` | None |
+| Purpose | Initialize resources | Process the request, build the response | Release resources |
+| Threading | Single thread | **Multi-threaded** | Single thread |
+
+**5. Advantages & Disadvantages** (of the servlet life-cycle model)
+
+*Advantages*
+- **One instance, many threads**: much faster and lighter than CGI, which starts a new process per request.
+- **One-time initialization** in `init()` avoids repeated costly set-up.
+- **Clean resource release** in `destroy()` prevents memory leaks.
+
+*Disadvantages*
+- Instance variables are shared by all threads, so **thread-safety problems** (race conditions) must be handled.
+- The **first request is slower** (loading and `init()`) unless `load-on-startup` is used.
+
+**6. Conclusion / Application**
+
+The servlet life cycle is the basis of **every Java web framework (Spring MVC's DispatcherServlet, Struts)** and of login handlers, form processors and REST endpoints on Apache Tomcat.
+
+---
+
+### Q4. Outline the step-by-step process to set up Node.js in Windows and create a MongoDB database connection. (7 Marks)
+
+**1. Introduction / Definition**
+
+**Node.js** is a JavaScript run time for building server-side applications, and **MongoDB** is a **NoSQL, document-oriented database** that stores data as **JSON-like BSON documents** in **collections**. Node.js connects to MongoDB using the official **`mongodb` driver** or the **Mongoose ODM** library.
+
+**2. Block Diagram - Set-up and Connection Flow**
+
+```
+  +-------------------------------+      +-------------------------------+
+  | 1. Download Node.js LTS (.msi)|      | 5. Install MongoDB Community  |
+  |    from nodejs.org            |      |    Server (.msi) + Compass    |
+  +---------------+---------------+      |    (or use MongoDB Atlas)     |
+                  |                      +---------------+---------------+
+  +---------------v---------------+                      |
+  | 2. Run installer (adds node + |      +---------------v---------------+
+  |    npm to PATH)               |      | 6. Start the service: mongod  |
+  +---------------+---------------+      |    on localhost:27017         |
+                  |                      +---------------+---------------+
+  +---------------v---------------+                      |
+  | 3. Verify: node -v , npm -v   |                      |
+  +---------------+---------------+                      |
+                  |                                      |
+  +---------------v---------------+                      |
+  | 4. mkdir project; npm init -y;|                      |
+  |    npm install mongodb        |                      |
+  +---------------+---------------+                      |
+                  |                                      |
+  +---------------v--------------------------------------v---------------+
+  | 7. app.js:  MongoClient.connect("mongodb://localhost:27017")         |
+  +----------------------------------+-----------------------------------+
+                                     |
+  +----------------------------------v-----------------------------------+
+  |   NODE.JS APP  <------ MongoDB Driver (TCP) ------>  MONGODB SERVER   |
+  |   (app.js)                                          DB -> Collection |
+  |                                                        -> Documents  |
+  +----------------------------------------------------------------------+
+```
+
+**3. Core Explanation / Working**
+
+*Part A - Installing Node.js on Windows*
+1. Open **https://nodejs.org** and download the **LTS (Long Term Support)** Windows Installer (`.msi`, 64-bit).
+2. Run the installer and accept the licence. Keep the default path `C:\Program Files\nodejs\`. Make sure **"Add to PATH"** and the **npm package manager** are selected. Click **Install**.
+3. Open **Command Prompt** and check the installation:
+
+```bash
+node -v      # e.g. v20.x.x
+npm -v       # e.g. 10.x.x
+```
+
+4. Create a project folder and initialise it:
+
+```bash
+mkdir myapp
+cd myapp
+npm init -y               # creates package.json
+npm install mongodb       # official MongoDB driver
+```
+
+*Part B - Installing and Starting MongoDB*
+
+5. Download **MongoDB Community Server** (`.msi`) from **mongodb.com**. Choose **"Complete"** set-up and **"Install MongoDB as a Service"**. Optionally install **MongoDB Compass** (GUI).
+6. The MongoDB service starts automatically and listens on **`localhost:27017`**. Check it with `mongosh` in the terminal.
+   - *Alternative:* create a free cloud cluster on **MongoDB Atlas** and copy its connection string (`mongodb+srv://...`).
+
+*Part C - Creating the Database Connection (`app.js`)*
+
+```javascript
+// app.js
+const { MongoClient } = require("mongodb");
+
+const url = "mongodb://127.0.0.1:27017";   // connection string
+const client = new MongoClient(url);
+const dbName = "collegeDB";
+
+async function main() {
+    try {
+        // 1. Connect to the MongoDB server
+        await client.connect();
+        console.log("Connected successfully to MongoDB");
+
+        // 2. Select the database (created automatically on first insert)
+        const db = client.db(dbName);
+        const students = db.collection("students");
+
+        // 3. Insert a document
+        const result = await students.insertOne(
+            { roll: 101, name: "Harsh", branch: "CSE", year: 3 });
+        console.log("Inserted id:", result.insertedId);
+
+        // 4. Read documents
+        const data = await students.find({ branch: "CSE" }).toArray();
+        console.log(data);
+    } catch (err) {
+        console.error("Connection error:", err);
+    } finally {
+        // 5. Close the connection
+        await client.close();
+    }
+}
+
+main();
+```
+
+7. Run the program:
+
+```bash
+node app.js
+```
+
+*Output:*
+
+```
+Connected successfully to MongoDB
+Inserted id: 6650f1c2a4...
+[ { _id: ..., roll: 101, name: 'Harsh', branch: 'CSE', year: 3 } ]
+```
+
+*Alternative using Mongoose (schema-based ODM)*
+
+```javascript
+const mongoose = require("mongoose");          // npm install mongoose
+mongoose.connect("mongodb://127.0.0.1:27017/collegeDB")
+        .then(() => console.log("Mongoose connected"))
+        .catch(err => console.log(err));
+const Student = mongoose.model("Student",
+        new mongoose.Schema({ roll: Number, name: String }));
+```
+
+**4. Key Characteristics - MongoDB (NoSQL) vs. MySQL (SQL)**
+
+| Basis | MongoDB | MySQL |
+|---|---|---|
+| Data model | **Documents** (JSON/BSON) | **Tables** (rows and columns) |
+| Schema | **Flexible / schema-less** | Fixed schema |
+| Query language | JavaScript-like methods (`find`, `insertOne`) | SQL |
+| Scaling | **Horizontal** (sharding) | Mainly vertical |
+| Joins | Limited (`$lookup`) | Full support |
+| Best with | Node.js (MERN / MEAN stack) | PHP, Java (LAMP) |
+
+**5. Advantages & Disadvantages**
+
+*Advantages*
+- **JavaScript end to end**: Node.js and MongoDB both use JSON, so no data conversion is needed.
+- **Non-blocking async I/O** handles many concurrent database requests efficiently.
+- **Flexible schema** speeds up development, and data scales horizontally.
+
+*Disadvantages*
+- No full **ACID joins** like SQL. Complex relational queries are harder.
+- Node.js is **not suited to CPU-heavy tasks**, which block its single thread.
+- The flexible schema can lead to **inconsistent data** without validation (Mongoose helps).
+
+**6. Conclusion / Application**
+
+Node.js with MongoDB forms the back end of the **MERN/MEAN stack**, used in **real-time chat apps, e-commerce sites and social media platforms** (for example parts of Netflix, Uber and LinkedIn).
+
+---
