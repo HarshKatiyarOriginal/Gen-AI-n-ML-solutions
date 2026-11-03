@@ -274,6 +274,199 @@ def _():
     save(f, "da_lifecycle")
 
 
+@fig("dbms_checkpoint")
+def _():
+    f, ax = plt.subplots(figsize=(6.6, 2.7))
+    tc, tf = 4.0, 8.0
+    rows = [("T1", 0.4, 3.0, True, "ignore (committed before Tc)"),
+            ("T2", 1.5, 5.5, True, "REDO"),
+            ("T3", 2.5, None, False, "UNDO"),
+            ("T4", 4.6, 6.8, True, "REDO"),
+            ("T5", 6.0, None, False, "UNDO")]
+    for i, (n, s0, e, done, act) in enumerate(rows):
+        y = 5 - i
+        end = e if done else tf
+        ax.plot([s0, end], [y, y], color="black", lw=2.2 if done else 1.4, ls="-" if done else "--")
+        ax.plot([s0], [y], marker="|", ms=10, color="black")
+        if done:
+            ax.plot([end], [y], marker="|", ms=10, color="black")
+        ax.text(-0.25, y, n, ha="right", va="center", fontsize=10)
+        ax.text(8.25, y, act, ha="left", va="center", fontsize=9.5, weight="bold" if act != "ignore (committed before Tc)" else "normal")
+    for x, t in [(tc, "$T_c$ (checkpoint)"), (tf, "$T_f$ (crash)")]:
+        ax.axvline(x, color="black", lw=0.9)
+        ax.text(x, 5.75, t, ha="center", fontsize=10)
+    ax.set_xlim(-0.8, 11.8); ax.set_ylim(0.4, 6.1); ax.axis("off")
+    ax.annotate("time", xy=(8.0, 0.55), xytext=(0, 0.55), arrowprops=dict(arrowstyle="-|>", lw=0.8), va="center", fontsize=9)
+    save(f, "dbms_checkpoint")
+
+
+@fig("web_positioning")
+def _():
+    f, ax = blank(6.2, 4.2)
+    def rect(x, y, w, h, t=None, ls="-", lw=1.1, fc="white", fs=9.5, va="center"):
+        ax.add_patch(Rectangle((x, y), w, h, fill=True, fc=fc, ec="black", ls=ls, lw=lw))
+        if t: ax.text(x + w / 2, y + h / 2 if va == "center" else y + h - 0.18, t, ha="center", va=va, fontsize=fs)
+    rect(0, 0, 10, 6.6, None, lw=1.6)
+    ax.text(0.15, 6.35, "VIEWPORT (browser window)", fontsize=9, va="center")
+    rect(6.6, 5.6, 3.2, 0.8, "FIXED: stays here\nwhen page scrolls", lw=1.6)
+    rect(0.4, 0.3, 9.2, 5.0, None, ls="--")
+    ax.text(0.55, 5.05, "Parent  (position: relative)", fontsize=9, va="center")
+    rect(0.8, 4.0, 3.0, 0.65, "static box 1 (normal flow)")
+    rect(0.8, 3.1, 3.0, 0.65, "static box 2")
+    rect(0.8, 2.2, 3.0, 0.65, None, ls=":")
+    ax.text(2.3, 2.52, "original place (gap kept)", fontsize=8, ha="center", style="italic")
+    rect(1.6, 1.75, 3.0, 0.65, "RELATIVE: shifted", lw=1.6)
+    ax.annotate("", xy=(1.6, 2.1), xytext=(0.8, 2.55), arrowprops=dict(arrowstyle="-|>", lw=0.8))
+    rect(0.8, 0.6, 3.0, 0.65, "static box 3")
+    rect(6.3, 3.7, 3.0, 1.1, "ABSOLUTE\ntop: 10px; right: 10px\n(out of normal flow)", lw=1.6)
+    ax.set_xlim(-0.1, 10.1); ax.set_ylim(-0.1, 6.7)
+    save(f, "web_positioning")
+
+
+@fig("daa_asymptotic")
+def _():
+    f, axs = plt.subplots(1, 3, figsize=(8.4, 2.5))
+    n = np.linspace(0.2, 10, 200)
+    g = n
+    curves = [("Big-O:  f(n) ≤ c·g(n)", [(1.6 * g, r"$c\,g(n)$", "-"), (g + 2.5 * np.sin(n) * np.exp(-n / 4) + 0.8, r"$f(n)$", "--")]),
+              ("Big-Ω:  f(n) ≥ c·g(n)", [(0.6 * g, r"$c\,g(n)$", "-"), (g + 1.5 * np.sin(n) * np.exp(-n / 4) + 0.6, r"$f(n)$", "--")]),
+              (r"Big-Θ:  $c_1 g(n) \leq f(n) \leq c_2 g(n)$", [(1.5 * g, r"$c_2\,g(n)$", "-"), (0.55 * g, r"$c_1\,g(n)$", "-"), (g + 1.2 * np.sin(n) * np.exp(-n / 3) + 0.5, r"$f(n)$", "--")])]
+    for ax, (title, cs) in zip(axs, curves):
+        for y, lab, ls in cs:
+            ax.plot(n, y, "k", ls=ls, lw=1.2)
+            ax.text(10.15, y[-1], lab, fontsize=9, va="center")
+        ax.axvline(3, color="black", lw=0.6, ls=":"); ax.text(3, -1.2, "$n_0$", ha="center", fontsize=10)
+        ax.set_title(title, fontsize=9.5); ax.set_xticks([]); ax.set_yticks([]); ax.set_xlim(0, 12); ax.set_ylim(0, 16)
+        ax.set_xlabel("n", fontsize=9); clean_axes(ax)
+    f.tight_layout()
+    save(f, "daa_asymptotic")
+
+
+@fig("daa_pnp")
+def _():
+    f, ax = blank(6.4, 4.0)
+    ax.add_patch(Ellipse((3.0, 2.0), 5.4, 3.6, fill=False, lw=1.4))
+    ax.add_patch(Ellipse((2.2, 1.55), 2.4, 1.6, fill=False, lw=1.2))
+    ax.add_patch(Ellipse((5.0, 3.35), 4.6, 2.3, fill=False, lw=1.4, ls="--"))
+    ax.text(0.95, 2.95, "NP", fontsize=15, weight="bold")
+    ax.text(2.2, 1.75, "P", fontsize=15, weight="bold", ha="center")
+    ax.text(2.2, 1.2, "Sorting, MST,\nDijkstra, Search", fontsize=8.5, ha="center")
+    ax.text(4.35, 3.05, "NP-Complete", fontsize=11, weight="bold", ha="center")
+    ax.text(4.35, 2.55, "SAT, 3-SAT, Clique,\nVertex Cover, Ham. Cycle", fontsize=8.5, ha="center")
+    ax.text(6.0, 4.05, "NP-Hard", fontsize=13, weight="bold", ha="center")
+    ax.text(6.2, 3.55, "Halting problem,\nTSP (optimization)", fontsize=8.5, ha="center")
+    ax.text(3.0, -0.25, r"NP-Complete = NP $\cap$ NP-Hard;   P $\subseteq$ NP", fontsize=10, ha="center", style="italic")
+    ax.set_xlim(0, 7.5); ax.set_ylim(-0.5, 4.6)
+    save(f, "daa_pnp")
+
+
+@fig("daa_4queens")
+def _():
+    f, axs = plt.subplots(1, 2, figsize=(5.6, 2.9))
+    for ax, sol, t in [(axs[0], (2, 4, 1, 3), "Solution 1: (2, 4, 1, 3)"), (axs[1], (3, 1, 4, 2), "Solution 2: (3, 1, 4, 2)")]:
+        for r in range(4):
+            for c in range(4):
+                ax.add_patch(Rectangle((c, 3 - r), 1, 1, fc="0.85" if (r + c) % 2 else "white", ec="black", lw=0.8))
+        for r, c in enumerate(sol):
+            ax.text(c - 0.5, 3 - r + 0.5, "♛", ha="center", va="center", fontsize=22, family="DejaVu Sans")
+        for i in range(4):
+            ax.text(i + 0.5, 4.15, str(i + 1), ha="center", fontsize=9); ax.text(-0.2, 3.5 - i, str(i + 1), ha="right", va="center", fontsize=9)
+        ax.set_xlim(-0.5, 4.1); ax.set_ylim(-0.1, 4.6); ax.set_aspect("equal"); ax.axis("off"); ax.set_title(t, fontsize=10, y=-0.12)
+    save(f, "daa_4queens")
+
+
+@fig("ml_regression")
+def _():
+    f, ax = plt.subplots(figsize=(4.2, 3.0))
+    x = np.array([1, 2, 3, 4, 5]); y = np.array([2, 4, 5, 4, 5]); yh = 2.2 + 0.6 * x
+    xs = np.linspace(0.5, 5.5, 10); ax.plot(xs, 2.2 + 0.6 * xs, "k-", lw=1.4)
+    for xi, yi, hi in zip(x, y, yh):
+        ax.plot([xi, xi], [yi, hi], "k:", lw=1)
+    ax.scatter(x, y, s=36, color="black", zorder=3)
+    ax.text(4.0, 3.05, r"$\hat{y} = 2.2 + 0.6x$", fontsize=11)
+    ax.text(1.12, 2.4, r"residual $e_i$", fontsize=9, style="italic")
+    ax.set_xlim(0.5, 5.6); ax.set_ylim(1.5, 5.6); ax.set_xlabel("x"); ax.set_ylabel("y"); clean_axes(ax)
+    save(f, "ml_regression")
+
+
+@fig("ml_gradient")
+def _():
+    f, ax = plt.subplots(figsize=(4.4, 3.0))
+    t = np.linspace(-4.6, 4.6, 200); ax.plot(t, t ** 2, "k-", lw=1.3)
+    th = [4.0]
+    for _ in range(5):
+        th.append(th[-1] - 0.1 * 2 * th[-1] * 1.6)
+    for a, b in zip(th[:-1], th[1:]):
+        ax.annotate("", xy=(b, b ** 2), xytext=(a, a ** 2), arrowprops=dict(arrowstyle="-|>", lw=1.0))
+    ax.scatter(th, [v ** 2 for v in th], s=22, color="black", zorder=3)
+    ax.text(4.05, 16.4, r"start $\theta_0$", fontsize=9)
+    ax.text(0, -1.6, "minimum (gradient = 0)", fontsize=9, ha="center")
+    ax.text(-4.4, 17, r"$\theta_{new} = \theta_{old} - \alpha\,\frac{dJ}{d\theta}$", fontsize=11)
+    ax.set_xlabel(r"$\theta$"); ax.set_ylabel(r"$J(\theta)$"); ax.set_xticks([]); ax.set_yticks([]); ax.set_ylim(-2.5, 22); clean_axes(ax)
+    save(f, "ml_gradient")
+
+
+@fig("ml_overfit")
+def _():
+    f, ax = plt.subplots(figsize=(5.0, 3.0))
+    n = np.linspace(0, 10, 200)
+    train = 0.55 + 0.43 * (1 - np.exp(-n / 2.5)); test = 0.55 + 0.3 * (1 - np.exp(-n / 2)) - 0.022 * np.maximum(n - 3.5, 0) ** 1.3
+    ax.plot(n, train, "k-", lw=1.4, label="Training accuracy"); ax.plot(n, test, "k--", lw=1.4, label="Test accuracy")
+    ax.axvline(3.6, color="black", lw=0.7, ls=":")
+    ax.text(1.4, 0.5, "UNDERFITTING\n(high bias)", ha="center", fontsize=8.5); ax.text(3.6, 0.5, "best\nsize", ha="center", fontsize=8.5)
+    ax.text(7.5, 0.5, "OVERFITTING\n(high variance)", ha="center", fontsize=8.5)
+    ax.annotate("pruning", xy=(4.0, 0.80), xytext=(7.0, 0.88), arrowprops=dict(arrowstyle="-|>", lw=0.8), fontsize=9)
+    ax.set_xlabel("Tree size (number of nodes)"); ax.set_ylabel("Accuracy"); ax.set_xticks([]); ax.set_ylim(0.42, 1.02)
+    ax.legend(frameon=False, fontsize=9, loc="lower right"); clean_axes(ax)
+    save(f, "ml_overfit")
+
+
+@fig("ml_knn")
+def _():
+    f, ax = plt.subplots(figsize=(3.8, 3.2))
+    A = [(1, 1), (2, 1), (1, 2)]; B = [(4, 3), (5, 4)]
+    ax.scatter(*zip(*A), marker="o", s=50, facecolor="black", label="Class A")
+    ax.scatter(*zip(*B), marker="s", s=50, facecolor="white", edgecolor="black", label="Class B")
+    ax.scatter([3], [2], marker="*", s=150, color="black"); ax.text(3.12, 2.08, "query ?", fontsize=9)
+    ax.add_patch(Circle((3, 2), 2.02, fill=False, ls="--", lw=0.9)); ax.text(3.5, 0.15, "k = 3 neighbours", fontsize=8.5)
+    for p, n in [((1, 1), "P1"), ((2, 1), "P2"), ((4, 3), "P3"), ((5, 4), "P4"), ((1, 2), "P5")]:
+        ax.annotate(n, p, textcoords="offset points", xytext=(5, 4), fontsize=8.5)
+    ax.set_xlim(-0.2, 6); ax.set_ylim(-0.2, 4.8); ax.set_aspect("equal"); ax.legend(frameon=False, fontsize=8.5, loc="upper left")
+    ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$"); clean_axes(ax)
+    save(f, "ml_knn")
+
+
+@fig("ml_and_xor")
+def _():
+    f, axs = plt.subplots(1, 2, figsize=(5.6, 2.6))
+    for ax, title, out in [(axs[0], "AND (linearly separable)", {(0, 0): 0, (0, 1): 0, (1, 0): 0, (1, 1): 1}),
+                           (axs[1], "XOR (NOT linearly separable)", {(0, 0): 0, (0, 1): 1, (1, 0): 1, (1, 1): 0})]:
+        for (a, b), v in out.items():
+            ax.scatter([a], [b], s=70, marker="o", facecolor="black" if v else "white", edgecolor="black", zorder=3)
+            ax.text(a + 0.07, b + 0.07, str(v), fontsize=10)
+        ax.set_title(title, fontsize=10); ax.set_xlim(-0.4, 1.5); ax.set_ylim(-0.4, 1.5); ax.set_xticks([0, 1]); ax.set_yticks([0, 1])
+        ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$"); clean_axes(ax)
+    xs = np.linspace(-0.4, 1.5, 10); axs[0].plot(xs, 1.5 - xs, "k--", lw=1.1)
+    axs[1].text(0.55, 0.45, "no single\nline works", ha="center", fontsize=8.5, style="italic")
+    f.tight_layout()
+    save(f, "ml_and_xor")
+
+
+@fig("ml_gridworld")
+def _():
+    f, ax = blank(4.4, 3.4)
+    grid = [["→", "→", "→", "GOAL\n+1"], ["↑", "WALL", "↑", "PIT\n−1"], ["START\n↑", "→", "↑", "←"]]
+    for r in range(3):
+        for c in range(4):
+            t = grid[r][c]
+            fc = "0.75" if t == "WALL" else "white"
+            ax.add_patch(Rectangle((c, 2 - r), 1, 1, fc=fc, ec="black", lw=1.1))
+            fs = 18 if len(t) == 1 else 9.5
+            ax.text(c + 0.5, 2 - r + 0.5, t, ha="center", va="center", fontsize=fs, family="DejaVu Sans" if len(t) == 1 else None, weight="bold" if len(t) > 1 else "normal")
+    ax.set_xlim(-0.05, 4.05); ax.set_ylim(-0.05, 3.05)
+    save(f, "ml_gridworld")
+
+
 if __name__ == "__main__":
     import sys
     names = sys.argv[1:] or list(REGISTRY)

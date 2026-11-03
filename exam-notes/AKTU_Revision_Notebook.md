@@ -15,38 +15,20 @@ The **three-schema architecture** (ANSI/SPARC architecture) separates a database
 
 **2. Block Diagram**
 
-```
-   +-----------+     +-----------+     +-----------+
-   |  User 1   |     |  User 2   |     |  User n   |
-   +-----+-----+     +-----+-----+     +-----+-----+
-         |                 |                 |
-   +-----v-----+     +-----v-----+     +-----v-----+
-   | External  |     | External  |     | External  |    EXTERNAL LEVEL
-   |  View 1   |     |  View 2   |     |  View n   |    (User views)
-   +-----+-----+     +-----+-----+     +-----+-----+
-         |                 |                 |
-         +-----------------+-----------------+
-                           |
-            External / Conceptual Mapping   <-- Logical Data Independence
-                           |
-               +-----------v-----------+
-               |   Conceptual Schema   |              CONCEPTUAL LEVEL
-               | (Entities, Relations, |              (Community view)
-               |  Constraints, Types)  |
-               +-----------+-----------+
-                           |
-            Conceptual / Internal Mapping   <-- Physical Data Independence
-                           |
-               +-----------v-----------+
-               |    Internal Schema    |              INTERNAL LEVEL
-               | (Files, Indexes, Data |              (Physical storage)
-               |  structures, Paths)   |
-               +-----------+-----------+
-                           |
-                   +-------v-------+
-                   | Stored Database|
-                   |    (Disk)      |
-                   +---------------+
+```{.dot caption="Three-schema (ANSI/SPARC) architecture" width="78%"}
+digraph G { nodesep=0.35; ranksep=0.45;
+  u1 [label="User 1", shape=plaintext]; u2 [label="User 2", shape=plaintext]; u3 [label="User n", shape=plaintext];
+  subgraph cluster_e { label="EXTERNAL LEVEL (user views)"; style=dashed; v1 [label="External\nView 1"]; v2 [label="External\nView 2"]; v3 [label="External\nView n"]; }
+  C [label="CONCEPTUAL SCHEMA\nentities, relationships, constraints", width=3.2];
+  I [label="INTERNAL SCHEMA\nfiles, indexes, access paths", width=3.2];
+  D [label="Stored Database", shape=cylinder];
+  u1 -> v1; u2 -> v2; u3 -> v3;
+  {v1 v2 v3} -> C [arrowhead=none];
+  C -> I [label="  conceptual / internal mapping\n  (physical data independence)"];
+  I -> D;
+  m [shape=plaintext, label="external / conceptual mapping\n(logical data independence)", fontsize=11];
+  v3 -> m [style=invis]; {rank=same; m; C}
+}
 ```
 
 **3. Core Explanation / Working**
@@ -125,60 +107,36 @@ Generalization, specialization and aggregation are **Enhanced ER (EER)** concept
 
 *(a) Generalization (Bottom-Up)*
 
-```
-     +--------+          +--------+
-     |  CAR   |          | TRUCK  |       Lower-level entities
-     +---+----+          +----+---+       (common attributes found)
-         |                    |
-         +---------+----------+
-                   |
-                  / \
-                 /ISA\                    Triangle = IS-A
-                /_____\
-                   |
-              +----v----+
-              | VEHICLE |                 Higher-level entity (created)
-              +---------+
-     Common attrs moved up: Reg_No, Model, Price
+```{.dot caption="Generalization (bottom-up): common attributes move up to VEHICLE" width="45%"}
+digraph G { rankdir=BT; nodesep=0.6;
+  car [label="CAR\n(Seats)", shape=box, style=""]; truck [label="TRUCK\n(Load_Capacity)", shape=box, style=""];
+  isa [label="ISA", shape=triangle, style="", width=0.9, height=0.7, fixedsize=true];
+  veh [label="VEHICLE\n(Reg_No, Model, Price)", shape=box, style=""];
+  car -> isa [arrowhead=none]; truck -> isa [arrowhead=none]; isa -> veh;
+}
 ```
 
 *(b) Specialization (Top-Down)*
 
-```
-              +----------+
-              | EMPLOYEE |                Higher-level entity
-              +----+-----+  (Emp_ID, Name, Salary)
-                   |
-                  / \
-                 /ISA\
-                /_____\
-                   |
-         +---------+----------+
-         |                    |
-   +-----v-----+       +------v-----+
-   | ENGINEER  |       |  MANAGER   |     Sub-classes created
-   +-----------+       +------------+
-   (Skill)             (Allowance)        Specific attributes added
+```{.dot caption="Specialization (top-down): EMPLOYEE split into sub-classes" width="45%"}
+digraph G { nodesep=0.6;
+  emp [label="EMPLOYEE\n(Emp_ID, Name, Salary)", shape=box, style=""];
+  isa [label="ISA", shape=invtriangle, style="", width=0.9, height=0.7, fixedsize=true];
+  eng [label="ENGINEER\n(Skill)", shape=box, style=""]; mgr [label="MANAGER\n(Allowance)", shape=box, style=""];
+  emp -> isa [arrowhead=none]; isa -> eng; isa -> mgr;
+}
 ```
 
 *(c) Aggregation*
 
-```
-     +-----------------------------------------------+
-     |                 (Aggregated Entity)           |
-     |  +----------+     /---------\    +---------+  |
-     |  | EMPLOYEE |----< WORKS_ON  >---| PROJECT |  |
-     |  +----------+     \---------/    +---------+  |
-     +-----------------------+-----------------------+
-                             |
-                        /---------\
-                       < MONITORS  >
-                        \---------/
-                             |
-                       +-----+-----+
-                       |  MANAGER  |
-                       +-----------+
-   MANAGER monitors the whole (EMPLOYEE works on PROJECT) relationship.
+```{.dot caption="Aggregation: the relationship (EMPLOYEE works on PROJECT) is treated as one entity" width="62%"}
+digraph G { rankdir=TB; compound=true; nodesep=0.5;
+  subgraph cluster_a { label="Aggregated entity"; style=bold;
+    e [label="EMPLOYEE", shape=box, style=""]; w [label="WORKS_ON", shape=diamond, style=""]; p [label="PROJECT", shape=box, style=""];
+    e -> w [arrowhead=none]; w -> p [arrowhead=none]; {rank=same; e; w; p} }
+  mon [label="MONITORS", shape=diamond, style=""]; m [label="MANAGER", shape=box, style=""];
+  w -> mon [ltail=cluster_a, arrowhead=none]; mon -> m [arrowhead=none];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -248,22 +206,15 @@ In 1985 **Dr. E.F. Codd**, the father of the relational model, proposed **13 rul
 
 **2. Block Diagram - Classification of Codd's Rules**
 
-```
-                      +----------------------------+
-                      |  Rule 0: Foundation Rule   |
-                      +-------------+--------------+
-                                    |
-     +------------------+-----------+-----------+--------------------+
-     |                  |                       |                    |
-+----v------+   +-------v-------+     +---------v--------+   +-------v-------+
-| STRUCTURE |   | DATA HANDLING |     |  INDEPENDENCE    |   |   INTEGRITY   |
-|  RULES    |   |    RULES      |     |     RULES        |   |  & SECURITY   |
-+-----------+   +---------------+     +------------------+   +---------------+
-| R1 Info   |   | R5 Sublanguage|     | R8 Physical DI   |   | R10 Integrity |
-| R2 Access |   | R6 View update|     | R9 Logical DI    |   |     indep.    |
-| R3 NULLs  |   | R7 Set-level  |     | R11 Distribution |   | R12 Non-      |
-| R4 Catalog|   |    ops        |     |     indep.       |   |   subversion  |
-+-----------+   +---------------+     +------------------+   +---------------+
+```{.dot caption="Codd's rules grouped by purpose" width="95%"}
+digraph G { nodesep=0.2; ranksep=0.4;
+  r0 [label="Rule 0: Foundation Rule", width=2.6];
+  a [label="STRUCTURE\nR1 Information\nR2 Guaranteed access\nR3 Systematic NULLs\nR4 Online catalog"];
+  b [label="DATA HANDLING\nR5 Comprehensive\nsub-language\nR6 View updating\nR7 Set-level ops"];
+  c [label="INDEPENDENCE\nR8 Physical DI\nR9 Logical DI\nR11 Distribution"];
+  d [label="INTEGRITY &\nSECURITY\nR10 Integrity\nindependence\nR12 Non-subversion"];
+  r0 -> {a b c d};
+}
 ```
 
 **3. Core Explanation - The Rules**
@@ -362,24 +313,13 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 
 **2. Block Diagram - Classification of Operators**
 
-```
-                        +----------------------+
-                        |  Relational Algebra  |
-                        |      Operators       |
-                        +----------+-----------+
-                                   |
-             +---------------------+----------------------+
-             |                                            |
-   +---------v----------+                     +-----------v-----------+
-   |    FUNDAMENTAL     |                     |        DERIVED        |
-   +--------------------+                     +-----------------------+
-   | Select      (σ)    |                     | Intersection   (∩)    |
-   | Project     (π)    |                     | Natural Join   (⋈)    |
-   | Union       (∪)    |                     | Theta Join     (⋈θ)   |
-   | Set Diff.   (−)    |                     | Outer Joins (⟕ ⟖ ⟗)   |
-   | Cartesian   (×)    |                     | Division       (÷)    |
-   | Rename      (ρ)    |                     | Assignment     (←)    |
-   +--------------------+                     +-----------------------+
+```{.dot caption="Classification of relational algebra operators" width="80%"}
+digraph G { nodesep=0.6;
+  ra [label="Relational Algebra Operators", width=2.8];
+  f [label="FUNDAMENTAL\nSelect (σ)   Project (π)\nUnion (∪)   Set difference (−)\nCartesian product (×)   Rename (ρ)"];
+  d [label="DERIVED\nIntersection (∩)   Natural join (⋈)\nTheta join   Outer joins (⟕ ⟖ ⟗)\nDivision (÷)   Assignment (←)"];
+  ra -> f; ra -> d;
+}
 ```
 
 **3. Core Explanation / Working**
@@ -400,30 +340,31 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 
 **Sample relations used below**
 
-```
- EMP                          DEPT
- +-----+-------+-----+        +-----+-------+
- | EID | Name  | DID |        | DID | DName |
- +-----+-------+-----+        +-----+-------+
- |  1  | Amit  | 10  |        | 10  | CSE   |
- |  2  | Riya  | 20  |        | 20  | IT    |
- |  3  | Karan | 40  |        | 30  | ECE   |
- +-----+-------+-----+        +-----+-------+
-```
+**EMP**
+
+| EID | Name | DID |
+|---|---|---|
+| 1 | Amit | 10 |
+| 2 | Riya | 20 |
+| 3 | Karan | 40 |
+
+**DEPT**
+
+| DID | DName |
+|---|---|
+| 10 | CSE |
+| 20 | IT |
+| 30 | ECE |
 
 *(c) Natural Join (EMP ⋈ DEPT)*
 
 - Joins on **all common attributes** (here `DID`) with an equality condition and keeps **one copy** of each common column.
 - Formula: `R ⋈ S = π (R ∪ S attrs) ( σ R.A = S.A (R × S) )`
 
-```
- +-----+-------+-----+-------+
- | EID | Name  | DID | DName |
- +-----+-------+-----+-------+
- |  1  | Amit  | 10  | CSE   |
- |  2  | Riya  | 20  | IT    |
- +-----+-------+-----+-------+
-```
+| EID | Name | DID | DName |
+|---|---|---|---|
+| 1 | Amit | 10 | CSE |
+| 2 | Riya | 20 | IT |
 
 *(d) Outer Joins*
 
@@ -432,18 +373,23 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 - **Right Outer Join (EMP ⟖ DEPT):** all DEPT tuples are kept.
 - **Full Outer Join (EMP ⟗ DEPT):** all tuples of both relations are kept.
 
-```
- LEFT OUTER JOIN                 RIGHT OUTER JOIN
- +---+-------+----+-------+      +------+------+----+-------+
- |EID| Name  |DID | DName |      | EID  | Name |DID | DName |
- +---+-------+----+-------+      +------+------+----+-------+
- | 1 | Amit  | 10 | CSE   |      |  1   | Amit | 10 | CSE   |
- | 2 | Riya  | 20 | IT    |      |  2   | Riya | 20 | IT    |
- | 3 | Karan | 40 | NULL  |      | NULL | NULL | 30 | ECE   |
- +---+-------+----+-------+      +------+------+----+-------+
+**Left outer join (EMP ⟕ DEPT)**
 
- FULL OUTER JOIN = rows of both tables above (Amit, Riya, Karan + ECE)
-```
+| EID | Name | DID | DName |
+|---|---|---|---|
+| 1 | Amit | 10 | CSE |
+| 2 | Riya | 20 | IT |
+| 3 | Karan | 40 | NULL |
+
+**Right outer join (EMP ⟖ DEPT)**
+
+| EID | Name | DID | DName |
+|---|---|---|---|
+| 1 | Amit | 10 | CSE |
+| 2 | Riya | 20 | IT |
+| NULL | NULL | 30 | ECE |
+
+**Full outer join (EMP ⟗ DEPT)** = all four rows above: Amit, Riya, Karan (DName NULL) and ECE (EID, Name NULL).
 
 *(e) Division Operator (R ÷ S)*
 
@@ -451,19 +397,24 @@ Codd's rules are the **yardstick used by vendors and academics** to rate RDBMS p
 - If R(A, B) and S(B), then R ÷ S gives every A value that is paired with **every** B value in S.
 - Formula: `R ÷ S = π A (R) − π A ( (π A (R) × S) − R )`
 
-```
- ENROLLED (R)          COURSE (S)        R ÷ S
- +---------+--------+   +--------+        +---------+
- | Student | Course |   | Course |        | Student |
- +---------+--------+   +--------+        +---------+
- |    A    |   C1   |   |   C1   |        |    A    |
- |    A    |   C2   |   |   C2   |        |    C    |
- |    B    |   C1   |   +--------+        +---------+
- |    C    |   C1   |
- |    C    |   C2   |
- |    C    |   C3   |
- +---------+--------+
-```
+| ENROLLED (R): Student | Course |
+|---|---|
+| A | C1 |
+| A | C2 |
+| B | C1 |
+| C | C1 |
+| C | C2 |
+| C | C3 |
+
+| COURSE (S): Course |
+|---|
+| C1 |
+| C2 |
+
+| R ÷ S: Student |
+|---|
+| A |
+| C |
 
 - *Step-by-step:*
   1. `π Student (R)` = {A, B, C}
@@ -511,26 +462,13 @@ Relational algebra is used **internally by the query optimizer** of every RDBMS 
 
 **2. Block Diagram**
 
-```
-                     +---------------------------+
-                     |  Formal Query Languages   |
-                     +-------------+-------------+
-                                   |
-              +--------------------+--------------------+
-              |                                         |
-   +----------v-----------+                 +-----------v------------+
-   |  Procedural          |                 |  Non-Procedural        |
-   |  Relational Algebra  |                 |  Relational Calculus   |
-   +----------------------+                 +-----------+------------+
-                                                        |
-                                    +-------------------+------------------+
-                                    |                                      |
-                         +----------v-----------+               +----------v-----------+
-                         |   Tuple RC (TRC)     |               |  Domain RC (DRC)     |
-                         |  var = whole tuple   |               |  var = column value  |
-                         |  {t | P(t)}          |               |  {<x1..xn>|P(x1..xn)}|
-                         |  Basis of: SQL, QUEL |               |  Basis of: QBE       |
-                         +----------------------+               +----------------------+
+```{.dot caption="Formal query languages" width="62%"}
+digraph G { nodesep=0.4;
+  q [label="Formal Query Languages", width=2.4];
+  p [label="Procedural\nRelational Algebra"]; n [label="Non-procedural\nRelational Calculus"];
+  t [label="Tuple RC (TRC)\nvariable = whole tuple\n{ t | P(t) }\nbasis of SQL, QUEL"]; d [label="Domain RC (DRC)\nvariable = column value\n{ <x1..xn> | P(x1..xn) }\nbasis of QBE"];
+  q -> p; q -> n; n -> t; n -> d;
+}
 ```
 
 **3. Core Explanation / Working**
@@ -603,25 +541,14 @@ TRC is the theoretical basis of **SQL's** `SELECT ... FROM ... WHERE` and DRC is
 
 **2. Block Diagram**
 
-```
-                   +------------------------------+
-                   |     Integrity Constraints    |
-                   +---------------+--------------+
-                                   |
-      +---------------+------------+-------------+------------------+
-      |               |                          |                  |
-+-----v------+  +-----v-------+        +---------v--------+  +------v------+
-|  DOMAIN    |  |    KEY      |        |  ENTITY          |  | REFERENTIAL |
-| Constraint |  | Constraint  |        |  INTEGRITY       |  |  INTEGRITY  |
-+------------+  +-------------+        +------------------+  +-------------+
-| Data type, |  | Uniqueness  |        | Primary key can  |  | FK value must|
-| range,     |  | of candidate|        | never be NULL    |  | match a PK or|
-| CHECK      |  | keys        |        |                  |  | be NULL      |
-+------------+  +-------------+        +------------------+  +-------------+
-
-   Referential link:
-   STUDENT.Dept_ID (Foreign Key) ------references-----> DEPARTMENT.Dept_ID (Primary Key)
-      (Referencing / Child)                               (Referenced / Parent)
+```{.dot caption="Types of integrity constraints, and the foreign-key link" width="88%"}
+digraph G { nodesep=0.25; ranksep=0.45;
+  ic [label="Integrity Constraints", width=2.3];
+  a [label="DOMAIN\ndata type, range,\nCHECK"]; b [label="KEY\nuniqueness of\ncandidate keys"]; c [label="ENTITY INTEGRITY\nprimary key\nnever NULL"]; d [label="REFERENTIAL\nFK = some PK\nvalue or NULL"];
+  ic -> {a b c d};
+  s [label="STUDENT.Dept_ID\n(foreign key, child)"]; t [label="DEPARTMENT.Dept_ID\n(primary key, parent)"];
+  d -> s [style=invis]; s -> t [label=" references"]; {rank=same; s; t}
+}
 ```
 
 **3. Core Explanation / Working**
@@ -632,16 +559,13 @@ TRC is the theoretical basis of **SQL's** `SELECT ... FROM ... WHERE` and DRC is
 - Defined using data types, `NOT NULL`, `DEFAULT` and `CHECK`.
 - SQL: `Age INT CHECK (Age BETWEEN 17 AND 30)`
 
-```
- STUDENT
- +------+-------+-------+
- | Roll | Name  |  Age  |
- +------+-------+-------+
- | 101  | Harsh |  21   |  <- Valid
- | 102  | Neha  | 'abc' |  <- VIOLATION: Age must be INT
- | 103  | Ravi  |  45   |  <- VIOLATION: CHECK (17-30) fails
- +------+-------+-------+
-```
+**STUDENT**
+
+| Roll | Name | Age | Status |
+|---|---|---|---|
+| 101 | Harsh | 21 | Valid |
+| 102 | Neha | 'abc' | **Violation:** Age must be INT |
+| 103 | Ravi | 45 | **Violation:** CHECK (17 to 30) fails |
 
 *(b) Key Constraint*
 
@@ -652,33 +576,34 @@ TRC is the theoretical basis of **SQL's** `SELECT ... FROM ... WHERE` and DRC is
 - **No primary key attribute may be NULL.** The primary key identifies each tuple uniquely, and NULL cannot identify anything.
 - SQL: `Roll INT PRIMARY KEY` (this implies `NOT NULL` and `UNIQUE`).
 
-```
- STUDENT
- +------+-------+
- | Roll | Name  |
- +------+-------+
- | 101  | Harsh |   <- Valid
- | NULL | Aman  |   <- VIOLATION: PK cannot be NULL
- | 101  | Priya |   <- VIOLATION: duplicate PK (key constraint)
- +------+-------+
-```
+**STUDENT**
+
+| Roll | Name | Status |
+|---|---|---|
+| 101 | Harsh | Valid |
+| NULL | Aman | **Violation:** PK cannot be NULL |
+| 101 | Priya | **Violation:** duplicate PK (key constraint) |
 
 *(d) Referential Integrity Constraint*
 
 - A **foreign key (FK)** value in the referencing (child) table must either **match an existing primary key** value in the referenced (parent) table or be **NULL**.
 - SQL: `Dept_ID INT REFERENCES DEPARTMENT(Dept_ID)`
 
-```
- DEPARTMENT (Parent)          STUDENT (Child)
- +---------+-------+          +------+-------+---------+
- | Dept_ID | DName |          | Roll | Name  | Dept_ID |
- +---------+-------+          +------+-------+---------+
- |   10    | CSE   |<---------| 101  | Harsh |   10    |  Valid
- |   20    | IT    |<---------| 102  | Neha  |   20    |  Valid
- +---------+-------+          | 103  | Ravi  |  NULL   |  Valid (not assigned)
-                              | 104  | Mohit |   50    |  VIOLATION: 50 not in parent
-                              +------+-------+---------+
-```
+**DEPARTMENT (parent)**
+
+| Dept_ID | DName |
+|---|---|
+| 10 | CSE |
+| 20 | IT |
+
+**STUDENT (child)**
+
+| Roll | Name | Dept_ID | Status |
+|---|---|---|---|
+| 101 | Harsh | 10 | Valid |
+| 102 | Neha | 20 | Valid |
+| 103 | Ravi | NULL | Valid (not assigned yet) |
+| 104 | Mohit | 50 | **Violation:** 50 is not in DEPARTMENT |
 
 *(e) How operations can violate constraints*
 
@@ -750,32 +675,18 @@ A decomposition of relation R into R1 and R2 is **lossless (non-additive) join**
 
 **2. Flowchart - Lossless Join Test (Binary Decomposition)**
 
-```
-            +-----------------------------------+
-            |  Given R, F and R1, R2            |
-            +-----------------+-----------------+
-                              |
-            +-----------------v-----------------+
-            | Cond 1: R1 ∪ R2 = R ?             |---- No ---> LOSSY
-            +-----------------+-----------------+
-                              | Yes
-            +-----------------v-----------------+
-            | Cond 2: R1 ∩ R2 ≠ ∅ ?             |---- No ---> LOSSY
-            +-----------------+-----------------+
-                              | Yes
-            +-----------------v-----------------+
-            | Compute (R1 ∩ R2)+ using F        |
-            +-----------------+-----------------+
-                              |
-            +-----------------v-----------------+
-            | Cond 3: (R1 ∩ R2) -> R1  OR       |---- No ---> LOSSY
-            |         (R1 ∩ R2) -> R2 ?         |
-            |  (common attr is a key of R1/R2)  |
-            +-----------------+-----------------+
-                              | Yes
-                       +------v------+
-                       |  LOSSLESS   |
-                       +-------------+
+```{.dot caption="Lossless-join test for a binary decomposition" width="62%"}
+digraph G { node [width=3.4];
+  s [label="Given R, F and decomposition R1, R2"];
+  c1 [label="Cond. 1: R1 ∪ R2 = R ?", shape=diamond, width=2.6];
+  c2 [label="Cond. 2: R1 ∩ R2 ≠ ∅ ?", shape=diamond, width=2.6];
+  cl [label="Compute (R1 ∩ R2)+ using F"];
+  c3 [label="Cond. 3: (R1 ∩ R2) → R1\nor (R1 ∩ R2) → R2 ?", shape=diamond, width=3];
+  ok [label="LOSSLESS", penwidth=2]; no [label="LOSSY"];
+  s -> c1; c1 -> c2 [label=" yes"]; c2 -> cl [label=" yes"]; cl -> c3; c3 -> ok [label=" yes"];
+  c1 -> no [label=" no"]; c2 -> no [label=" no"]; c3 -> no [label=" no"];
+  {rank=same; c2; no}
+}
 ```
 
 **3. Core Explanation / Working**
@@ -807,17 +718,27 @@ Decomposition: `R1(A, B, C)` and `R2(A, D, E)`
 
 - R1 ∩ R2 = {B}, and B+ = {B}. B is a key of neither R1 nor R2, so the decomposition is **LOSSY**.
 
-```
-     R                  R1           R2           R1 ⋈ R2
- +---+---+---+       +---+---+    +---+---+    +---+---+---+
- | A | B | C |       | A | B |    | B | C |    | A | B | C |
- +---+---+---+       +---+---+    +---+---+    +---+---+---+
- | 1 | x | p |  -->  | 1 | x |    | x | p |    | 1 | x | p |
- | 2 | x | q |       | 2 | x |    | x | q |    | 1 | x | q | <- spurious
- +---+---+---+       +---+---+    +---+---+    | 2 | x | p | <- spurious
-                                               | 2 | x | q |
-                                               +---+---+---+
-```
+| R: A | B | C |
+|---|---|---|
+| 1 | x | p |
+| 2 | x | q |
+
+| R1: A | B |
+|---|---|
+| 1 | x |
+| 2 | x |
+
+| R2: B | C |
+|---|---|
+| x | p |
+| x | q |
+
+| R1 ⋈ R2: A | B | C | Note |
+|---|---|---|---|
+| 1 | x | p | original |
+| 1 | x | q | **spurious** |
+| 2 | x | p | **spurious** |
+| 2 | x | q | original |
 
 The join gives 4 tuples instead of 2. The extra tuples make information **ambiguous**, which is why the decomposition is called "lossy".
 
@@ -875,36 +796,16 @@ A **canonical (minimal) cover Fc** of an FD set F is the **smallest equivalent s
 
 **2. Flowchart - Algorithm**
 
-```
-        +-------------------------------------------+
-        |              Given FD set F               |
-        +---------------------+---------------------+
-                              |
-        +---------------------v---------------------+
-        | STEP 1: Decompose RHS (singleton RHS)     |
-        |   A -> BC  ==>  A -> B ,  A -> C          |
-        +---------------------+---------------------+
-                              |
-        +---------------------v---------------------+
-        | STEP 2: Remove extraneous LHS attributes  |
-        |   For XY -> Z: if X+ contains Z, drop Y   |
-        +---------------------+---------------------+
-                              |
-        +---------------------v---------------------+
-        | STEP 3: Remove redundant FDs              |
-        |   For X -> A: drop it, compute X+ with    |
-        |   the rest; if A is in X+, it's redundant |
-        +---------------------+---------------------+
-                              |
-        +---------------------v---------------------+
-        | STEP 4: Union rule - combine same LHS     |
-        |   A -> B , A -> C  ==>  A -> BC           |
-        +---------------------+---------------------+
-                              |
-                     +--------v--------+
-                     | Canonical Cover |
-                     |       Fc        |
-                     +-----------------+
+```{.dot caption="Algorithm for finding the canonical cover" width="60%"}
+digraph G { node [width=3.8];
+  a [label="Given FD set F"];
+  b [label="STEP 1: Make every RHS a single attribute\nA → BC  becomes  A → B, A → C"];
+  c [label="STEP 2: Remove extraneous LHS attributes\nfor XY → Z: if X+ contains Z, drop Y"];
+  d [label="STEP 3: Remove redundant FDs\ndrop X → A; if A ∈ X+ (using the rest), it is redundant"];
+  e [label="STEP 4: Union rule: combine FDs with the same LHS"];
+  f [label="Canonical cover Fc", penwidth=2];
+  a -> b -> c -> d -> e -> f;
+}
 ```
 
 **3. Core Explanation / Working - Solved Example 1**
@@ -913,9 +814,7 @@ A **canonical (minimal) cover Fc** of an FD set F is the **smallest equivalent s
 
 *Step 1: Make every RHS a single attribute*
 
-```
- F1 = { A → B,  C → B,  D → A,  D → B,  D → C,  AC → D }
-```
+$$F_1 = \{\, A \to B,\;\; C \to B,\;\; D \to A,\;\; D \to B,\;\; D \to C,\;\; AC \to D \,\}$$
 
 *Step 2: Remove extraneous attributes from LHS* (only `AC → D` has a composite LHS)
 
@@ -940,9 +839,7 @@ A **canonical (minimal) cover Fc** of an FD set F is the **smallest equivalent s
 
 **Answer:**
 
-```
-   Fc = { A → B,  C → B,  D → AC,  AC → D }
-```
+$$F_c = \{\, A \to B,\;\; C \to B,\;\; D \to AC,\;\; AC \to D \,\}$$
 
 **Solved Example 2 (Korth)**
 
@@ -990,34 +887,12 @@ A **Multivalued Dependency (MVD)** `X →→ Y` exists when, for one value of X,
 
 **2. Block Diagram - Normal Form Hierarchy**
 
-```
-  +-----------------+
-  | Unnormalized    |
-  +--------+--------+
-           | remove multi-valued / repeating attributes
-  +--------v--------+
-  |      1NF        |
-  +--------+--------+
-           | remove partial dependencies
-  +--------v--------+
-  |      2NF        |
-  +--------+--------+
-           | remove transitive dependencies
-  +--------v--------+
-  |      3NF        |
-  +--------+--------+
-           | every determinant must be a superkey
-  +--------v--------+
-  |      BCNF       |
-  +--------+--------+
-           | remove non-trivial MVDs           <-- Topic of this answer
-  +--------v--------+
-  |      4NF        |
-  +--------+--------+
-           | remove JDs not implied by keys    <-- Topic of this answer
-  +--------v--------+
-  |   5NF / PJNF    |
-  +-----------------+
+```{.dot caption="Normal forms: each step removes one kind of dependency" width="98%"}
+digraph G { rankdir=LR; nodesep=0.2; node [width=0.9];
+  u [label="Unnormalized"]; n1 [label="1NF"]; n2 [label="2NF"]; n3 [label="3NF"]; bc [label="BCNF"]; n4 [label="4NF", penwidth=2]; n5 [label="5NF / PJNF", penwidth=2];
+  u -> n1 [label="atomic\nvalues"]; n1 -> n2 [label="remove partial\ndependency"]; n2 -> n3 [label="remove transitive\ndependency"];
+  n3 -> bc [label="every determinant\nis a superkey"]; bc -> n4 [label="remove\nnon-trivial MVDs"]; n4 -> n5 [label="remove JDs not\nimplied by keys"];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -1036,18 +911,14 @@ A **Multivalued Dependency (MVD)** `X →→ Y` exists when, for one value of X,
 
 A student takes several courses and has several hobbies, and the two are **independent** of each other.
 
-```
- STUDENT_INFO  (Key = {SID, Course, Hobby})
- +-----+--------+---------+
- | SID | Course |  Hobby  |
- +-----+--------+---------+
- | S1  | DBMS   | Cricket |
- | S1  | DBMS   | Music   |
- | S1  | OS     | Cricket |
- | S1  | OS     | Music   |
- +-----+--------+---------+
-   MVDs:  SID →→ Course   and   SID →→ Hobby
-```
+**STUDENT_INFO** (key = {SID, Course, Hobby}; MVDs: SID →→ Course and SID →→ Hobby)
+
+| SID | Course | Hobby |
+|---|---|---|
+| S1 | DBMS | Cricket |
+| S1 | DBMS | Music |
+| S1 | OS | Cricket |
+| S1 | OS | Music |
 
 - Problem: adding one new hobby for S1 requires **2 new rows** (one per course). This is redundancy and an update anomaly.
 
@@ -1057,16 +928,21 @@ A student takes several courses and has several hobbies, and the two are **indep
 - In the example, SID is not a superkey, so the relation is **not in 4NF**.
 - **Decomposition:** for X →→ Y, split into R1(X ∪ Y) and R2(R − Y).
 
-```
- STUDENT_COURSE              STUDENT_HOBBY
- +-----+--------+            +-----+---------+
- | SID | Course |            | SID |  Hobby  |
- +-----+--------+            +-----+---------+
- | S1  | DBMS   |            | S1  | Cricket |
- | S1  | OS     |            | S1  | Music   |
- +-----+--------+            +-----+---------+
-   Both now in 4NF (only trivial MVDs remain). The decomposition is lossless.
-```
+**STUDENT_COURSE**
+
+| SID | Course |
+|---|---|
+| S1 | DBMS |
+| S1 | OS |
+
+**STUDENT_HOBBY**
+
+| SID | Hobby |
+|---|---|
+| S1 | Cricket |
+| S1 | Music |
+
+Both tables are now in 4NF (only trivial MVDs remain), and the decomposition is lossless.
 
 *(d) Join Dependency (JD)*
 
@@ -1078,17 +954,14 @@ A student takes several courses and has several hobbies, and the two are **indep
 
 Rule (cyclic constraint): if a Supplier supplies Part P, the Supplier supplies to Project J, and Project J uses Part P, then the Supplier supplies P to J.
 
-```
- SPJ (all attributes form the key; no MVD exists)
- +----------+------+---------+
- | Supplier | Part | Project |
- +----------+------+---------+
- |    S1    |  P1  |   J2    |
- |    S1    |  P2  |   J1    |
- |    S2    |  P1  |   J1    |
- |    S1    |  P1  |   J1    |
- +----------+------+---------+
-```
+**SPJ** (all attributes form the key; no MVD exists)
+
+| Supplier | Part | Project |
+|---|---|---|
+| S1 | P1 | J2 |
+| S1 | P2 | J1 |
+| S2 | P1 | J1 |
+| S1 | P1 | J1 |
 
 - Projections: `SP = {S1P1, S1P2, S2P1}`, `PJ = {P1J2, P2J1, P1J1}`, `JS = {J2S1, J1S1, J1S2}`.
 - `SP ⋈ PJ` = {S1P1J2, S1P1J1, S1P2J1, **S2P1J2**, S2P1J1}. The tuple S2P1J2 is **spurious**, so 2 projections are not enough.
@@ -1169,34 +1042,18 @@ A schedule is **serializable** if its effect is equivalent to some **serial sche
 
 **2. Flowchart - Testing a Schedule**
 
-```
-            +-----------------------------------+
-            |          Given Schedule S         |
-            +-----------------+-----------------+
-                              |
-            +-----------------v-----------------+
-            | Draw precedence graph (conflicts: |
-            |   R-W, W-R, W-W on same item)     |
-            +-----------------+-----------------+
-                              |
-                    +---------v---------+
-                    |  Cycle in graph?  |
-                    +----+---------+----+
-                      No |         | Yes
-          +--------------v--+   +--v-------------------------+
-          | CONFLICT        |   | Not conflict serializable. |
-          | SERIALIZABLE    |   | Any BLIND WRITE in S?      |
-          | => also VIEW    |   +--+----------------------+--+
-          | SERIALIZABLE    |      | No                   | Yes
-          +-----------------+   +--v--------------+   +---v-----------------------+
-                                | NOT VIEW        |   | Check view equivalence    |
-                                | SERIALIZABLE    |   | with each serial order:   |
-                                +-----------------+   | 1. Initial read           |
-                                                      | 2. Updated (W-R) read     |
-                                                      | 3. Final write            |
-                                                      +---+-----------------------+
-                                                          |
-                                                 Match found => VIEW SERIALIZABLE
+```{.dot caption="Testing a schedule for conflict and view serializability" width="72%"}
+digraph G { node [width=3];
+  s [label="Given schedule S"];
+  g [label="Draw precedence graph\n(R-W, W-R, W-W conflicts on the same item)"];
+  c [label="Cycle in the graph?", shape=diamond, width=2.4];
+  cs [label="CONFLICT SERIALIZABLE\n(and therefore view serializable)", penwidth=2];
+  b [label="Any blind write in S?", shape=diamond, width=2.4];
+  nv [label="NOT view serializable"];
+  v [label="Check view equivalence with each serial order:\n1. initial read  2. reads-from  3. final write"];
+  r [label="Match found → VIEW SERIALIZABLE", penwidth=2];
+  s -> g -> c; c -> cs [label=" no"]; c -> b [label=" yes"]; b -> nv [label=" no"]; b -> v [label=" yes"]; v -> r;
+}
 ```
 
 **3. Core Explanation / Working**
@@ -1219,17 +1076,14 @@ A schedule is **serializable** if its effect is equivalent to some **serial sche
 
 *(c) Solved Example - Test for View Serializability*
 
-```
- Schedule S:
- +---------+---------+---------+
- |   T1    |   T2    |   T3    |
- +---------+---------+---------+
- | R(A)    |         |         |
- |         | W(A)    |         |
- | W(A)    |         |         |
- |         |         | W(A)    |
- +---------+---------+---------+
-```
+**Schedule S**
+
+| Time | T1 | T2 | T3 |
+|---|---|---|---|
+| 1 | R(A) | | |
+| 2 | | W(A) | |
+| 3 | W(A) | | |
+| 4 | | | W(A) |
 
 *Step 1: Conflict test with a precedence graph*
 
@@ -1237,18 +1091,14 @@ A schedule is **serializable** if its effect is equivalent to some **serial sche
 - W2(A) before W1(A) gives T2 → T1.
 - W1(A) before W3(A) gives T1 → T3. W2(A) before W3(A) gives T2 → T3.
 
-```
-         +------+   T1 -> T2   +------+
-         |  T1  |------------->|  T2  |
-         |      |<-------------|      |
-         +--+---+   T2 -> T1   +--+---+
-            |                     |
-            +--------+   +--------+
-                     v   v
-                   +------+
-                   |  T3  |
-                   +------+
-   Cycle T1 -> T2 -> T1 exists  ==>  NOT conflict serializable
+```{.dot caption="Precedence graph: the cycle T1 → T2 → T1 means S is NOT conflict serializable" width="40%"}
+digraph G { nodesep=0.8; ranksep=0.7;
+  node [shape=circle, width=0.55, fixedsize=true];
+  T1; T2; T3;
+  T1 -> T2 [label=" R1(A), W2(A)"]; T2 -> T1 [label=" W2(A), W1(A)"];
+  T1 -> T3; T2 -> T3;
+  {rank=same; T1; T2}
+}
 ```
 
 *Step 2: View test.* W2(A) and W3(A) are **blind writes**, so check against the serial order T1 → T2 → T3.
@@ -1299,31 +1149,19 @@ The **Timestamp Ordering (TO) Protocol** is a **non-lock-based** concurrency con
 
 **2. Flowchart - Basic TO Protocol with Thomas Write Rule**
 
-```
-                       +------------------------+
-                       | Ti issues an operation |
-                       |      on item Q         |
-                       +-----------+------------+
-                                   |
-                 +-----------------+------------------+
-                 |                                    |
-          +------v------+                      +------v------+
-          |   READ(Q)   |                      |  WRITE(Q)   |
-          +------+------+                      +------+------+
-                 |                                    |
-     +-----------v-----------+           +------------v-----------+
-     | TS(Ti) < W-TS(Q) ?    |           | TS(Ti) < R-TS(Q) ?     |
-     +----+-------------+----+           +----+--------------+----+
-      Yes |             | No              Yes |              | No
-   +------v-----+  +----v-----------+  +------v-----+  +-----v-----------------+
-   | REJECT,    |  | EXECUTE read;  |  | REJECT,    |  | TS(Ti) < W-TS(Q) ?    |
-   | rollback Ti|  | R-TS(Q) =      |  | rollback Ti|  +----+-------------+----+
-   +------------+  | max(R-TS,TS(Ti)|  +------------+   Yes |             | No
-                   +----------------+          +----------v--------+ +--v-------------+
-                                               | Basic TO: ROLLBACK| | EXECUTE write; |
-                                               | Thomas: IGNORE    | | W-TS(Q)=TS(Ti) |
-                                               | write (obsolete)  | +----------------+
-                                               +-------------------+
+```{.dot caption="Basic timestamp ordering, with the Thomas Write Rule change" width="96%"}
+digraph G { nodesep=0.3; ranksep=0.4; node [fontsize=11];
+  op [label="Ti issues an operation on item Q"];
+  rd [label="READ(Q)"]; wr [label="WRITE(Q)"];
+  r1 [label="TS(Ti) < W-TS(Q) ?", shape=diamond];
+  rr [label="REJECT\nroll back Ti"]; rx [label="EXECUTE read\nR-TS(Q) = max(R-TS(Q), TS(Ti))"];
+  w1 [label="TS(Ti) < R-TS(Q) ?", shape=diamond]; wr1 [label="REJECT\nroll back Ti"];
+  w2 [label="TS(Ti) < W-TS(Q) ?", shape=diamond];
+  ob [label="OBSOLETE write\nBasic TO: roll back Ti\nThomas rule: IGNORE it", penwidth=2];
+  wx [label="EXECUTE write\nW-TS(Q) = TS(Ti)"];
+  op -> rd; op -> wr; rd -> r1; r1 -> rr [label=" yes"]; r1 -> rx [label=" no"];
+  wr -> w1; w1 -> wr1 [label=" yes"]; w1 -> w2 [label=" no"]; w2 -> ob [label=" yes"]; w2 -> wx [label=" no"];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -1399,23 +1237,18 @@ Timestamp-based concurrency control is the basis of **MVCC (Multi-Version Concur
 
 **2. Block Diagram - Granularity Hierarchy Tree**
 
-```
-                              +------+
-   Level 0 (Coarsest)         |  DB  |
-                              +--+---+
-                    +------------+-------------+
-                 +--v--+                    +--v--+
-   Level 1       | A1  |    (Areas)         | A2  |
-                 +--+--+                    +--+--+
-             +------+-----+              +-----+------+
-          +--v--+      +--v--+        +--v--+      +--v--+
-   Level 2|Fa   |      |Fb   |        |Fc   |      |Fd   |  (Files/Tables)
-          +--+--+      +--+--+        +--+--+      +--+--+
-           /   \        /   \          /   \        /   \
-   Level 3 ra1 ra2    rb1  rb2       rc1  rc2     rd1  rd2  (Records / Rows)
-   (Finest)
-
-   Locking: TOP-DOWN (root first)      Unlocking: BOTTOM-UP (leaf first)
+```{.dot caption="Granularity hierarchy: lock top-down, unlock bottom-up" width="75%"}
+digraph G { nodesep=0.15; ranksep=0.4;
+  node [shape=box, style=rounded];
+  DB [label="DB  (level 0, coarsest)"];
+  A1 [label="Area A1"]; A2 [label="Area A2"];
+  Fa [label="File Fa"]; Fb [label="File Fb"]; Fc [label="File Fc"]; Fd [label="File Fd"];
+  node [shape=ellipse, style="", fontsize=11];
+  ra1; ra2; rb1; rb2; rc1; rc2; rd1; rd2;
+  DB -> {A1 A2}; A1 -> {Fa Fb}; A2 -> {Fc Fd};
+  Fa -> {ra1 ra2}; Fb -> {rb1 rb2}; Fc -> {rc1 rc2}; Fd -> {rd1 rd2};
+  lvl [shape=plaintext, label="records\n(level 3, finest)"]; rd2 -> lvl [style=invis]; {rank=same; lvl; rd2}
+}
 ```
 
 **3. Core Explanation / Working**
@@ -1430,17 +1263,13 @@ Timestamp-based concurrency control is the basis of **MVCC (Multi-Version Concur
 
 *(b) Compatibility Matrix* (Y = compatible, N = conflict)
 
-```
- +---------+------+------+------+------+------+
- | Held -> |  IS  |  IX  |  S   | SIX  |  X   |
- +---------+------+------+------+------+------+
- |   IS    |  Y   |  Y   |  Y   |  Y   |  N   |
- |   IX    |  Y   |  Y   |  N   |  N   |  N   |
- |   S     |  Y   |  N   |  Y   |  N   |  N   |
- |   SIX   |  Y   |  N   |  N   |  N   |  N   |
- |   X     |  N   |  N   |  N   |  N   |  N   |
- +---------+------+------+------+------+------+
-```
+| Requested ↓ / Held → | IS | IX | S | SIX | X |
+|---|---|---|---|---|---|
+| **IS** | Yes | Yes | Yes | Yes | No |
+| **IX** | Yes | Yes | No | No | No |
+| **S** | Yes | No | Yes | No | No |
+| **SIX** | Yes | No | No | No | No |
+| **X** | No | No | No | No | No |
 
 *(c) Rules of the Multiple Granularity Locking Protocol* (for transaction Ti)
 
@@ -1531,28 +1360,21 @@ Multiple granularity locking with intention locks is implemented in **Microsoft 
 
 **2. Block Diagram**
 
+```{.dot caption="Shadow paging: the shadow table still points to the old pages; pages 2 and 4 were copied on write" width="82%"}
+digraph G { rankdir=TB; nodesep=0.35; ranksep=0.7;
+  root [label="DB root pointer\n(fixed disk address)", style="rounded,bold"];
+  node [shape=record, style="", fontsize=11];
+  sh [label="SHADOW table\n(on disk, frozen)|<1> 1|<2> 2|<3> 3|<4> 4"];
+  cu [label="CURRENT table\n(in memory)|<1> 1|<2> 2|<3> 3|<4> 4"];
+  node [shape=box, style="", width=0.9, height=0.45];
+  p1 [label="P1"]; p2 [label="P2\n(old)"]; p3 [label="P3"]; p4 [label="P4\n(old)"]; p2n [label="P2'\n(new)", penwidth=2]; p4n [label="P4'\n(new)", penwidth=2];
+  root -> sh [label=" before commit"]; root -> cu [label=" after commit\n (atomic switch)", style=dashed];
+  sh:1 -> p1; sh:2 -> p2; sh:3 -> p3; sh:4 -> p4;
+  cu:1 -> p1; cu:3 -> p3; cu:2 -> p2n; cu:4 -> p4n;
+  {rank=same; sh; cu} {rank=same; p1; p2; p3; p4; p2n; p4n}
+}
 ```
-   +----------------------+                      +----------------------+
-   |  SHADOW PAGE TABLE   |                      |  CURRENT PAGE TABLE  |
-   |  (on disk, frozen)   |                      |  (in memory, live)   |
-   +------+---------------+     DISK PAGES       +------+---------------+
-   | Page | Points to     |   +--------------+   | Page | Points to     |
-   +------+---------------+   | P1  (old)    |   +------+---------------+
-   |  1   | P1            |   | P2  (old)    |   |  1   | P1   (shared) |
-   |  2   | P2            |   | P3  (old)    |   |  2   | P2'  (NEW)    |
-   |  3   | P3            |   | P4  (old)    |   |  3   | P3   (shared) |
-   |  4   | P4            |   | P2' (copy)   |   |  4   | P4'  (NEW)    |
-   +------+---------------+   | P4' (copy)   |   +------+---------------+
-              ^               +--------------+              ^
-              |                                             |
-              |     +----------------------------------+    |
-              +-----|  DB ROOT POINTER (fixed address) |----+
-           (before  +----------------------------------+  (after commit:
-            commit)                                        atomic switch)
 
-   Abort / crash  -> root still points to SHADOW table -> old consistent state
-   Commit         -> root switched to CURRENT table   -> new state is durable
-```
 
 **3. Core Explanation / Working**
 
@@ -1612,18 +1434,7 @@ Shadow paging is used in **System R (early IBM RDBMS)**, the **SQLite rollback j
 
 **2. Block Diagram - Checkpoint Recovery Timeline**
 
-```
-  Time ------------------------------------------------------------------->
-                           Tc (Checkpoint)                 Tf (Crash)
-                                 |                              |
-  T1  |=========|                |                              |  -> Ignore (done before Tc)
-  T2        |====================|=========|                    |  -> REDO (committed after Tc)
-  T3              |==============|==============================X  -> UNDO (not committed)
-  T4                             |  |==============|            |  -> REDO (committed)
-  T5                             |          |===================X  -> UNDO (not committed)
-                                 |                              |
-            |=====| = transaction duration     X = still active at crash
-```
+![Checkpoint recovery: transactions are classified by when they started and committed relative to the checkpoint Tc and the crash Tf](figures/dbms_checkpoint.svg){width=82%}
 
 **3. Core Explanation / Working**
 
@@ -1651,20 +1462,16 @@ Shadow paging is used in **System R (early IBM RDBMS)**, the **SQLite rollback j
 
 *(d) Example* - T0: A = 1000 to 950, B = 2000 to 2050. T1: C = 700 to 600.
 
-```
-   DEFERRED MODIFICATION LOG         IMMEDIATE MODIFICATION LOG
-   +--------------------------+      +------------------------------+
-   | <T0 start>               |      | <T0 start>                   |
-   | <T0, A, 950>             |      | <T0, A, 1000, 950>           |
-   | <T0, B, 2050>            |      | <T0, B, 2000, 2050>          |
-   | <T0 commit>              |      | <T0 commit>                  |
-   | <T1 start>               |      | <T1 start>                   |
-   | <T1, C, 600>             |      | <T1, C, 700, 600>            |
-   |   --- CRASH ---          |      |   --- CRASH ---              |
-   +--------------------------+      +------------------------------+
-   Recovery: REDO(T0);               Recovery: REDO(T0);
-             ignore T1                         UNDO(T1) -> C = 700
-```
+| Deferred modification log | Immediate modification log |
+|---|---|
+| ⟨T0 start⟩ | ⟨T0 start⟩ |
+| ⟨T0, A, 950⟩ | ⟨T0, A, 1000, 950⟩ |
+| ⟨T0, B, 2050⟩ | ⟨T0, B, 2000, 2050⟩ |
+| ⟨T0 commit⟩ | ⟨T0 commit⟩ |
+| ⟨T1 start⟩ | ⟨T1 start⟩ |
+| ⟨T1, C, 600⟩ | ⟨T1, C, 700, 600⟩ |
+| **crash** | **crash** |
+| Recovery: **REDO(T0)**; ignore T1 | Recovery: **REDO(T0)**; **UNDO(T1)**, so C = 700 |
 
 *(e) Checkpointing*
 
@@ -1719,35 +1526,21 @@ A **B-Tree of order m** is a **self-balancing multi-way search tree** in which e
 
 **2. Block Diagram - Structure Comparison**
 
+```{.dot caption="B-Tree of order 3: every node holds keys AND data pointers (*)" width="52%"}
+digraph G { nodesep=0.25; ranksep=0.45; node [shape=record, style="", height=0.35];
+  r [label="40*"]; a [label="20*"]; b [label="60*"]; l1 [label="10*"]; l2 [label="30*"]; l3 [label="50*"]; l4 [label="70*"];
+  r -> a; r -> b; a -> l1; a -> l2; b -> l3; b -> l4;
+}
 ```
-  B-TREE (order 3): data pointers in ALL nodes
 
-                     +---------+
-                     |   40*   |            * = key + data pointer
-                     +--+---+--+
-                +-------+   +-------+
-           +----v----+         +----v----+
-           |   20*   |         |   60*   |
-           +-+-----+-+         +-+-----+-+
-             |     |             |     |
-          +--v-+ +-v--+       +--v-+ +-v--+
-          |10* | |30* |       |50* | |70* |
-          +----+ +----+       +----+ +----+
-
-  B+ TREE (order 3): data only at LEAVES, leaves linked
-
-                         +---------+
-                         |   40    |        (index keys only)
-                         +--+---+--+
-                  +---------+   +---------+
-             +----v----+           +----v----+
-             |   20    |           |   60    |
-             +--+---+--+           +--+---+--+
-          +-----+   +----+       +----+   +----+
-       +--v--+     +-----v-+  +--v----+  +----v--+
-       | 10* |---->| 20*30*|->| 40*50*|->| 60*70*|-> NULL
-       +-----+     +-------+  +-------+  +-------+
-                 (sequential linked list of leaves)
+```{.dot caption="B+ Tree of order 3: data only in the leaves, and the leaves are linked in order" width="62%"}
+digraph G { nodesep=0.25; ranksep=0.45; node [shape=record, style="", height=0.35];
+  r [label="40"]; a [label="20"]; b [label="60"];
+  l1 [label="10*", shape=box]; l2 [label="20*   30*", shape=box]; l3 [label="40*   50*", shape=box]; l4 [label="60*   70*", shape=box];
+  r -> a; r -> b; a -> l1; a -> l2; b -> l3; b -> l4;
+  l1 -> l2 -> l3 -> l4 [constraint=false, style=dashed, arrowsize=0.6];
+  {rank=same; l1; l2; l3; l4}
+}
 ```
 
 **3. Core Explanation / Working**
@@ -1771,39 +1564,25 @@ A **B-Tree of order m** is a **self-balancing multi-way search tree** in which e
 
 *(c) Solved Example - Insert 10, 20, 30, 40, 50, 60, 70 into a B-Tree of order m = 3* (max 2 keys per node)
 
+```{.dot caption="B-Tree (order m = 3) insertion of 10, 20, ..., 70: each overflow pushes the median key up" width="98%"}
+digraph G { nodesep=0.12; ranksep=0.35; node [shape=record, style="", height=0.32, fontsize=11];
+  subgraph cluster_1 { label="After 10, 20"; style=dashed; s1 [label="10 | 20"]; }
+  subgraph cluster_3 { label="Insert 30: overflow,\n20 moves up"; style=dashed; s3r [label="20"]; s3a [label="10"]; s3b [label="30"]; s3r -> s3a; s3r -> s3b; }
+  subgraph cluster_5 { label="Insert 40, 50: overflow,\n40 moves up"; style=dashed; s5r [label="20 | 40"]; s5a [label="10"]; s5b [label="30"]; s5c [label="50"]; s5r -> s5a; s5r -> s5b; s5r -> s5c; }
+  subgraph cluster_7 { label="Insert 60, 70: leaf AND root overflow,\nroot splits (height + 1)"; style=bold;
+    f [label="40"]; fa [label="20"]; fb [label="60"]; f1 [label="10"]; f2 [label="30"]; f3 [label="50"]; f4 [label="70"];
+    f -> fa; f -> fb; fa -> f1; fa -> f2; fb -> f3; fb -> f4; }
+}
 ```
- Step 1: Insert 10            Step 2: Insert 20
-         [10]                         [10 | 20]
 
- Step 3: Insert 30  -> [10 | 20 | 30] OVERFLOW -> split, median 20 goes up
-                 [20]
-                /    \
-             [10]    [30]
-
- Step 4: Insert 40  -> goes to leaf [30]
-                 [20]
-                /    \
-             [10]    [30 | 40]
-
- Step 5: Insert 50  -> [30 | 40 | 50] OVERFLOW -> split, median 40 goes up
-                 [20 | 40]
-                /    |    \
-             [10]  [30]   [50]
-
- Step 6: Insert 60  -> goes to leaf [50]
-                 [20 | 40]
-                /    |    \
-             [10]  [30]   [50 | 60]
-
- Step 7: Insert 70  -> [50 | 60 | 70] OVERFLOW -> 60 goes up
-         Root becomes [20 | 40 | 60] OVERFLOW -> split root, 40 goes up
-
-                       [40]                 <- New root (height +1)
-                     /      \
-                 [20]        [60]
-                /    \      /    \
-             [10]   [30]  [50]   [70]
-```
+| Step | Key inserted | What happens | Tree after the step |
+|---|---|---|---|
+| 1-2 | 10, 20 | Fit in the root | [10 \| 20] |
+| 3 | 30 | Root overflows [10 \| 20 \| 30]: 20 moves up | root [20], leaves [10] [30] |
+| 4 | 40 | Goes to leaf [30] | [30 \| 40] |
+| 5 | 50 | Leaf overflows [30 \| 40 \| 50]: 40 moves up | root [20 \| 40], leaves [10] [30] [50] |
+| 6 | 60 | Goes to leaf [50] | [50 \| 60] |
+| 7 | 70 | Leaf overflows: 60 moves up, so the root becomes [20 \| 40 \| 60] and overflows: 40 moves up | root [40], children [20] [60], leaves [10] [30] [50] [70] |
 
 *Final tree:* height = 3, all leaves at the same level, and every node has between 1 and 2 keys.
 
@@ -1916,45 +1695,15 @@ B+ Trees are the **default index structure** in MySQL InnoDB, Oracle, PostgreSQL
 
 **2. Block Diagram - Web Development Life Cycle**
 
-```
-   +------------------------------+
-   | 1. Information Gathering /   |  Goals, target audience, purpose
-   |    Requirement Analysis      |
-   +--------------+---------------+
-                  |
-   +--------------v---------------+
-   | 2. Planning                  |  Sitemap, technology stack,
-   |    (Sitemap & Wireframe)     |  wireframes, timeline
-   +--------------+---------------+
-                  |
-   +--------------v---------------+
-   | 3. Design                    |  UI/UX, layout, colour,
-   |    (Mock-ups / Prototype)    |  typography, client review
-   +--------------+---------------+
-                  |
-   +--------------v---------------+
-   | 4. Content Writing &         |  Text, images, SEO keywords
-   |    Assembly                  |
-   +--------------+---------------+
-                  |
-   +--------------v---------------+       +---------------------+
-   | 5. Development (Coding)      |<----->| Front end: HTML,    |
-   |                              |       | CSS, JavaScript     |
-   +--------------+---------------+       | Back end: Node/JSP, |
-                  |                       | DB: MySQL/MongoDB   |
-   +--------------v---------------+       +---------------------+
-   | 6. Testing & Review          |  Functional, cross-browser,
-   |                              |  performance, security tests
-   +--------------+---------------+
-                  |       ^  bugs found
-                  |       +-------------- back to step 5
-   +--------------v---------------+
-   | 7. Deployment / Launch       |  Hosting, domain, upload (FTP/CI)
-   +--------------+---------------+
-                  |
-   +--------------v---------------+
-   | 8. Maintenance & Updates     |  Monitoring, backups, new features
-   +------------------------------+
+```{.dot caption="Web development life cycle" width="80%"}
+digraph G { nodesep=0.3; ranksep=0.32; node [width=2.6];
+  a [label="1. Information gathering\n(goals, audience, purpose)"]; b [label="2. Planning\n(sitemap, wireframes, tech stack)"];
+  c [label="3. Design\n(UI/UX mock-ups, client review)"]; d [label="4. Content writing & assembly"];
+  e [label="5. Development (coding)"]; t [label="Front end: HTML, CSS, JS\nBack end: Node / JSP\nDB: MySQL / MongoDB", shape=note, width=2.2];
+  f [label="6. Testing & review"]; g [label="7. Deployment / launch"]; h [label="8. Maintenance & updates"];
+  a -> b -> c -> d -> e -> f -> g -> h; e -> t [dir=both, style=dashed]; {rank=same; e; t}
+  f -> e [label=" bugs", style=dashed, constraint=false];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -2019,31 +1768,21 @@ An **HTML form** collects user input and sends it to a server for processing. It
 
 **2. Block Diagram - Form Layout and Data Flow**
 
-```
-  +-----------------------------------------------+
-  |           USER REGISTRATION FORM              |
-  +-----------------------------------------------+
-  | Full Name     : [ text            ]           |
-  | Email         : [ email           ]           |
-  | Password      : [ password        ]           |
-  | Date of Birth : [ date            ]           |
-  | Mobile        : [ tel             ]           |
-  | Gender        : (o) Male  ( ) Female ( ) Other|  <- radio
-  | Course        : [ B.Tech CSE   v ]            |  <- select
-  | Skills        : [x] HTML [ ] CSS [x] JS       |  <- checkbox
-  | Photo         : [ Choose File ]               |  <- file
-  | Address       : [ textarea               ]    |
-  |                 [                        ]    |
-  | [x] I agree to the terms                      |
-  |          [ Register ]   [ Reset ]             |  <- submit / reset
-  +-----------------------+-----------------------+
-                          | method="POST"
-                          v action="/register"
-             +--------------------------+
-             |  Web Server (Servlet/    |
-             |  Node.js) processes data |
-             +--------------------------+
-```
+<figure class="fig"><div class="formmock">
+<div class="fm-title">USER REGISTRATION FORM</div>
+<div class="fm-row"><span>Full Name</span><input type="text" placeholder="text"></div>
+<div class="fm-row"><span>Email</span><input type="text" placeholder="email"></div>
+<div class="fm-row"><span>Password</span><input type="password" value="12345678"></div>
+<div class="fm-row"><span>Date of Birth</span><input type="text" placeholder="dd-mm-yyyy (date)"></div>
+<div class="fm-row"><span>Gender</span><label><input type="radio" checked> Male</label> <label><input type="radio"> Female</label> <label><input type="radio"> Other</label></div>
+<div class="fm-row"><span>Course</span><select><option>B.Tech CSE</option></select></div>
+<div class="fm-row"><span>Skills</span><label><input type="checkbox" checked> HTML</label> <label><input type="checkbox"> CSS</label> <label><input type="checkbox" checked> JS</label></div>
+<div class="fm-row"><span>Photo</span><button>Choose File</button></div>
+<div class="fm-row"><span>Address</span><textarea rows="2"></textarea></div>
+<div class="fm-row"><span></span><label><input type="checkbox" checked> I agree to the terms</label></div>
+<div class="fm-row"><span></span><button>Register</button> <button>Reset</button></div>
+<div class="fm-note">method="post" &nbsp;→&nbsp; action="/register" &nbsp;→&nbsp; server (Servlet / Node.js)</div>
+</div><figcaption>Layout of the registration form and where its data goes</figcaption></figure>
 
 **3. Core Explanation / Working - HTML Code**
 
@@ -2180,21 +1919,15 @@ Registration forms like this are used on every **sign-up page**, for example col
 
 **2. Block Diagram - XML Tree Structure**
 
-```
-                      +-----------+
-                      |  library  |   (root element)
-                      +-----+-----+
-               +------------+-------------+
-          +----v----+                +----v----+
-          |  book   | id="B101"      |  book   | id="B102"
-          +----+----+ category=...   +----+----+
-     +-------+-+------+------+--------+
-     |       |        |      |        |
-  +--v--+ +--v---+ +--v--+ +-v---+ +--v-----+
-  |title| |author| |isbn | |year | | price  |
-  +-----+ +------+ +-----+ +-----+ +--------+
-
-   XML file ---> validated against ---> DTD / XSD ---> "Valid XML"
+```{.dot caption="XML tree of library.xml, validated against a DTD or XSD" width="98%"}
+digraph G { nodesep=0.2; ranksep=0.4; node [fontsize=11];
+  lib [label="library\n(root element)", penwidth=2];
+  b1 [label="book\nid=\"B101\" category=\"Database\""]; b2 [label="book\nid=\"B102\" category=\"Web\""];
+  node [shape=ellipse, style=""];
+  t [label="title"]; au [label="author (1..n)"]; pu [label="publisher"]; is [label="isbn"]; yr [label="year"]; pr [label="price\ncurrency=\"INR\""]; cp [label="copies"];
+  dots [label="...", shape=plaintext];
+  lib -> b1; lib -> b2; b1 -> {t au pu is yr pr cp}; b2 -> dots;
+}
 ```
 
 **3. Core Explanation / Working**
@@ -2362,29 +2095,13 @@ The **CSS Box Model** says that **every HTML element is a rectangular box** made
 
 **2. Block Diagram**
 
-```
- +-------------------------------------------------------------+
- |                        MARGIN (transparent)                 |
- |     +-----------------------------------------------+       |
- |     |                BORDER (visible line)          |       |
- |     |     +-----------------------------------+     |       |
- |     |     |      PADDING (takes background)   |     |       |
- |     |     |     +-----------------------+     |     |       |
- |     |     |     |                       |     |     |       |
- |     |     |     |        CONTENT        |     |     |       |
- |     |     |     |   (text / image)      |     |     |       |
- |     |     |     |   width x height      |     |     |       |
- |     |     |     |                       |     |     |       |
- |     |     |     +-----------------------+     |     |       |
- |     |     |                                   |     |       |
- |     |     +-----------------------------------+     |       |
- |     |                                               |       |
- |     +-----------------------------------------------+       |
- |                                                             |
- +-------------------------------------------------------------+
-   Outside  <------------------------------------------>  Inside
-   Margin  ->  Border  ->  Padding  ->  Content
-```
+<figure class="fig"><div class="boxmodel">
+<div class="bm-margin"><span class="bm-lbl">MARGIN (transparent, space outside the border)</span>
+<div class="bm-border"><span class="bm-lbl">BORDER (visible line)</span>
+<div class="bm-padding"><span class="bm-lbl">PADDING (shows background, space inside the border)</span>
+<div class="bm-content">CONTENT<br><small>text / image &nbsp; (width × height)</small></div>
+</div></div></div></div>
+<figcaption>CSS box model: margin → border → padding → content (outside to inside)</figcaption></figure>
 
 **3. Core Explanation / Working**
 
@@ -2463,27 +2180,7 @@ The CSS **`position`** property decides **how an element is placed** in the docu
 
 **2. Block Diagram**
 
-```
- VIEWPORT (browser window)
- +-------------------------------------------------------------+
- |  [FIXED]  <- stays here even when the page scrolls          |
- |                                                             |
- |  +------------- Parent (position: relative) -------------+  |
- |  |                                                       |  |
- |  |  [ static box 1 ]   <- normal flow                    |  |
- |  |                                                       |  |
- |  |  [ static box 2 ]                                     |  |
- |  |         [ RELATIVE box ]  <- moved from its own       |  |
- |  |  .....  (gap left where it originally was)            |  |
- |  |                                       +------------+  |  |
- |  |  [ static box 3 ]                     | ABSOLUTE   |  |  |
- |  |                                       | top:10px;  |  |  |
- |  |                                       | right:10px |  |  |
- |  |                                       +------------+  |  |
- |  |       ^ removed from flow, placed relative to parent  |  |
- |  +-------------------------------------------------------+  |
- +-------------------------------------------------------------+
-```
+![CSS positioning: static and relative stay in the normal flow; absolute is placed inside the nearest positioned parent; fixed is placed relative to the viewport](figures/web_positioning.svg){width=72%}
 
 **3. Core Explanation / Working**
 
@@ -2574,21 +2271,13 @@ A **CSS selector** is a pattern that **selects the HTML elements** to which a st
 
 **2. Block Diagram - Classification of Selectors**
 
-```
-                         +------------------+
-                         |  CSS SELECTORS   |
-                         +--------+---------+
-        +-----------+-----------+-+---------+-------------+--------------+
-        |           |           |           |             |              |
-   +----v----+ +----v----+ +----v----+ +----v-----+ +-----v-----+ +------v------+
-   | Simple  | |Combinator| |Attribute| | Pseudo-  | |  Pseudo-  | |  Grouping / |
-   |         | |          | |         | | class    | |  element  | |  Universal  |
-   +---------+ +----------+ +---------+ +----------+ +-----------+ +-------------+
-   | element | | A B      | | [type]  | | :hover   | | ::before  | |  *          |
-   | .class  | | A > B    | | [a="v"] | | :focus   | | ::after   | |  h1, h2, p  |
-   | #id     | | A + B    | | [a^="v"]| | :nth-    | | ::first-  | |             |
-   |         | | A ~ B    | |         | |  child() | |   letter  | |             |
-   +---------+ +----------+ +---------+ +----------+ +-----------+ +-------------+
+```{.dot caption="Types of CSS selectors" width="98%"}
+digraph G { nodesep=0.12; ranksep=0.45; node [fontsize=11];
+  S [label="CSS SELECTORS", width=2];
+  a [label="Simple\nelement\n.class\n#id"]; b [label="Combinator\nA B   A > B\nA + B   A ~ B"]; c [label="Attribute\n[type]\n[a=\"v\"]\n[a^=\"v\"]"];
+  d [label="Pseudo-class\n:hover  :focus\n:nth-child()"]; e [label="Pseudo-element\n::before  ::after\n::first-letter"]; f [label="Grouping /\nUniversal\nh1, h2, p\n*"];
+  S -> {a b c d e f};
+}
 ```
 
 **3. Core Explanation / Working**
@@ -2725,35 +2414,27 @@ The **Document Object Model (DOM)** is a **W3C standard, platform- and language-
 
 **2. Block Diagram - DOM Tree**
 
-```
-   HTML source:
-   <html>
-     <head><title>My Page</title></head>
-     <body>
-       <h1 id="head">Hello</h1>
-       <a href="x.html">Link</a>
-     </body>
-   </html>
+*HTML source*
 
-                     +----------------+
-                     |    document    |   (root object)
-                     +-------+--------+
-                             |
-                     +-------v--------+
-                     |    <html>      |   Element node
-                     +---+--------+---+
-                +--------+        +---------+
-          +-----v-----+                +----v-----+
-          |  <head>   |                |  <body>  |
-          +-----+-----+                +--+----+--+
-                |                   +-----+    +-----+
-          +-----v-----+        +----v-----+   +------v------+
-          |  <title>  |        |   <h1>   |   |    <a>      |
-          +-----+-----+        | id="head"|   | href="x..." | <- Attribute node
-                |              +----+-----+   +------+------+
-          +-----v-----+        +----v-----+   +------v------+
-          | "My Page" |        | "Hello"  |   |   "Link"    |  <- Text nodes
-          +-----------+        +----------+   +-------------+
+```html
+<html>
+  <head><title>My Page</title></head>
+  <body>
+    <h1 id="head">Hello</h1>
+    <a href="x.html">Link</a>
+  </body>
+</html>
+```
+
+```{.dot caption="DOM tree of the page: element, attribute and text nodes" width="70%"}
+digraph G { nodesep=0.25; ranksep=0.38; node [fontsize=11];
+  doc [label="document", penwidth=2]; html [label="<html>"]; head [label="<head>"]; body [label="<body>"];
+  title [label="<title>"]; h1 [label="<h1>"]; a [label="<a>"];
+  node [shape=ellipse, style=""]; t1 [label="\"My Page\""]; t2 [label="\"Hello\""]; t3 [label="\"Link\""];
+  node [shape=note, style=""]; at1 [label="id=\"head\""]; at2 [label="href=\"x.html\""];
+  doc -> html -> {head body}; head -> title -> t1; body -> {h1 a}; h1 -> t2; a -> t3;
+  h1 -> at1 [style=dashed, arrowhead=none]; a -> at2 [style=dashed, arrowhead=none];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -2861,38 +2542,17 @@ The DOM powers every interactive web feature, such as **live form validation, im
 
 **2. Flowchart - Validation Logic**
 
-```
-               +---------------------------+
-               |  User clicks "Register"   |
-               +-------------+-------------+
-                             | onsubmit = validateForm()
-               +-------------v-------------+
-               |  Name field empty?        |--- Yes --> Show error, return false
-               +-------------+-------------+
-                             | No
-               +-------------v-------------+
-               |  Email format valid?      |--- No  --> Show error, return false
-               |  (regex test)             |
-               +-------------+-------------+
-                             | Yes
-               +-------------v-------------+
-               |  Password >= 8 chars,     |--- No  --> Show error, return false
-               |  has digit + uppercase +  |
-               |  special character?       |
-               +-------------+-------------+
-                             | Yes
-               +-------------v-------------+
-               | Password == Confirm Pwd?  |--- No  --> Show error, return false
-               +-------------+-------------+
-                             | Yes
-               +-------------v-------------+
-               | Mobile = 10 digits?       |--- No  --> Show error, return false
-               +-------------+-------------+
-                             | Yes
-               +-------------v-------------+
-               |  return true              |
-               |  -> Form sent to server   |
-               +---------------------------+
+```{.dot caption="Client-side validation flow" width="62%"}
+digraph G { node [width=3];
+  s [label="User clicks Register\nonsubmit = validateForm()"];
+  n [label="Name empty?", shape=diamond, width=2.2]; e [label="Email format valid?", shape=diamond, width=2.4];
+  p [label="Password: 8+ chars,\ndigit, uppercase, special?", shape=diamond, width=2.8]; c [label="Password = Confirm?", shape=diamond, width=2.4];
+  m [label="Mobile = 10 digits?", shape=diamond, width=2.4];
+  ok [label="return true\nform is sent to the server", penwidth=2]; err [label="show error message\nreturn false (stop)"];
+  s -> n; n -> e [label=" no"]; e -> p [label=" yes"]; p -> c [label=" yes"]; c -> m [label=" yes"]; m -> ok [label=" yes"];
+  n -> err [label=" yes"]; e -> err [label=" no"]; p -> err [label=" no"]; c -> err [label=" no"]; m -> err [label=" no"];
+  {rank=same; p; err}
+}
 ```
 
 **3. Core Explanation / Working - Program**
@@ -3028,36 +2688,18 @@ A **socket** is one **endpoint of a two-way communication link** between two pro
 
 **2. Block Diagram - TCP Client-Server Socket Communication**
 
-```
-          CLIENT                                        SERVER
-  +------------------------+                  +------------------------+
-  |                        |                  | ServerSocket ss =      |
-  |                        |                  |  new ServerSocket(5000)|
-  |                        |                  +-----------+------------+
-  |                        |                              |
-  |                        |                  +-----------v------------+
-  |                        |                  | Socket s = ss.accept() |
-  |                        |                  |   (waits / blocks)     |
-  +-----------+------------+                  +-----------+------------+
-              |                                           ^
-  +-----------v------------+   1. Connection request      |
-  | Socket s = new Socket( |------ (3-way handshake) -----+
-  |  "localhost", 5000)    |
-  +-----------+------------+
-              |
-  +-----------v------------+   2. Request data            +------------------------+
-  | s.getOutputStream()    |----------------------------->| s.getInputStream()     |
-  |   write request        |                              |   read request         |
-  +-----------+------------+                              +-----------+------------+
-              |                                                       |
-  +-----------v------------+   3. Response data           +-----------v------------+
-  | s.getInputStream()     |<-----------------------------| s.getOutputStream()    |
-  |   read response        |                              |   write response       |
-  +-----------+------------+                              +-----------+------------+
-              |                                                       |
-  +-----------v------------+   4. Connection close        +-----------v------------+
-  |      s.close()         |<---------------------------->|      s.close()         |
-  +------------------------+                              +------------------------+
+```{.dot caption="TCP client-server socket communication" width="84%"}
+digraph G { nodesep=1.2; ranksep=0.4; node [width=2.6, fontsize=11];
+  subgraph cluster_c { label="CLIENT"; style=dashed;
+    c1 [label="Socket s = new Socket(\"localhost\", 5000)"]; c2 [label="s.getOutputStream()\nwrite request"]; c3 [label="s.getInputStream()\nread response"]; c4 [label="s.close()"];
+    c1 -> c2 -> c3 -> c4; }
+  subgraph cluster_s { label="SERVER"; style=dashed;
+    s0 [label="ServerSocket ss = new ServerSocket(5000)"]; s1 [label="Socket s = ss.accept()\n(waits)"]; s2 [label="s.getInputStream()\nread request"]; s3 [label="s.getOutputStream()\nwrite response"]; s4 [label="s.close()"];
+    s0 -> s1 -> s2 -> s3 -> s4; }
+  c1 -> s1 [label=" 1. connect\n (3-way handshake)", style=bold, constraint=false];
+  c2 -> s2 [label=" 2. request", constraint=false]; s3 -> c3 [label=" 3. response", constraint=false];
+  c4 -> s4 [label=" 4. close", dir=both, constraint=false];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -3203,34 +2845,17 @@ public class Student implements java.io.Serializable {
 
 **2. Block Diagram - EJB Architecture**
 
-```
-  +-----------------+        +-------------------------------------------------+
-  |    CLIENTS      |        |              EJB SERVER (App Server)            |
-  |                 |        |      e.g. GlassFish, WildFly, WebLogic          |
-  | +-------------+ |  RMI/  |  +-------------------------------------------+  |
-  | | Web Client  | |  IIOP  |  |               EJB CONTAINER               |  |
-  | |(Servlet/JSP)| +------->|  |                                           |  |
-  | +-------------+ |  JNDI  |  |  +---------------+   +-----------------+  |  |
-  | +-------------+ | lookup |  |  | Remote/Local  |-->|  Session Bean   |  |  |
-  | | Java App    | +------->|  |  |  Interface    |   | (Business logic)|  |  |
-  | | Client      | |        |  |  +---------------+   +-----------------+  |  |
-  | +-------------+ |        |  |                      +-----------------+  |  |
-  | +-------------+ |  JMS   |  |  JMS Queue/Topic --->| Message-Driven  |  |  |
-  | | Messaging   | +------->|  |                      | Bean (MDB)      |  |  |
-  | | Client      | |        |  |                      +-----------------+  |  |
-  | +-------------+ |        |  |                      +-----------------+  |  |
-  +-----------------+        |  |                      | Entity (JPA)    |  |  |
-                             |  |                      +--------+--------+  |  |
-                             |  |  Container Services:          |           |  |
-                             |  |  Transactions (JTA) |Security |           |  |
-                             |  |  Life cycle |Pooling|JNDI|    |           |  |
-                             |  |  Concurrency | Persistence    |           |  |
-                             |  +-------------------------------+-----------+  |
-                             +----------------------------------+--------------+
-                                                                |  JDBC
-                                                       +--------v--------+
-                                                       |    DATABASE     |
-                                                       +-----------------+
+```{.dot caption="EJB architecture" width="90%"}
+digraph G { rankdir=TB; nodesep=0.3; ranksep=0.6; compound=true; node [fontsize=11];
+  subgraph cluster_cl { label="CLIENTS"; style=dashed; w [label="Web client\n(Servlet / JSP)"]; j [label="Java application\nclient"]; m [label="Messaging\nclient"]; }
+  subgraph cluster_srv { label="EJB SERVER (GlassFish, WildFly, WebLogic)"; style=solid;
+    subgraph cluster_ct { label="EJB CONTAINER"; style=dashed;
+      i [label="Remote / Local\ninterface (proxy)"]; sb [label="Session Bean\n(business logic)"]; q [label="JMS queue /\ntopic"]; mdb [label="Message-Driven\nBean"]; en [label="Entity (JPA)"];
+      svc [label="Container services: transactions (JTA), security,\nlife cycle, pooling, JNDI, concurrency, persistence", shape=note];
+      i -> sb; q -> mdb; sb -> en; } }
+  db [label="Database", shape=cylinder];
+  w -> i [label=" JNDI / RMI-IIOP"]; j -> i; m -> q [label=" JMS"]; en -> db [label=" JDBC"];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -3318,23 +2943,14 @@ A **Java Bean** is a simple, **client-side or general-purpose reusable component
 
 **2. Block Diagram - Where Each Runs**
 
-```
-   JAVA BEAN                                ENTERPRISE JAVA BEAN
-   +------------------------------+         +----------------------------------+
-   |  Any JVM (Desktop / Web app) |         |   Application Server (JVM)       |
-   |  +------------------------+  |         |  +----------------------------+  |
-   |  |  Student Bean          |  |         |  |       EJB CONTAINER        |  |
-   |  |  - private fields      |  |         |  |  +----------------------+  |  |
-   |  |  - get/set methods     |  |         |  |  | BankBean (@Stateless)|  |  |
-   |  |  - no-arg constructor  |  |         |  |  +----------------------+  |  |
-   |  |  - Serializable        |  |         |  |  Transactions | Security   |  |
-   |  +------------------------+  |         |  |  Pooling | JNDI | Remote   |  |
-   |   Used directly with `new`   |         |  +----------------------------+  |
-   +------------------------------+         +---------------^------------------+
-                                                            | RMI-IIOP / JNDI
-                                                    +-------+--------+
-                                                    | Remote Clients |
-                                                    +----------------+
+```{.dot caption="Where a Java Bean and an EJB run" width="88%"}
+digraph G { nodesep=0.6; node [fontsize=11];
+  subgraph cluster_jb { label="JAVA BEAN: any JVM (desktop / web app)"; style=dashed;
+    jb [label="Student Bean\n- private fields\n- get / set methods\n- no-arg constructor\n- Serializable"]; u [label="Created directly with new", shape=plaintext]; u -> jb; }
+  subgraph cluster_ejb { label="ENTERPRISE JAVA BEAN: application server"; style=dashed;
+    subgraph cluster_c { label="EJB CONTAINER"; style=solid; eb [label="BankBean (@Stateless)"]; sv [label="transactions · security · pooling\nJNDI · remote access", shape=note]; }
+    rc [label="Remote clients", shape=plaintext]; rc -> eb [label=" RMI-IIOP / JNDI"]; }
+}
 ```
 
 **3. Core Explanation / Working**
@@ -3395,31 +3011,28 @@ A **session bean** is an enterprise bean that **performs business tasks for a cl
 
 **2. Block Diagram - Session Bean Types**
 
-```
-   STATELESS (@Stateless)              STATEFUL (@Stateful)             SINGLETON (@Singleton)
-   +-----------------------+           +----------------------+         +----------------------+
-   |   Instance POOL       |           | Client A -> Bean A   |         | Client A --+         |
-   | +----+ +----+ +----+  |           |   (cart: 3 items)    |         | Client B --+--> ONE  |
-   | | B1 | | B2 | | B3 |  |           | Client B -> Bean B   |         | Client C --+   Bean  |
-   | +----+ +----+ +----+  |           |   (cart: 1 item)     |         |  (shared state,      |
-   |   ^      ^      ^     |           |                      |         |   one per app)       |
-   +---+------+------+-----+           | One bean per client, |         +----------------------+
-       |      |      |                 | keeps conversational |
-    Any client gets any free           | state across calls   |
-    instance; no state kept            +----------------------+
-    between calls
+```{.dot caption="Session bean types" width="96%"}
+digraph G { nodesep=0.3; ranksep=0.5; node [fontsize=11];
+  subgraph cluster_sl { label="STATELESS (@Stateless)"; style=dashed;
+    ca [label="Client A", shape=plaintext]; cb [label="Client B", shape=plaintext];
+    pool [label="Instance POOL\n[B1]  [B2]  [B3]\nany free instance serves any client;\nno state kept between calls"]; ca -> pool; cb -> pool; }
+  subgraph cluster_sf { label="STATEFUL (@Stateful)"; style=dashed;
+    xa [label="Client A", shape=plaintext]; xb [label="Client B", shape=plaintext];
+    ba [label="Bean A\n(cart: 3 items)"]; bb [label="Bean B\n(cart: 1 item)"]; xa -> ba; xb -> bb; }
+  subgraph cluster_sg { label="SINGLETON (@Singleton)"; style=dashed;
+    ya [label="Client A", shape=plaintext]; yb [label="Client B", shape=plaintext]; yc [label="Client C", shape=plaintext];
+    one [label="ONE bean per application\n(shared state)"]; ya -> one; yb -> one; yc -> one; }
+}
 ```
 
 *Life cycle of a Stateful Session Bean*
 
-```
-                     @PostConstruct
- +----------------+ -----------------> +---------+   @PrePassivate    +-----------+
- | Does Not Exist |                    |  READY  | -----------------> |  PASSIVE  |
- +----------------+ <----------------- +---------+ <----------------- | (on disk) |
-                  @Remove / @PreDestroy                @PostActivate  +-----------+
-
- Stateless bean: only "Does Not Exist" <-> "Ready (pooled)"; there is no Passive state.
+```{.dot caption="Life cycle of a stateful session bean (a stateless bean has only Does Not Exist and Ready)" width="78%"}
+digraph G { rankdir=LR; nodesep=0.8; ranksep=1.1; node [shape=ellipse, style="", width=1.6];
+  dne [label="Does Not\nExist"]; rdy [label="READY", penwidth=2]; pas [label="PASSIVE\n(on disk)"];
+  dne -> rdy [label="new + DI +\n@PostConstruct"]; rdy -> dne [label="@Remove / timeout\n+ @PreDestroy"];
+  rdy -> pas [label="@PrePassivate\n(idle)"]; pas -> rdy [label="@PostActivate"];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -3528,39 +3141,16 @@ Stateless beans implement **payment and calculation services**, while stateful b
 
 **2. Block Diagram - JSP Processing / Life Cycle**
 
-```
-  +-----------+  1. HTTP Request (hello.jsp)   +--------------------------------------+
-  |  Browser  |------------------------------->|        WEB SERVER / CONTAINER        |
-  |  (Client) |                                |             (Tomcat)                 |
-  +-----^-----+                                |                                      |
-        |                                      |   +------------------------------+   |
-        |                                      |   | First request or JSP changed?|   |
-        |                                      |   +-------+--------------+-------+   |
-        |                                      |       Yes |              | No        |
-        |                                      |   +-------v-------+      |           |
-        |                                      |   | 2. TRANSLATION|      |           |
-        |                                      |   | hello.jsp ->  |      |           |
-        |                                      |   | hello_jsp.java|      |           |
-        |                                      |   +-------+-------+      |           |
-        |                                      |   +-------v-------+      |           |
-        |                                      |   | 3. COMPILATION|      |           |
-        |                                      |   | -> hello_jsp  |      |           |
-        |                                      |   |    .class     |      |           |
-        |                                      |   +-------+-------+      |           |
-        |                                      |   +-------v-------+      |           |
-        |                                      |   | 4. LOADING &  |      |           |
-        |                                      |   | INSTANTIATION |      |           |
-        |                                      |   +-------+-------+      |           |
-        |                                      |   +-------v-------+      |           |
-        |                                      |   | 5. jspInit()  |      |           |
-        |                                      |   +-------+-------+      |           |
-        |                                      |   +-------v--------------v-------+   |
-        |     7. HTTP Response (HTML)          |   | 6. _jspService(req, res)     |   |
-        +--------------------------------------+---|  (runs on EVERY request)     |   |
-                                               |   +------------------------------+   |
-                                               |   | 8. jspDestroy() (on undeploy)|   |
-                                               |   +------------------------------+   |
-                                               +--------------------------------------+
+```{.dot caption="JSP processing: translation and compilation happen only on the first request (or after the JSP changes)" width="70%"}
+digraph G { nodesep=0.4; ranksep=0.35; node [width=2.8];
+  br [label="Browser: HTTP request\nfor hello.jsp"];
+  q [label="First request, or\nJSP changed?", shape=diamond, width=2.2];
+  t [label="1. TRANSLATION\nhello.jsp → hello_jsp.java"]; c [label="2. COMPILATION\n→ hello_jsp.class"];
+  l [label="3. LOADING & INSTANTIATION"]; i [label="4. jspInit()  (once)"];
+  sv [label="5. _jspService(request, response)\n(on EVERY request)", penwidth=2];
+  rs [label="Browser: HTTP response (HTML)"]; d [label="6. jspDestroy()  (on undeploy)", style="rounded,dashed"];
+  br -> q; q -> t [label=" yes"]; t -> c -> l -> i -> sv; q -> sv [label=" no"]; sv -> rs; sv -> d [style=dashed];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -3666,39 +3256,18 @@ A **Servlet** is a server-side Java class that **handles HTTP requests and gener
 
 **2. Block Diagram - Servlet Life Cycle**
 
-```
-                   +-------------------------------------+
-                   |  1. LOADING the servlet class       |   (first request or
-                   |     (Class.forName by container)    |    load-on-startup)
-                   +------------------+------------------+
-                                      |
-                   +------------------v------------------+
-                   |  2. INSTANTIATION                   |   Only ONE object
-                   |     (no-arg constructor called)     |
-                   +------------------+------------------+
-                                      |
-                   +------------------v------------------+
-                   |  3. init(ServletConfig config)      |   Called ONCE
-                   |     - read config, open DB conn     |
-                   +------------------+------------------+
-                                      |
-                                      v
-                   +-------------------------------------+
-     Request 1 --->|  4. service(ServletRequest,         |   Called for EVERY
-     Request 2 --->|            ServletResponse)         |   request, each in
-     Request n --->|     -> doGet() / doPost() /         |   a NEW THREAD
-                   |        doPut() / doDelete()         |
-                   +------------------+------------------+
-                                      |  (server shutdown /
-                                      |   undeploy / reload)
-                   +------------------v------------------+
-                   |  5. destroy()                       |   Called ONCE
-                   |     - close DB conn, release memory |
-                   +------------------+------------------+
-                                      |
-                   +------------------v------------------+
-                   |  6. Garbage Collection              |
-                   +-------------------------------------+
+```{.dot caption="Servlet life cycle" width="62%"}
+digraph G { nodesep=0.5; ranksep=0.35; node [width=3.2];
+  a [label="1. LOADING the servlet class\n(first request or load-on-startup)"];
+  b [label="2. INSTANTIATION\n(only ONE object, no-arg constructor)"];
+  c [label="3. init(ServletConfig)   called ONCE\nread config, open DB connection"];
+  d [label="4. service(request, response)\ncalled for EVERY request, each in a new thread\n→ doGet() / doPost() / doPut() / doDelete()", penwidth=2];
+  e [label="5. destroy()   called ONCE\nclose connections, release memory"];
+  f [label="6. Garbage collection"];
+  r [label="Request 1\nRequest 2\nRequest n", shape=plaintext];
+  a -> b -> c -> d -> e -> f; r -> d; {rank=same; r; d}
+  d -> d [label=" next request"];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -3811,35 +3380,17 @@ The servlet life cycle is the basis of **every Java web framework (Spring MVC's 
 
 **2. Block Diagram - Set-up and Connection Flow**
 
-```
-  +-------------------------------+      +-------------------------------+
-  | 1. Download Node.js LTS (.msi)|      | 5. Install MongoDB Community  |
-  |    from nodejs.org            |      |    Server (.msi) + Compass    |
-  +---------------+---------------+      |    (or use MongoDB Atlas)     |
-                  |                      +---------------+---------------+
-  +---------------v---------------+                      |
-  | 2. Run installer (adds node + |      +---------------v---------------+
-  |    npm to PATH)               |      | 6. Start the service: mongod  |
-  +---------------+---------------+      |    on localhost:27017         |
-                  |                      +---------------+---------------+
-  +---------------v---------------+                      |
-  | 3. Verify: node -v , npm -v   |                      |
-  +---------------+---------------+                      |
-                  |                                      |
-  +---------------v---------------+                      |
-  | 4. mkdir project; npm init -y;|                      |
-  |    npm install mongodb        |                      |
-  +---------------+---------------+                      |
-                  |                                      |
-  +---------------v--------------------------------------v---------------+
-  | 7. app.js:  MongoClient.connect("mongodb://localhost:27017")         |
-  +----------------------------------+-----------------------------------+
-                                     |
-  +----------------------------------v-----------------------------------+
-  |   NODE.JS APP  <------ MongoDB Driver (TCP) ------>  MONGODB SERVER   |
-  |   (app.js)                                          DB -> Collection |
-  |                                                        -> Documents  |
-  +----------------------------------------------------------------------+
+```{.dot caption="Setting up Node.js and MongoDB on Windows" width="90%"}
+digraph G { nodesep=0.5; ranksep=0.32; node [width=2.6, fontsize=11];
+  subgraph cluster_n { label="Node.js"; style=dashed;
+    n1 [label="1. Download Node.js LTS (.msi)\nfrom nodejs.org"]; n2 [label="2. Run installer\n(adds node + npm to PATH)"]; n3 [label="3. Verify: node -v, npm -v"]; n4 [label="4. mkdir project; npm init -y;\nnpm install mongodb"];
+    n1 -> n2 -> n3 -> n4; }
+  subgraph cluster_m { label="MongoDB"; style=dashed;
+    m1 [label="5. Install MongoDB Community\nServer (.msi) + Compass\n(or use MongoDB Atlas)"]; m2 [label="6. Service mongod runs on\nlocalhost:27017"]; m1 -> m2; }
+  a [label="7. app.js: MongoClient.connect(\"mongodb://localhost:27017\")", width=5, penwidth=2];
+  r [label="Node.js app  ⇄  MongoDB driver (TCP)  ⇄  MongoDB server\n(database → collection → documents)", width=5];
+  n4 -> a; m2 -> a; a -> r;
+}
 ```
 
 **3. Core Explanation / Working**
@@ -3917,7 +3468,7 @@ node app.js
 
 *Output:*
 
-```
+```text
 Connected successfully to MongoDB
 Inserted id: 6650f1c2a4...
 [ { _id: ..., roll: 101, name: 'Harsh', branch: 'CSE', year: 3 } ]
@@ -3987,16 +3538,7 @@ Node.js with MongoDB forms the back end of the **MERN/MEAN stack**, used in **re
   `f(n) = Θ(g(n))` if there exist positive constants **c1, c2, n0** such that **0 ≤ c1·g(n) ≤ f(n) ≤ c2·g(n) for all n ≥ n0**.
   Example: 3n + 2 = Θ(n). Also, f(n) = Θ(g(n)) if and only if f(n) = O(g(n)) and f(n) = Ω(g(n)).
 
-```
-      f(n) = O(g(n))          f(n) = Ω(g(n))            f(n) = Θ(g(n))
-   |        c.g(n)         |        f(n)           |       c2.g(n)
-   |      /  ___f(n)       |      /  ___c.g(n)     |      /  __f(n)
-   |    /  _/              |    /  _/              |    /  _/ __c1.g(n)
-   |  / _/                 |  / _/                 |  / _/ _/
-   |/_/                    |/_/                    |/_/_/
-   +--+------------> n     +--+------------> n     +--+------------> n
-      n0                      n0                      n0
-```
+![Asymptotic bounds: O gives an upper bound, Ω a lower bound and Θ a tight bound (for all n ≥ n₀)](figures/daa_asymptotic.svg){width=95%}
 
 **(b) Differentiate between stable and unstable sorting algorithms.**
 
@@ -4017,23 +3559,14 @@ A **recurrence relation** expresses the running time T(n) of a recursive algorit
 
 **2. Flowchart - Master Theorem Decision**
 
-```
-          +-----------------------------------------------+
-          |  T(n) = a T(n/b) + f(n),   a >= 1, b > 1      |
-          +-----------------------+-----------------------+
-                                  |
-          +-----------------------v-----------------------+
-          |   Compute  n^(log_b a)   and compare to f(n)  |
-          +---+-------------------+-------------------+---+
-              |                   |                   |
-   f(n) smaller polynomially  f(n) equal         f(n) larger polynomially
-   f(n)=O(n^(log_b a - e))    f(n)=Θ(n^log_b a)  f(n)=Ω(n^(log_b a + e))
-              |                   |              AND a f(n/b) <= c f(n), c<1
-     +--------v--------+  +-------v-----------+  +--------v--------+
-     |     CASE 1      |  |      CASE 2       |  |     CASE 3      |
-     | T(n) =          |  | T(n) =            |  | T(n) =          |
-     | Θ(n^(log_b a))  |  | Θ(n^(log_b a)logn)|  |   Θ(f(n))       |
-     +-----------------+  +-------------------+  +-----------------+
+```{.dot caption="Master Theorem: compare f(n) with n^(log_b a)" width="90%"}
+digraph G { nodesep=0.3; ranksep=0.45; node [fontsize=11];
+  s [label="T(n) = a T(n/b) + f(n),   a ≥ 1, b > 1", width=3.6]; c [label="Compute n^(log_b a) and compare it with f(n)", width=3.6];
+  c1 [label="CASE 1\nf(n) polynomially SMALLER\nf(n) = O(n^(log_b a − ε))\n\nT(n) = Θ(n^(log_b a))"];
+  c2 [label="CASE 2\nf(n) EQUAL\nf(n) = Θ(n^(log_b a))\n\nT(n) = Θ(n^(log_b a) · log n)"];
+  c3 [label="CASE 3\nf(n) polynomially LARGER\nf(n) = Ω(n^(log_b a + ε))\nand a f(n/b) ≤ c f(n), c < 1\nT(n) = Θ(f(n))"];
+  s -> c -> {c1 c2 c3};
+}
 ```
 
 **3. Core Explanation / Working**
@@ -4055,19 +3588,19 @@ A **recurrence relation** expresses the running time T(n) of a recursive algorit
 
 *(ii) Recursion Tree*
 
+```{.dot caption="Recursion tree for T(n) = 2T(n/2) + n: every level costs n, and there are log₂n + 1 levels" width="84%"}
+digraph G { nodesep=0.2; ranksep=0.35; node [shape=plaintext, fontsize=12];
+  a [label="n"]; b1 [label="n/2"]; b2 [label="n/2"]; c1 [label="n/4"]; c2 [label="n/4"]; c3 [label="n/4"]; c4 [label="n/4"];
+  d1 [label="1"]; d2 [label="1"]; d3 [label="· · ·"]; d4 [label="1"]; d5 [label="1"];
+  a -> {b1 b2}; b1 -> {c1 c2}; b2 -> {c3 c4}; c1 -> d1 [style=dotted]; c2 -> d2 [style=dotted]; c3 -> d4 [style=dotted]; c4 -> d5 [style=dotted];
+  node [shape=plaintext, fontsize=11];
+  la [label="level 0:   n"]; lb [label="level 1:   2 · n/2 = n"]; lc [label="level 2:   4 · n/4 = n"]; ld [label="level log n:   n · 1 = n"];
+  {rank=same; a; la} {rank=same; b2; lb} {rank=same; c4; lc} {rank=same; d5; ld}
+  a -> la [style=invis]; b2 -> lb [style=invis]; c4 -> lc [style=invis]; d5 -> ld [style=invis];
+}
 ```
- Level                     Tree                               Cost of level
-   0                         n                                     n
-                          /     \
-   1                   n/2       n/2                     n/2 + n/2 = n
-                      /   \     /   \
-   2               n/4   n/4  n/4   n/4                  4 x n/4   = n
-                   ...   ...  ...   ...                       ...
-  log n         1  1  1  1 ............ 1  1   (n leaves)   n x 1  = n
-                                                       ----------------
-          Height = log2 n,  number of levels = log2 n + 1
-          Total = n x (log2 n + 1) = n log n + n  =  Θ(n log n)
-```
+
+$$T(n) = \underbrace{n + n + \cdots + n}_{\log_2 n \,+\, 1 \text{ levels}} = n(\log_2 n + 1) = \Theta(n \log n)$$
 
 - At level i there are 2^i nodes, each costing n/2^i, so **each level costs n**.
 - The recursion stops when n/2^i = 1, that is i = log2 n.
@@ -4085,18 +3618,18 @@ A **recurrence relation** expresses the running time T(n) of a recursive algorit
 
 *(ii) Recursion Tree (verification)*
 
+```{.dot caption="Recursion tree for T(n) = 3T(n/9) + n: level costs shrink by a factor of 3" width="80%"}
+digraph G { nodesep=0.15; ranksep=0.35; node [shape=plaintext, fontsize=12];
+  a [label="n"]; b1 [label="n/9"]; b2 [label="n/9"]; b3 [label="n/9"];
+  c1 [label="n/81"]; c2 [label="· · ·  (9 nodes)  · · ·"]; c3 [label="n/81"];
+  a -> {b1 b2 b3}; b1 -> c1; b2 -> c2; b3 -> c3;
+  node [fontsize=11]; la [label="level 0:   n"]; lb [label="level 1:   3 · n/9 = n/3"]; lc [label="level 2:   9 · n/81 = n/9"];
+  {rank=same; a; la} {rank=same; b3; lb} {rank=same; c3; lc}
+  a -> la [style=invis]; b3 -> lb [style=invis]; c3 -> lc [style=invis];
+}
 ```
- Level              Tree                                  Cost of level
-   0                  n                                        n
-                   /  |  \
-   1           n/9   n/9   n/9                         3(n/9)  = n/3
-              / | \  ...   / | \
-   2       n/81 ... (9 nodes) ... n/81                 9(n/81) = n/9
-                     ...                                     ...
-   i                                                   n / 3^i
-                                                     -----------------
-   Total <= n (1 + 1/3 + 1/9 + ...) = n x 1/(1 - 1/3) = 1.5 n  =  Θ(n)
-```
+
+$$T(n) \le n\left(1 + \frac{1}{3} + \frac{1}{9} + \cdots\right) = n \cdot \frac{1}{1 - \frac{1}{3}} = \frac{3n}{2} = \Theta(n)$$
 
 - Level costs form a **decreasing geometric series** (ratio 1/3), so the **root dominates**.
 - **T(n) = Θ(n)**
@@ -4142,35 +3675,20 @@ These methods are used to analyse **Merge Sort, Binary Search, Strassen's matrix
 
 **2. Flowchart - Quick Sort**
 
-```
-              +--------------------------------+
-              |     QUICKSORT(A, p, r)         |
-              +---------------+----------------+
-                              |
-                     +--------v--------+
-                     |    p < r ?      |---- No ----> Return (0 or 1 element)
-                     +--------+--------+
-                              | Yes
-              +---------------v----------------+
-              | q = PARTITION(A, p, r)         |   pivot x = A[r]
-              |  - elements <= x go left       |
-              |  - elements >  x go right      |
-              |  - pivot placed at index q     |
-              +---------------+----------------+
-                              |
-             +----------------+----------------+
-             |                                 |
-   +---------v----------+           +----------v---------+
-   | QUICKSORT(A,p,q-1) |           | QUICKSORT(A,q+1,r) |
-   |  (left part)       |           |  (right part)      |
-   +--------------------+           +--------------------+
+```{.dot caption="Quick Sort" width="62%"}
+digraph G { node [width=3];
+  a [label="QUICKSORT(A, p, r)"]; b [label="p < r ?", shape=diamond, width=1.4]; ret [label="return\n(0 or 1 element)"];
+  c [label="q = PARTITION(A, p, r)\npivot x = A[r]: smaller to the left,\nlarger to the right, pivot at index q"];
+  l [label="QUICKSORT(A, p, q − 1)", width=2.2]; r [label="QUICKSORT(A, q + 1, r)", width=2.2];
+  a -> b; b -> ret [label=" no"]; b -> c [label=" yes"]; c -> l; c -> r;
+}
 ```
 
 **3. Core Explanation / Working**
 
 *Algorithm (Lomuto partition, CLRS)*
 
-```
+```text
 QUICKSORT(A, p, r)
 1. if p < r
 2.     q = PARTITION(A, p, r)
@@ -4204,18 +3722,15 @@ PARTITION(A, p, r)
 
 *Recursive calls*
 
-```
-                     [2 8 7 1 3 5 6 4]          pivot 4
-                    /                  \
-             [2 1 3]   (4)    [7 5 6 8]
-             pivot 3          pivot 8
-            /       \         /       \
-        [2 1] (3)   []    [7 5 6] (8)  []
-        pivot 1           pivot 6
-       /      \          /      \
-     []  (1)  [2]     [5]  (6)  [7]
-
-   Sorted:  1  2  3  4  5  6  7  8
+```{.dot caption="Recursive calls of Quick Sort on [2, 8, 7, 1, 3, 5, 6, 4] (circled = pivot placed in its final position)" width="78%"}
+digraph G { nodesep=0.2; ranksep=0.35; node [fontsize=11];
+  r [label="[2 8 7 1 3 5 6 4]\npivot 4"];
+  l1 [label="[2 1 3]\npivot 3"]; p4 [label="4", shape=circle, style=""]; r1 [label="[7 5 6 8]\npivot 8"];
+  l2 [label="[2 1]\npivot 1"]; p3 [label="3", shape=circle, style=""]; r2 [label="[7 5 6]\npivot 6"]; p8 [label="8", shape=circle, style=""];
+  p1 [label="1", shape=circle, style=""]; x2 [label="[2]"]; x5 [label="[5]"]; p6 [label="6", shape=circle, style=""]; x7 [label="[7]"];
+  r -> {l1 p4 r1}; l1 -> {l2 p3}; r1 -> {r2 p8}; l2 -> {p1 x2}; r2 -> {x5 p6 x7};
+  s [label="Sorted: 1 2 3 4 5 6 7 8", shape=plaintext, fontsize=12];
+}
 ```
 
 *Complexity*
@@ -4273,26 +3788,13 @@ Quick Sort is the basis of **C's `qsort()`, C++ `std::sort` (introsort) and Java
 
 **2. Block Diagram**
 
-```
-   COUNTING SORT                              HEAP SORT
-   +---------------------------+              +-----------------------------+
-   | 1. Count each key -> C[]  |              | 1. BUILD-MAX-HEAP(A)        |
-   +-------------+-------------+              +--------------+--------------+
-                 |                                           |
-   +-------------v-------------+              +--------------v--------------+
-   | 2. Cumulative sum of C[]  |              | 2. Swap A[1] (max) with     |
-   |   C[i] = C[i] + C[i-1]    |              |    A[heap-size]             |
-   +-------------+-------------+              +--------------+--------------+
-                 |                                           |
-   +-------------v-------------+              +--------------v--------------+
-   | 3. Scan A from RIGHT:     |              | 3. heap-size = heap-size - 1|
-   |   B[C[A[j]]] = A[j]       |              |    MAX-HEAPIFY(A, 1)        |
-   |   C[A[j]] = C[A[j]] - 1   |              +--------------+--------------+
-   +-------------+-------------+                             |
-                 |                               repeat until heap-size = 1
-   +-------------v-------------+              +--------------v--------------+
-   | 4. Output array B[]       |              |      Sorted array A         |
-   +---------------------------+              +-----------------------------+
+```{.dot caption="Steps of Counting Sort and Heap Sort" width="88%"}
+digraph G { nodesep=0.7; ranksep=0.32; node [width=2.6, fontsize=11];
+  subgraph cluster_c { label="COUNTING SORT"; style=dashed;
+    c1 [label="1. Count each key → C[ ]"]; c2 [label="2. Cumulative sum\nC[i] = C[i] + C[i − 1]"]; c3 [label="3. Scan A from the RIGHT:\nB[C[A[j]]] = A[j];  C[A[j]]−−"]; c4 [label="4. Output array B[ ]"]; c1 -> c2 -> c3 -> c4; }
+  subgraph cluster_h { label="HEAP SORT"; style=dashed;
+    h1 [label="1. BUILD-MAX-HEAP(A)"]; h2 [label="2. Swap A[1] (max) with\nA[heap-size]"]; h3 [label="3. heap-size −1;\nMAX-HEAPIFY(A, 1)"]; h4 [label="Sorted array A"]; h1 -> h2 -> h3 -> h4; h3 -> h2 [label=" repeat until\n heap-size = 1", style=dashed]; }
+}
 ```
 
 **3. Core Explanation / Working**
@@ -4330,17 +3832,12 @@ Quick Sort is the basis of **C's `qsort()`, C++ `std::sort` (introsort) and Java
 
 *Step 1 - BUILD-MAX-HEAP* (heapify from i = ⌊n/2⌋ = 2 down to 1)
 
-```
-  Initial tree           i = 2 (10): children 5, 1     i = 1 (4): children 10, 3
-                         10 >= both, no change          swap 4 <-> 10, then
-                                                        4 vs children 5, 1: swap 4 <-> 5
-        4                        4                              10
-      /   \                    /   \                          /    \
-    10     3                 10     3                        5      3
-   /  \                     /  \                            / \
-  5    1                   5    1                          4   1
-
-                                         Max-Heap: A = [10, 5, 3, 4, 1]
+```{.dot caption="BUILD-MAX-HEAP on [4, 10, 3, 5, 1]" width="86%"}
+digraph G { nodesep=0.25; ranksep=0.3; node [shape=circle, style="", width=0.42, fixedsize=true, fontsize=12];
+  subgraph cluster_a { label="Initial tree"; style=dashed; a1 [label="4"]; a2 [label="10"]; a3 [label="3"]; a4 [label="5"]; a5 [label="1"]; a1 -> {a2 a3}; a2 -> {a4 a5}; }
+  subgraph cluster_b { label="i = 2 (10 ≥ 5, 1): no change"; style=dashed; b1 [label="4"]; b2 [label="10"]; b3 [label="3"]; b4 [label="5"]; b5 [label="1"]; b1 -> {b2 b3}; b2 -> {b4 b5}; }
+  subgraph cluster_c { label="i = 1: swap 4↔10, then 4↔5\nMax-heap [10, 5, 3, 4, 1]"; style=bold; c1 [label="10"]; c2 [label="5"]; c3 [label="3"]; c4 [label="4"]; c5 [label="1"]; c1 -> {c2 c3}; c2 -> {c4 c5}; }
+}
 ```
 
 *Step 2 - Repeatedly extract the maximum*
@@ -4423,36 +3920,15 @@ A **B-Tree of minimum degree t** is a balanced multi-way search tree in which ev
 
 **2. Flowchart - B-Tree Insertion (CLRS, proactive splitting)**
 
-```
-             +-------------------------------+
-             |      B-TREE-INSERT(T, k)      |
-             +---------------+---------------+
-                             |
-             +---------------v---------------+
-             |  Is root full (2t-1 = 5 keys)?|---- Yes ---+
-             +---------------+---------------+            |
-                             | No             +-----------v-----------+
-                             |                | Create new root s;    |
-                             |                | SPLIT old root:       |
-                             |                | median key moves up   |
-                             |                | (height increases +1) |
-                             |                +-----------+-----------+
-                             |<---------------------------+
-             +---------------v---------------+
-             |  INSERT-NONFULL(node, k)      |
-             +---------------+---------------+
-                             |
-                 +-----------v-----------+
-                 |   Is node a leaf?     |--- Yes ---> Insert k in sorted
-                 +-----------+-----------+             position. DONE.
-                             | No
-             +---------------v---------------+
-             | Find child c where k belongs  |
-             | If c is FULL -> SPLIT c,      |
-             |   median goes up to node      |
-             +---------------+---------------+
-                             |
-                   Recurse on the correct child
+```{.dot caption="B-Tree insertion with proactive splitting (CLRS)" width="64%"}
+digraph G { node [width=3.2];
+  a [label="B-TREE-INSERT(T, k)"]; b [label="Root full (2t − 1 = 5 keys)?", shape=diamond, width=2.8];
+  c [label="Create a new root; SPLIT the old root\n(median moves up, height + 1)"];
+  d [label="INSERT-NONFULL(node, k)"]; e [label="Node is a leaf?", shape=diamond, width=2];
+  f [label="Insert k in sorted position. DONE", penwidth=2];
+  g [label="Find child c where k belongs;\nif c is FULL, split c (median moves up);\nrecurse on the correct child"];
+  a -> b; b -> c [label=" yes"]; b -> d [label=" no"]; c -> d; d -> e; e -> f [label=" yes"]; e -> g [label=" no"]; g -> e [style=dashed];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -4461,49 +3937,23 @@ A **B-Tree of minimum degree t** is a balanced multi-way search tree in which ev
 
 *Example:* insert **10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120** into an empty B-Tree with **t = 3** (max 5 keys per node).
 
+```{.dot caption="B-Tree (t = 3, max 5 keys per node): inserting 10, 20, ..., 120" width="98%"}
+digraph G { nodesep=0.12; ranksep=0.32; node [shape=record, style="", height=0.3, fontsize=10.5];
+  subgraph cluster_a { label="After 10-50: root FULL"; style=dashed; a [label="10|20|30|40|50"]; }
+  subgraph cluster_b { label="Insert 60: split root,\n30 moves up"; style=dashed; br [label="30"]; b1 [label="10|20"]; b2 [label="40|50|60"]; br -> b1; br -> b2; }
+  subgraph cluster_c { label="Insert 70, 80, then 90:\nsplit child, 60 moves up"; style=dashed; cr [label="30|60"]; c1 [label="10|20"]; c2 [label="40|50"]; c3 [label="70|80|90"]; cr -> c1; cr -> c2; cr -> c3; }
+  subgraph cluster_d { label="Insert 100, 110, then 120:\nsplit child, 90 moves up (FINAL)"; style=bold; dr [label="30|60|90"]; d1 [label="10|20"]; d2 [label="40|50"]; d3 [label="70|80"]; d4 [label="100|110|120"]; dr -> d1; dr -> d2; dr -> d3; dr -> d4; }
+}
 ```
- Step 1-5: Insert 10, 20, 30, 40, 50 into the root (it now holds 5 keys = FULL)
 
-           [10 | 20 | 30 | 40 | 50]
-
-
- Step 6: Insert 60. The root is FULL, so SPLIT it first: median 30 moves up.
-         Then 60 goes into the right leaf.
-
-                     [30]
-                    /    \
-             [10 | 20]   [40 | 50 | 60]
-
-
- Step 7-8: Insert 70, 80 into the right leaf (now FULL with 5 keys)
-
-                     [30]
-                    /    \
-             [10 | 20]   [40 | 50 | 60 | 70 | 80]
-
-
- Step 9: Insert 90. On the way down the child is FULL, so SPLIT it: median 60
-         moves up. Then 90 goes into the rightmost leaf.
-
-                         [30 | 60]
-                       /     |     \
-               [10 | 20] [40 | 50] [70 | 80 | 90]
-
-
- Step 10-11: Insert 100, 110 (the rightmost leaf becomes FULL)
-
-                         [30 | 60]
-                       /     |     \
-               [10 | 20] [40 | 50] [70 | 80 | 90 | 100 | 110]
-
-
- Step 12: Insert 120. The child is FULL, so SPLIT it: median 90 moves up.
-          Then 120 is inserted.
-
-                         [30 | 60 | 90]
-                      /     |     |      \
-             [10 | 20] [40 | 50] [70 | 80] [100 | 110 | 120]
-```
+| Step | Keys inserted | Action | Result |
+|---|---|---|---|
+| 1-5 | 10, 20, 30, 40, 50 | Fill the root | [10 \| 20 \| 30 \| 40 \| 50] (full) |
+| 6 | 60 | Root full: **split**, 30 moves up | [30] → [10 \| 20], [40 \| 50 \| 60] |
+| 7-8 | 70, 80 | Into the right leaf | [40 \| 50 \| 60 \| 70 \| 80] (full) |
+| 9 | 90 | Child full: **split**, 60 moves up | [30 \| 60] → [10 \| 20], [40 \| 50], [70 \| 80 \| 90] |
+| 10-11 | 100, 110 | Into the rightmost leaf | [70 \| 80 \| 90 \| 100 \| 110] (full) |
+| 12 | 120 | Child full: **split**, 90 moves up | [30 \| 60 \| 90] → [10 \| 20], [40 \| 50], [70 \| 80], [100 \| 110 \| 120] |
 
 *Final tree check:*
 
@@ -4551,18 +4001,13 @@ A **Red-Black Tree** is a **self-balancing binary search tree** in which every n
 
 **2. Diagram - Rotations**
 
-```
-           LEFT-ROTATE(T, x)                     RIGHT-ROTATE(T, y)
-
-         x                    y                   y                   x
-        / \                  / \                 / \                 / \
-       a   y      ==>       x   c               x   c      ==>      a   y
-          / \              / \                 / \                     / \
-         b   c            a   b               a   b                   b   c
-
-   - y moves up, x becomes y's left child      - x moves up, y becomes x's right child
-   - y's left subtree b becomes x's right      - x's right subtree b becomes y's left
-   - In-order (a x b y c) is unchanged; O(1) time
+```{.dot caption="Left and right rotation (in-order sequence a, x, b, y, c is unchanged; O(1) time)" width="82%"}
+digraph G { nodesep=0.3; ranksep=0.35; node [shape=circle, style="", width=0.42, fixedsize=true];
+  subgraph cluster_1 { label="Before LEFT-ROTATE(x)\n(after RIGHT-ROTATE(y))"; style=dashed; x1 [label="x"]; a1 [label="a", shape=triangle, width=0.4]; y1 [label="y"]; b1 [label="b", shape=triangle, width=0.4]; c1 [label="c", shape=triangle, width=0.4]; x1 -> a1; x1 -> y1; y1 -> b1; y1 -> c1; }
+  mid [label="LEFT-ROTATE(x)  ⇒\n⇐  RIGHT-ROTATE(y)", shape=plaintext, fixedsize=false];
+  subgraph cluster_2 { label="After LEFT-ROTATE(x)\n(before RIGHT-ROTATE(y))"; style=dashed; y2 [label="y"]; x2 [label="x"]; c2 [label="c", shape=triangle, width=0.4]; a2 [label="a", shape=triangle, width=0.4]; b2 [label="b", shape=triangle, width=0.4]; y2 -> x2; y2 -> c2; x2 -> a2; x2 -> b2; }
+  {rank=same; x1; mid; y2}
+}
 ```
 
 **3. Core Explanation / Working**
@@ -4579,48 +4024,28 @@ A **Red-Black Tree** is a **self-balancing binary search tree** in which every n
 
 *Example:* insert **10, 20, 30, 15, 12** into an empty Red-Black Tree (R = red, B = black)
 
+*Notation in the figures: filled circle = BLACK node, double circle = RED node.*
+
+```{.dot caption="Insert 30: Case 3 (RR line). Left-rotate at 10 and swap the colours of 10 and 20" width="56%"}
+digraph G { nodesep=0.3; ranksep=0.3;
+  subgraph cluster_a { label="after inserting 30"; style=dashed; node [shape=circle, style=filled, fillcolor=black, fontcolor=white, width=0.5, fixedsize=true, fontsize=12]; a10 [label="10"]; node [shape=doublecircle, style="", fillcolor=white, fontcolor=black, width=0.42, fixedsize=true, fontsize=12]; a20 [label="20"]; a30 [label="30"]; a10 -> a20; a20 -> a30; }
+  subgraph cluster_b { label="after the fix"; style=bold; node [shape=circle, style=filled, fillcolor=black, fontcolor=white, width=0.5, fixedsize=true, fontsize=12]; b20 [label="20"]; node [shape=doublecircle, style="", fillcolor=white, fontcolor=black, width=0.42, fixedsize=true, fontsize=12]; b10 [label="10"]; b30 [label="30"]; b20 -> b10; b20 -> b30; }
+}
 ```
- Insert 10: the root is coloured BLACK (Case 0)
 
-        10B
+```{.dot caption="Insert 15: Case 1 (uncle 30 is RED). Recolour 10 and 30 BLACK, 20 RED, then the root becomes BLACK again" width="56%"}
+digraph G { nodesep=0.3; ranksep=0.3;
+  subgraph cluster_a { label="after inserting 15"; style=dashed; node [shape=circle, style=filled, fillcolor=black, fontcolor=white, width=0.5, fixedsize=true, fontsize=12]; a20 [label="20"]; node [shape=doublecircle, style="", fillcolor=white, fontcolor=black, width=0.42, fixedsize=true, fontsize=12]; a10 [label="10"]; a30 [label="30"]; a15 [label="15"]; a20 -> a10; a20 -> a30; a10 -> a15; }
+  subgraph cluster_b { label="after recolouring"; style=bold; node [shape=circle, style=filled, fillcolor=black, fontcolor=white, width=0.5, fixedsize=true, fontsize=12]; b20 [label="20"]; b10 [label="10"]; b30 [label="30"]; node [shape=doublecircle, style="", fillcolor=white, fontcolor=black, width=0.42, fixedsize=true, fontsize=12]; b15 [label="15"]; b20 -> b10; b20 -> b30; b10 -> b15; }
+}
+```
 
- Insert 20: parent 10 is BLACK, no violation
-
-        10B
-          \
-          20R
-
- Insert 30: parent 20 RED, uncle NIL (BLACK), and 30 is the RIGHT child of the
-            RIGHT child (RR line) -> Case 3: LEFT-ROTATE at 10, swap colours of 20 and 10
-
-        10B                              20B
-          \                             /   \
-          20R        ==>             10R     30R
-            \
-            30R
-
- Insert 15: 15 < 20 -> left, > 10 -> right. Parent 10 RED, uncle 30 RED
-            -> Case 1: RECOLOUR 10 and 30 BLACK, 20 RED; 20 is the root -> BLACK
-
-          20B                              20B
-         /   \                            /   \
-      10R     30R        ==>           10B     30B
-        \                                \
-        15R                              15R
-
- Insert 12: 12 < 20 -> left, > 10 -> right, < 15 -> left. Parent 15 RED,
-            uncle (left child of 10) NIL = BLACK. 15 is the RIGHT child of 10 and
-            12 is the LEFT child of 15 (RL triangle)
-            -> Case 2: RIGHT-ROTATE at 15
-            -> Case 3: LEFT-ROTATE at 10, recolour 12 BLACK and 10 RED
-
-          20B                   20B                         20B
-         /   \                 /   \                       /   \
-      10B     30B           10B     30B                 12B     30B
-        \          ==>        \            ==>          /  \
-        15R                   12R                     10R   15R
-        /                       \
-      12R                       15R
+```{.dot caption="Insert 12: RL triangle. Case 2 (right-rotate at 15), then Case 3 (left-rotate at 10, recolour 12 BLACK and 10 RED)" width="84%"}
+digraph G { nodesep=0.25; ranksep=0.28;
+  subgraph cluster_a { label="after inserting 12"; style=dashed; node [shape=circle, style=filled, fillcolor=black, fontcolor=white, width=0.5, fixedsize=true, fontsize=12]; a20 [label="20"]; a10 [label="10"]; a30 [label="30"]; node [shape=doublecircle, style="", fillcolor=white, fontcolor=black, width=0.42, fixedsize=true, fontsize=12]; a15 [label="15"]; a12 [label="12"]; a20 -> a10; a20 -> a30; a10 -> a15; a15 -> a12; }
+  subgraph cluster_b { label="right-rotate at 15"; style=dashed; node [shape=circle, style=filled, fillcolor=black, fontcolor=white, width=0.5, fixedsize=true, fontsize=12]; b20 [label="20"]; b10 [label="10"]; b30 [label="30"]; node [shape=doublecircle, style="", fillcolor=white, fontcolor=black, width=0.42, fixedsize=true, fontsize=12]; b12 [label="12"]; b15 [label="15"]; b20 -> b10; b20 -> b30; b10 -> b12; b12 -> b15; }
+  subgraph cluster_c { label="left-rotate at 10 + recolour (FINAL)"; style=bold; node [shape=circle, style=filled, fillcolor=black, fontcolor=white, width=0.5, fixedsize=true, fontsize=12]; c20 [label="20"]; c12 [label="12"]; c30 [label="30"]; node [shape=doublecircle, style="", fillcolor=white, fontcolor=black, width=0.42, fixedsize=true, fontsize=12]; c10 [label="10"]; c15 [label="15"]; c20 -> c12; c20 -> c30; c12 -> c10; c12 -> c15; }
+}
 ```
 
 *Final tree verification:*
@@ -4668,27 +4093,15 @@ A **Binomial Heap** is a **mergeable heap**: a collection of **binomial trees** 
 
 **2. Diagram - Binomial Trees B0 to B3**
 
-```
-  B0       B1        B2                 B3
-                                   
-  o        o         o                  o
-           |        / \             /   |   \
-           o       o   o           o    o    o
-                   |              / \   |
-                   o             o   o  o
-                                 |
-                                 o
-  nodes:   1        2         4                  8      (= 2^k)
-  height:  0        1         2                  3      (= k)
-
-  LINKING two B(k-1) trees gives Bk:
-
-        z (smaller key)        y                       z
-        |                +     |          ==>        /   \
-     B(k-2)...              B(k-2)...               y    (old children of z)
-                                                    |
-                                                 (y's children)
-     The root y becomes the LEFTMOST child of root z.
+```{.dot caption="Binomial trees B0 to B3: Bk has 2^k nodes and height k; it is formed by linking two B(k−1) trees" width="78%"}
+digraph G { nodesep=0.2; ranksep=0.32; node [shape=circle, style="", width=0.25, fixedsize=true, label=""];
+  subgraph cluster_0 { label="B0"; style=invis; a0; }
+  subgraph cluster_1 { label="B1"; style=invis; b0; b1; b0 -> b1; }
+  subgraph cluster_2 { label="B2"; style=invis; c0; c1; c2; c3; c0 -> c1; c0 -> c3; c1 -> c2; }
+  subgraph cluster_3 { label="B3"; style=invis; d0; d1; d2; d3; d4; d5; d6; d7; d0 -> d1; d0 -> d5; d0 -> d7; d1 -> d2; d1 -> d4; d2 -> d3; d5 -> d6; }
+  la [shape=plaintext, label="B0", fixedsize=false]; lb [shape=plaintext, label="B1", fixedsize=false]; lc [shape=plaintext, label="B2", fixedsize=false]; ld [shape=plaintext, label="B3", fixedsize=false];
+  la -> a0 [style=invis]; lb -> b0 [style=invis]; lc -> c0 [style=invis]; ld -> d0 [style=invis];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -4710,19 +4123,17 @@ A **Binomial Heap** is a **mergeable heap**: a collection of **binomial trees** 
 
 *(c) Node Structure*
 
-```
-     +--------+--------+---------+--------+---------+
-     | parent |  key   | degree  | child  | sibling |
-     +--------+--------+---------+--------+---------+
-```
+| parent | key | degree | child | sibling |
+|---|---|---|---|---|
+| pointer to the parent | the key value | number of children | pointer to the leftmost child | pointer to the right sibling |
 
 *(d) BINOMIAL-LINK(y, z)*: makes y a child of z, when both are roots of B(k−1) trees and z.key ≤ y.key
 
-```
-     y.parent  = z
-     y.sibling = z.child
-     z.child   = y
-     z.degree  = z.degree + 1          // O(1)
+```text
+y.parent  = z
+y.sibling = z.child
+z.child   = y
+z.degree  = z.degree + 1          // O(1)
 ```
 
 *(e) Union (Merge) Operation, BINOMIAL-HEAP-UNION(H1, H2)*
@@ -4735,39 +4146,22 @@ A **Binomial Heap** is a **mergeable heap**: a collection of **binomial trees** 
 
 *(f) Worked Example*
 
+```{.dot caption="BINOMIAL-HEAP-UNION of H1 (3 nodes) and H2 (5 nodes)" width="96%"}
+digraph G { nodesep=0.15; ranksep=0.28; node [shape=circle, style="", width=0.36, fixedsize=true, fontsize=10.5];
+  subgraph cluster_h1 { label="H1 (n = 3 = 011)"; style=dashed; p12 [label="12"]; p7 [label="7"]; p25 [label="25"]; p7 -> p25; }
+  subgraph cluster_h2 { label="H2 (n = 5 = 101)"; style=dashed; q18 [label="18"]; q3 [label="3"]; q6 [label="6"]; q37 [label="37"]; q8 [label="8"]; q3 -> q6; q3 -> q37; q6 -> q8; }
+  subgraph cluster_s2 { label="Link 12 & 18 (B0s) → B1;\nlink 12 & 7 (B1s) → B2"; style=dashed; r7 [label="7"]; r12 [label="12"]; r25 [label="25"]; r18 [label="18"]; r7 -> r12; r7 -> r25; r12 -> r18; }
+  subgraph cluster_f { label="Link 7 & 3 (B2s) → B3\nRESULT: 8 = 1000 (binary)"; style=bold; f3 [label="3"]; f7 [label="7"]; f6 [label="6"]; f37 [label="37"]; f12 [label="12"]; f25 [label="25"]; f8 [label="8"]; f18 [label="18"];
+    f3 -> f7; f3 -> f6; f3 -> f37; f7 -> f12; f7 -> f25; f6 -> f8; f12 -> f18; }
+}
 ```
- H1 (n=3 = 011):   12(B0)   7(B1)          H2 (n=5 = 101):   18(B0)   3(B2)
-                            |                                         / \
-                            25                                       6   37
-                                                                     |
-                                                                     8
 
- Step 1 - Merge root lists by degree:   12(B0) -> 18(B0) -> 7(B1) -> 3(B2)
-
- Step 2 - Link 12 & 18 (both B0); 12 < 18 so 12 becomes root -> B1
-          12(B1) -> 7(B1) -> 3(B2)
-           |
-           18
-
- Step 3 - Link 12 & 7 (both B1); 7 < 12 so 7 becomes root -> B2
-          7(B2) -> 3(B2)
-         /  \
-        12   25
-        |
-        18
-
- Step 4 - Link 7 & 3 (both B2); 3 < 7 so 3 becomes root -> B3 (8 nodes)
-
-                       3
-                    /  |  \
-                   7   6   37
-                  / \  |
-                12  25 8
-                 |
-                18
-
- Result: H = { B3 } with 8 = 1000 (binary) nodes  [ 3 + 5 = 8 ]
-```
+| Step | Root list (by degree) | Action |
+|---|---|---|
+| 1. Merge | 12(B0) → 18(B0) → 7(B1) → 3(B2) | Merge both root lists, sorted by degree |
+| 2 | 12(B1) → 7(B1) → 3(B2) | Link 12 and 18 (both B0); 12 < 18, so 12 is the root |
+| 3 | 7(B2) → 3(B2) | Link 12 and 7 (both B1); 7 < 12, so 7 is the root |
+| 4 | 3(B3) | Link 7 and 3 (both B2); 3 < 7, so 3 is the root |
 
 **4. Key Characteristics - Binary Heap vs. Binomial Heap (Time Complexities)**
 
@@ -4808,19 +4202,14 @@ A **Trie (prefix tree)** is a tree-based data structure for storing a set of str
 
 **2. Diagram - Standard Trie for S = {bear, bell, bid, bull, buy, sell, stock, stop}**
 
-```
-                               (root)
-                          /              \
-                        b                  s
-                    /   |   \            /    \
-                   e    i    u          e      t
-                  / \   |   / \         |      |
-                 a   l  d  l   y        l      o
-                 |   |     |            |     / \
-                 r   l     l            l    c   p
-                                             |
-                                             k
-     Many nodes have a single child (for example a->r, l->l, s-e-l-l)
+```{.dot caption="Standard trie for {bear, bell, bid, bull, buy, sell, stock, stop} (22 nodes)" width="64%"}
+digraph G { nodesep=0.12; ranksep=0.25; node [shape=circle, style="", width=0.3, fixedsize=true, fontsize=11];
+  r [label="•"]; b [label="b"]; s [label="s"]; e [label="e"]; i [label="i"]; u [label="u"]; e2 [label="e"]; t [label="t"];
+  a [label="a"]; l1 [label="l"]; d [label="d"]; l3 [label="l"]; y [label="y"]; l5 [label="l"]; o [label="o"];
+  rr [label="r"]; l2 [label="l"]; l4 [label="l"]; l6 [label="l"]; c [label="c"]; p [label="p"]; k [label="k"];
+  r -> {b s}; b -> {e i u}; s -> {e2 t}; e -> {a l1}; i -> d; u -> {l3 y}; e2 -> l5; t -> o;
+  a -> rr; l1 -> l2; l3 -> l4; l5 -> l6; o -> {c p}; c -> k;
+}
 ```
 
 **3. Core Explanation / Working**
@@ -4834,19 +4223,15 @@ A **Trie (prefix tree)** is a tree-based data structure for storing a set of str
 
 *Compressed Trie for S = {bear, bell, bid, bull, buy, sell, stock, stop}*
 
+```{.dot caption="Compressed trie: single-child chains merged into one edge (14 nodes)" width="62%"}
+digraph G { nodesep=0.2; ranksep=0.3; node [shape=box, style=rounded, height=0.32, fontsize=11];
+  r [label="(root)"]; b [label="b"]; s [label="s"]; e [label="e"]; id [label="id"]; u [label="u"]; ell [label="ell"]; to [label="to"];
+  ar [label="ar"]; ll1 [label="ll"]; ll2 [label="ll"]; y [label="y"]; ck [label="ck"]; p [label="p"];
+  r -> {b s}; b -> {e id u}; s -> {ell to}; e -> {ar ll1}; u -> {ll2 y}; to -> {ck p};
+}
 ```
-                                (root)
-                         /                \
-                       b                    s
-                  /    |     \           /      \
-                e      id     u        ell       to
-               / \           / \                /  \
-             ar   ll       ll    y            ck     p
 
-   Words read from root to leaf:
-   b+e+ar = bear     b+e+ll = bell     b+id = bid      b+u+ll = bull
-   b+u+y  = buy      s+ell  = sell     s+to+ck = stock s+to+p = stop
-```
+*Reading root to leaf:* b+e+ar = bear, b+e+ll = bell, b+id = bid, b+u+ll = bull, b+u+y = buy, s+ell = sell, s+to+ck = stock, s+to+p = stop.
 
 *Compression actions taken*
 
@@ -4905,13 +4290,10 @@ Compressed tries are used in **autocomplete and spell checkers, IP routing table
 
 - Dijkstra's algorithm **fails when the graph has negative-weight edges**. It **finalizes** a vertex as soon as it is extracted from the priority queue, assuming its distance can never decrease later. A negative edge breaks this assumption.
 
-```
-      S -------(1)-------> A        Dijkstra: d(A) = 1 is finalized first.
-       \                   ^                  d(B) = 2; then edge B->A gives 0,
-       (2)               (-2)                 but A is already final.
-         \               /
-          +----> B -----+           Output : d(A) = 1   (WRONG)
-                                    Correct: S -> B -> A = 2 + (-2) = 0
+```{.dot caption="Dijkstra fails with a negative edge: it finalizes d(A) = 1, but the true shortest distance is S → B → A = 2 + (−2) = 0" width="38%"}
+digraph G { rankdir=LR; nodesep=0.6; node [shape=circle, style="", width=0.45, fixedsize=true];
+  S -> A [label=" 1"]; S -> B [label=" 2"]; B -> A [label=" −2"];
+}
 ```
 
 - **Solution:** use the **Bellman-Ford algorithm**, which handles negative edges and also detects negative cycles.
@@ -4926,36 +4308,20 @@ A **Minimum Spanning Tree (MST)** of a connected, weighted, undirected graph G(V
 
 **2. Block Diagram - Given Graph and Algorithm Flow**
 
-```
-   GIVEN GRAPH (6 vertices, 9 edges)
-
-                A
-              /   \
-           3 /     \ 4
-            /       \
-           C ---1--- B
-           | \       |
-         5 |  \ 7    | 2
-           |   \     |
-           E ---6--- D
-            \       /
-           8 \     / 9
-              \   /
-                F
-
-   Edges: A-B 4, A-C 3, B-C 1, B-D 2, C-D 7, C-E 5, D-E 6, D-F 9, E-F 8
-
-
-   KRUSKAL                                   PRIM
-   +--------------------------------+        +--------------------------------+
-   | Sort all edges by weight       |        | Start from any vertex (A)      |
-   +---------------+----------------+        +---------------+----------------+
-   +---------------v----------------+        +---------------v----------------+
-   | Pick the smallest edge; add it |        | Pick the minimum edge joining  |
-   | if it does NOT form a cycle    |        | the tree to a NON-tree vertex  |
-   | (Union-Find check)             |        | (priority queue)               |
-   +---------------+----------------+        +---------------+----------------+
-                   | repeat until V-1 edges                  | repeat until all V included
+```{.dot engine="neato" caption="Given weighted graph (6 vertices, 9 edges)" width="40%"}
+graph G { splines=line; overlap=true; edge [fontsize=12];
+  node [shape=circle, style="", width=0.42, fixedsize=true, fontsize=13];
+  A [pos="2,3.4!"]; C [pos="0.6,2.3!"]; B [pos="3.4,2.3!"]; E [pos="0.6,0.9!"]; D [pos="3.4,0.9!"]; F [pos="2,-0.1!"];
+  A -- B [label="4", ];
+  A -- C [label="3", ];
+  B -- C [label="1", ];
+  B -- D [label="2", ];
+  C -- D [label="7", ];
+  C -- E [label="5", ];
+  D -- E [label="6", ];
+  D -- F [label="9", ];
+  E -- F [label="8", ];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -5004,23 +4370,20 @@ A **Minimum Spanning Tree (MST)** of a connected, weighted, undirected graph G(V
 
 *Resulting MST (same from both algorithms)*
 
-```
-                A
-              /
-           3 /
-            /
-           C ---1--- B
-           |         |
-         5 |         | 2
-           |         |
-           E         D
-            \
-           8 \
-              \
-                F
-
-   MST edges: B-C(1), B-D(2), A-C(3), C-E(5), E-F(8)
-   Total weight = 1 + 2 + 3 + 5 + 8 = 19
+```{.dot engine="neato" caption="Minimum spanning tree (bold edges), total weight = 1 + 2 + 3 + 5 + 8 = 19" width="40%"}
+graph G { splines=line; overlap=true; edge [fontsize=12];
+  node [shape=circle, style="", width=0.42, fixedsize=true, fontsize=13];
+  A [pos="2,3.4!"]; C [pos="0.6,2.3!"]; B [pos="3.4,2.3!"]; E [pos="0.6,0.9!"]; D [pos="3.4,0.9!"]; F [pos="2,-0.1!"];
+  A -- B [label="4", style=dashed, color="gray45"];
+  A -- C [label="3", penwidth=3];
+  B -- C [label="1", penwidth=3];
+  B -- D [label="2", penwidth=3];
+  C -- D [label="7", style=dashed, color="gray45"];
+  C -- E [label="5", penwidth=3];
+  D -- E [label="6", style=dashed, color="gray45"];
+  D -- F [label="9", style=dashed, color="gray45"];
+  E -- F [label="8", penwidth=3];
+}
 ```
 
 **4. Key Characteristics - Kruskal vs. Prim**
@@ -5062,50 +4425,37 @@ MST algorithms are used to design **minimum-cost networks: laying telephone or f
 
 **2. Flowchart and Graph**
 
+```{.dot caption="Dijkstra's algorithm" width="60%"}
+digraph G { node [width=3.4];
+  a [label="d[source] = 0; d[v] = ∞ for all other v\nQ = all vertices (min-priority queue)"];
+  b [label="u = EXTRACT-MIN(Q)   (u is now final)"];
+  c [label="for each neighbour v of u:  RELAX(u, v)\nif d[u] + w(u, v) < d[v]:\n    d[v] = d[u] + w(u, v);  parent[v] = u"];
+  q [label="Q empty?", shape=diamond, width=1.6]; e [label="Shortest paths found", penwidth=2];
+  a -> b -> c -> q; q -> b [label=" no"]; q -> e [label=" yes"];
+}
 ```
-   GRAPH (undirected; same graph as the MST question)
 
-                A  (source)
-              /   \
-           3 /     \ 4
-            /       \
-           C ---1--- B
-           | \       |
-         5 |  \ 7    | 2
-           |   \     |
-           E ---6--- D
-            \       /
-           8 \     / 9
-              \   /
-                F
-
-        +-----------------------------------------+
-        | d[source] = 0;  d[v] = INF for all v    |
-        | Q = all vertices (min-priority queue)   |
-        +--------------------+--------------------+
-                             |
-        +--------------------v--------------------+
-        |  u = EXTRACT-MIN(Q)   (finalize u)      |<-----+
-        +--------------------+--------------------+      |
-                             |                           |
-        +--------------------v--------------------+      |
-        | For each neighbour v of u:  RELAX(u,v)  |      |
-        | if d[u] + w(u,v) < d[v]:                |      |
-        |     d[v] = d[u] + w(u,v); parent[v] = u |      |
-        +--------------------+--------------------+      |
-                             |                           |
-                    +--------v--------+   No             |
-                    |   Q empty ?     |------------------+
-                    +--------+--------+
-                             | Yes
-                       Shortest paths found
+```{.dot engine="neato" caption="Graph used (source = A)" width="40%"}
+graph G { splines=line; overlap=true; edge [fontsize=12];
+  node [shape=circle, style="", width=0.42, fixedsize=true, fontsize=13];
+  A [pos="2,3.4!"]; C [pos="0.6,2.3!"]; B [pos="3.4,2.3!"]; E [pos="0.6,0.9!"]; D [pos="3.4,0.9!"]; F [pos="2,-0.1!"];
+  A -- B [label="4", ];
+  A -- C [label="3", ];
+  B -- C [label="1", ];
+  B -- D [label="2", ];
+  C -- D [label="7", ];
+  C -- E [label="5", ];
+  D -- E [label="6", ];
+  D -- F [label="9", ];
+  E -- F [label="8", ];
+}
 ```
 
 **3. Core Explanation / Working**
 
 *Algorithm*
 
-```
+```text
 DIJKSTRA(G, w, s)
 1. for each vertex v:  d[v] = INF,  parent[v] = NIL
 2. d[s] = 0
@@ -5142,22 +4492,20 @@ DIJKSTRA(G, w, s)
 | E | 8 | A → C → E |
 | F | 15 | A → B → D → F |
 
-```
-   SHORTEST PATH TREE (from A)
-
-                A
-              /   \
-           3 /     \ 4
-            /       \
-           C         B
-           |         |
-         5 |         | 2
-           |         |
-           E         D
-                    /
-                 9 /
-                  /
-                F
+```{.dot engine="neato" caption="Shortest-path tree from A (bold edges); distances A0, B4, C3, D6, E8, F15" width="40%"}
+graph G { splines=line; overlap=true; edge [fontsize=12];
+  node [shape=circle, style="", width=0.42, fixedsize=true, fontsize=13];
+  A [pos="2,3.4!"]; C [pos="0.6,2.3!"]; B [pos="3.4,2.3!"]; E [pos="0.6,0.9!"]; D [pos="3.4,0.9!"]; F [pos="2,-0.1!"];
+  A -- B [label="4", penwidth=3];
+  A -- C [label="3", penwidth=3];
+  B -- C [label="1", style=dashed, color="gray45"];
+  B -- D [label="2", penwidth=3];
+  C -- D [label="7", style=dashed, color="gray45"];
+  C -- E [label="5", penwidth=3];
+  D -- E [label="6", style=dashed, color="gray45"];
+  D -- F [label="9", penwidth=3];
+  E -- F [label="8", style=dashed, color="gray45"];
+}
 ```
 
 *Complexity*
@@ -5204,24 +4552,17 @@ The proof is **by contradiction**, using the **cycle property** and an **exchang
 
 **2. Diagram - Exchange Argument**
 
+```{.dot engine="neato" caption="Exchange argument: adding e to T2 creates a cycle; removing the heavier edge f gives a lighter spanning tree" width="56%"}
+graph G { splines=line; node [shape=circle, style="", width=0.42, fixedsize=true, fontsize=12];
+  u [pos="0,0!"]; v [pos="4,0!"]; p1 [label="", pos="0.8,-1.2!"]; p2 [label="", pos="2,-1.6!"]; p3 [label="", pos="3.2,-1.2!"];
+  u -- v [label="e  (in T1, not in T2)", penwidth=2.5, style=dashed];
+  u -- p1; p1 -- p2 [label="f  (in T2, not in T1)", penwidth=2.5]; p2 -- p3; p3 -- v;
+  t [shape=plaintext, label="path in T2 from u to v", pos="2,-2.2!", fixedsize=false];
+}
 ```
-   Assume two different MSTs T1 and T2.
-   e = minimum-weight edge in  T1 XOR T2  (in one tree but not the other); say e is in T1.
 
-        T2 + e  creates a CYCLE C:
 
-             u  o--------- e (in T1, not in T2) ---------o  v
-                 \                                      /
-                  o -- ... -- o ---- f ---- o -- ... --o
-                         (path in T2 from u to v)
-                   f is on the cycle, f in T2 but NOT in T1
-
-        Since e is the minimum edge of T1 XOR T2 and weights are distinct:
-                         w(e) < w(f)
-
-        T2' = T2 + e - f   is a spanning tree with
-        w(T2') = w(T2) + w(e) - w(f)  <  w(T2)      ==> CONTRADICTION
-```
+$$w(e) < w(f) \;\;\Rightarrow\;\; w(T_2') = w(T_2) + w(e) - w(f) < w(T_2) \quad\text{(contradiction)}$$
 
 **3. Core Explanation / Working - The Proof**
 
@@ -5265,11 +4606,11 @@ The proof is **by contradiction**, using the **cycle property** and an **exchang
 
 *Note (the converse is false):* a graph with repeated weights **may still have a unique MST**, but uniqueness is then not guaranteed. For example, a triangle with all edges of weight 1 has **3 different MSTs**.
 
-```
-        A                 MST 1: A-B, A-C       (each has total weight 2)
-      1/ \1               MST 2: A-B, B-C
-      B---C               MST 3: A-C, B-C
-        1                 Equal weights ==> MST not unique
+```{.dot engine="neato" caption="Equal weights: this triangle has 3 different MSTs (A-B + A-C, A-B + B-C, A-C + B-C), each of weight 2" width="26%"}
+graph G { splines=line; node [shape=circle, style="", width=0.42, fixedsize=true];
+  A [pos="1,1.6!"]; B [pos="0,0!"]; C [pos="2,0!"];
+  A -- B [label="1"]; A -- C [label="1"]; B -- C [label="1"];
+}
 ```
 
 **4. Key Characteristics - Properties Used in the Proof**
@@ -5333,35 +4674,20 @@ In the **0/1 Knapsack problem**, we have n items, each with a **weight wi** and 
 
 **2. Flowchart - DP Recurrence**
 
-```
-                  +-------------------------------------+
-                  |     Compute V[i][w] for item i,     |
-                  |     capacity w                      |
-                  +------------------+------------------+
-                                     |
-                  +------------------v------------------+
-                  |  i = 0  or  w = 0 ?                 |--- Yes ---> V[i][w] = 0
-                  +------------------+------------------+
-                                     | No
-                  +------------------v------------------+
-                  |  wi > w ?  (item does not fit)      |--- Yes ---> V[i][w] = V[i-1][w]
-                  +------------------+------------------+             (exclude item)
-                                     | No
-                  +------------------v------------------+
-                  | V[i][w] = max( V[i-1][w],           |  <- exclude item i
-                  |                vi + V[i-1][w - wi]) |  <- include item i
-                  +-------------------------------------+
+```{.dot caption="Filling one cell of the 0/1 Knapsack table" width="88%"}
+digraph G { node [width=3];
+  a [label="Compute V[i][w]"]; b [label="i = 0 or w = 0 ?", shape=diamond, width=2]; z [label="V[i][w] = 0"];
+  c [label="wᵢ > w ?\n(item does not fit)", shape=diamond, width=2.2]; x [label="V[i][w] = V[i−1][w]\n(exclude item i)"];
+  m [label="V[i][w] = max( V[i−1][w],  vᵢ + V[i−1][w − wᵢ] )\n(exclude  vs.  include item i)", penwidth=2, width=4];
+  a -> b; b -> z [label=" yes"]; b -> c [label=" no"]; c -> x [label=" yes"]; c -> m [label=" no"];
+}
 ```
 
 **3. Core Explanation / Working**
 
 *Recurrence*
 
-```
-               | 0                                          if i = 0 or w = 0
-   V[i][w]  =  | V[i-1][w]                                  if wi > w
-               | max( V[i-1][w],  vi + V[i-1][w - wi] )     otherwise
-```
+$$V[i][w] = \begin{cases} 0 & \text{if } i = 0 \text{ or } w = 0 \\ V[i-1][w] & \text{if } w_i > w \\ \max\big(V[i-1][w],\; v_i + V[i-1][w - w_i]\big) & \text{otherwise} \end{cases}$$
 
 *Problem:* capacity **W = 5**, n = 4 items.
 
@@ -5440,37 +4766,20 @@ The **Matrix Chain Multiplication (MCM)** problem: given a chain of matrices A1,
 
 **2. Flowchart - Algorithm**
 
-```
-        +--------------------------------------------------+
-        |  Input: dimension sequence p0, p1, ..., pn       |
-        +-------------------------+------------------------+
-                                  |
-        +-------------------------v------------------------+
-        |  m[i][i] = 0  for all i  (single matrix = 0 cost)|
-        +-------------------------+------------------------+
-                                  |
-        +-------------------------v------------------------+
-        |  for chain length L = 2 to n                     |
-        |    for i = 1 to n-L+1 ;  j = i+L-1               |
-        |      m[i][j] = min over i<=k<j of                |
-        |        m[i][k] + m[k+1][j] + p(i-1) p(k) p(j)    |
-        |      s[i][j] = the k giving the minimum          |
-        +-------------------------+------------------------+
-                                  |
-        +-------------------------v------------------------+
-        | Answer = m[1][n];  build brackets from s[ ][ ]   |
-        +--------------------------------------------------+
+```{.dot caption="Matrix Chain Multiplication (bottom-up DP)" width="62%"}
+digraph G { node [width=3.6];
+  a [label="Input: dimensions p₀, p₁, ..., pₙ"]; b [label="m[i][i] = 0 for all i\n(a single matrix costs nothing)"];
+  c [label="for chain length L = 2 to n\n  for i = 1 to n − L + 1,  j = i + L − 1\n    m[i][j] = min over i ≤ k < j of\n      m[i][k] + m[k+1][j] + p(i−1) · p(k) · p(j)\n    s[i][j] = the k giving the minimum"];
+  d [label="Answer = m[1][n]; brackets from s[ ][ ]", penwidth=2];
+  a -> b -> c -> d;
+}
 ```
 
 **3. Core Explanation / Working**
 
 *Recurrence*
 
-```
-   m[i][j] = 0                                                    if i = j
-   m[i][j] = min { m[i][k] + m[k+1][j] + p(i-1).p(k).p(j) }       if i < j
-            i<=k<j
-```
+$$m[i][j] = \begin{cases} 0 & \text{if } i = j \\[4pt] \displaystyle\min_{i \le k < j} \Big\{ m[i][k] + m[k+1][j] + p_{i-1}\, p_k\, p_j \Big\} & \text{if } i < j \end{cases}$$
 
 *Problem:* 4 matrices
 
@@ -5509,31 +4818,31 @@ The dimension sequence is **p = <p0, p1, p2, p3, p4> = <5, 4, 6, 2, 7>**.
 
 *Final Tables*
 
-```
-      m[i][j] (cost table)                    s[i][j] (split table)
-   +-----+-----+-----+-----+-----+         +-----+-----+-----+-----+
-   | i\j |  1  |  2  |  3  |  4  |         | i\j |  2  |  3  |  4  |
-   +-----+-----+-----+-----+-----+         +-----+-----+-----+-----+
-   |  1  |  0  | 120 |  88 | 158 |         |  1  |  1  |  1  |  3  |
-   |  2  |     |  0  |  48 | 104 |         |  2  |     |  2  |  3  |
-   |  3  |     |     |  0  |  84 |         |  3  |     |     |  3  |
-   |  4  |     |     |     |  0  |         +-----+-----+-----+-----+
-   +-----+-----+-----+-----+-----+
-```
+**m[i][j] (cost table)**
+
+| i \ j | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|
+| 1 | 0 | 120 | 88 | **158** |
+| 2 | | 0 | 48 | 104 |
+| 3 | | | 0 | 84 |
+| 4 | | | | 0 |
+
+**s[i][j] (split table)**
+
+| i \ j | 2 | 3 | 4 |
+|---|---|---|---|
+| 1 | 1 | 1 | **3** |
+| 2 | | 2 | 3 |
+| 3 | | | 3 |
 
 *Step 5 - Building the optimal parenthesization from s*
 
-```
-   PRINT-OPTIMAL-PARENS(s, 1, 4):  s[1][4] = 3   ==>  ( A1 A2 A3 ) ( A4 )
-   PRINT-OPTIMAL-PARENS(s, 1, 3):  s[1][3] = 1   ==>  ( A1 ) ( A2 A3 )
-
-                     (1..4)  split at k = 3
-                    /      \
-              (1..3) k=1    A4
-              /     \
-            A1    (2..3) k=2
-                  /    \
-                A2      A3
+```{.dot caption="Parenthesization tree from the s table: ((A1 (A2 A3)) A4)" width="40%"}
+digraph G { nodesep=0.3; ranksep=0.35; node [fontsize=11];
+  r [label="A1..A4\nsplit k = 3"]; l [label="A1..A3\nsplit k = 1"]; a4 [label="A4", shape=circle, style=""];
+  a1 [label="A1", shape=circle, style=""]; m [label="A2..A3\nsplit k = 2"]; a2 [label="A2", shape=circle, style=""]; a3 [label="A3", shape=circle, style=""];
+  r -> l; r -> a4; l -> a1; l -> m; m -> a2; m -> a3;
+}
 ```
 
 **Optimal parenthesization: ((A1 (A2 A3)) A4)** with **minimum cost = 158** scalar multiplications.
@@ -5577,35 +4886,20 @@ A **subsequence** is a sequence obtained by deleting zero or more characters **w
 
 **2. Flowchart - LCS Recurrence**
 
-```
-              +------------------------------------+
-              |       Compute c[i][j]              |
-              +-----------------+------------------+
-                                |
-              +-----------------v------------------+
-              |    i = 0  or  j = 0 ?              |--- Yes ---> c[i][j] = 0
-              +-----------------+------------------+
-                                | No
-              +-----------------v------------------+
-              |     X[i] = Y[j] ?                  |--- Yes ---> c[i][j] = c[i-1][j-1] + 1
-              +-----------------+------------------+             arrow = DIAGONAL
-                                | No
-              +-----------------v------------------+
-              | c[i][j] = max(c[i-1][j], c[i][j-1])|
-              | arrow = UP (if c[i-1][j] >= c[i][j-1])
-              |         else LEFT                  |
-              +------------------------------------+
+```{.dot caption="Filling one cell of the LCS table" width="88%"}
+digraph G { node [width=3];
+  a [label="Compute c[i][j]"]; b [label="i = 0 or j = 0 ?", shape=diamond, width=2]; z [label="c[i][j] = 0"];
+  e [label="X[i] = Y[j] ?", shape=diamond, width=1.8]; d [label="c[i][j] = c[i−1][j−1] + 1\narrow = DIAGONAL"];
+  m [label="c[i][j] = max( c[i−1][j], c[i][j−1] )\narrow = UP if c[i−1][j] ≥ c[i][j−1], else LEFT"];
+  a -> b; b -> z [label=" yes"]; b -> e [label=" no"]; e -> d [label=" yes"]; e -> m [label=" no"];
+}
 ```
 
 **3. Core Explanation / Working**
 
 *Recurrence*
 
-```
-              | 0                                if i = 0 or j = 0
-   c[i][j] =  | c[i-1][j-1] + 1                  if X[i] = Y[j]
-              | max( c[i-1][j], c[i][j-1] )      if X[i] != Y[j]
-```
+$$c[i][j] = \begin{cases} 0 & \text{if } i = 0 \text{ or } j = 0 \\ c[i-1][j-1] + 1 & \text{if } X_i = Y_j \\ \max\big(c[i-1][j],\; c[i][j-1]\big) & \text{if } X_i \ne Y_j \end{cases}$$
 
 *Problem:* **X = A B C B D A B** (m = 7), **Y = B D C A B A** (n = 6)
 
@@ -5708,31 +5002,7 @@ LCS is used in the **`diff` utility and Git (file comparison), DNA and protein s
 
 **2. Diagram - Relationship Between the Classes (assuming P ≠ NP)**
 
-```
-                 +-------------------------------------------+
-                 |                 NP-HARD                   |
-                 |   (Halting Problem, TSP-optimization)     |
-                 |     -> NOT necessarily in NP              |
-        +--------+-------------------------------------------+--------+
-        |        |              NP-COMPLETE                  |        |
-        |        |      = NP  ∩  NP-HARD                     |        |
-        |        |   (SAT, 3-SAT, Clique, Vertex Cover,      |        |
-        |        |    Hamiltonian Cycle, TSP-decision)       |        |
-        |        +-------------------------------------------+        |
-        |                                                             |
-        |                    +----------------------+                 |
-        |                    |          P           |                 |
-        |                    |  (Sorting, MST,      |                 |
-        |                    |   Dijkstra, Search)  |                 |
-        |                    +----------------------+                 |
-        |                                                             |
-        |  NP  (solution VERIFIABLE in polynomial time)               |
-        +-------------------------------------------------------------+
-
-     Relations:   P ⊆ NP ,   NP-Complete ⊆ NP ,   NP-Complete ⊆ NP-Hard
-
-     If P = NP (unproven):  P = NP = NP-Complete  (inside NP-Hard)
-```
+![Relationship between P, NP, NP-Complete and NP-Hard (assuming P ≠ NP)](figures/daa_pnp.svg){width=78%}
 
 **3. Core Explanation / Working**
 
@@ -5772,18 +5042,12 @@ LCS is used in the **`diff` utility and Git (file comparison), DNA and protein s
 
 *(f) Chain of reductions (standard NPC problems)*
 
-```
-                 SAT  (Cook-Levin)
-                  |
-                3-SAT
-               /     \
-          CLIQUE    3-COLOURING
-             |
-       VERTEX COVER  ------>  SET COVER
-             |
-     HAMILTONIAN CYCLE
-             |
-      TSP (decision)
+```{.dot caption="Chain of polynomial-time reductions between NP-Complete problems" width="56%"}
+digraph G { nodesep=0.4; ranksep=0.35; node [fontsize=11];
+  sat [label="SAT  (Cook-Levin, 1971)", penwidth=2]; s3 [label="3-SAT"]; cl [label="CLIQUE"]; col [label="3-COLOURING"];
+  vc [label="VERTEX COVER"]; sc [label="SET COVER"]; hc [label="HAMILTONIAN CYCLE"]; tsp [label="TSP (decision)"];
+  sat -> s3; s3 -> cl; s3 -> col; cl -> vc; vc -> sc; vc -> hc; hc -> tsp;
+}
 ```
 
 *(g) The P vs NP question*
@@ -5829,34 +5093,17 @@ The **N-Queens problem** asks us to place N queens on an N × N chessboard so th
 
 **2. Flowchart and Algorithm**
 
-```
-              +-----------------------------------+
-              |       NQUEENS(k, n)  (row k)      |
-              +-----------------+-----------------+
-                                |
-              +-----------------v-----------------+
-              |  for column i = 1 to n            |<-------------+
-              +-----------------+-----------------+              |
-                                |                                |
-              +-----------------v-----------------+   No         |
-              |  PLACE(k, i) safe?                |------------> next i
-              |  (no same column, no diagonal)    |              ^
-              +-----------------+-----------------+              |
-                                | Yes                            |
-              +-----------------v-----------------+              |
-              |  x[k] = i                         |              |
-              +-----------------+-----------------+              |
-                                |                                |
-                    +-----------v-----------+                    |
-                    |    k == n ?           |--- Yes --> PRINT solution x[1..n]
-                    +-----------+-----------+                    |
-                                | No                             |
-              +-----------------v-----------------+              |
-              |  NQUEENS(k+1, n)  (next row)      |--------------+
-              +-----------------------------------+  (returns = BACKTRACK)
+```{.dot caption="Backtracking algorithm for N-Queens" width="62%"}
+digraph G { node [width=3];
+  a [label="NQUEENS(k, n)  (place a queen in row k)"]; b [label="for column i = 1 to n"];
+  c [label="PLACE(k, i) safe?\n(no same column, no diagonal)", shape=diamond, width=3];
+  d [label="x[k] = i"]; e [label="k = n ?", shape=diamond, width=1.4];
+  f [label="PRINT solution x[1..n]", penwidth=2]; g [label="NQUEENS(k + 1, n)\n(returning = BACKTRACK)"];
+  a -> b -> c; c -> b [label=" no: next i"]; c -> d [label=" yes"]; d -> e; e -> f [label=" yes"]; e -> g [label=" no"]; g -> b [style=dashed];
+}
 ```
 
-```
+```text
 PLACE(k, i)                         // can queen k go in column i?
 1. for j = 1 to k - 1
 2.     if x[j] == i                         // same column
@@ -5894,41 +5141,25 @@ NQUEENS(k, n)
 
 *State-space tree (pruned).* X = node killed by the bounding function.
 
-```
-                                   (root)
-                  +------------------+-------------------+
-                Q1=1                                   Q1=2
-       +------+------+------+                 +------+------+------+
-     Q2=1   Q2=2   Q2=3   Q2=4              Q2=1   Q2=2   Q2=3   Q2=4
-       X      X      |      |                 X      X      X      |
-                     |      |                                    Q3=1
-              Q3: 1,2,3,4   |                                      |
-              all X         |                                    Q4=3
-              (backtrack)   |                                 * SOLUTION *
-                  +------+--+---+------+                       (2,4,1,3)
-                Q3=1   Q3=2   Q3=3   Q3=4
-                  X      |      X      X
-                         |
-                  Q4: 1,2,3,4 all X
-                  (backtrack to Q1)
+```{.dot caption="Pruned state-space tree for 4-Queens (✗ = killed by the bounding function)" width="96%"}
+digraph G { nodesep=0.08; ranksep=0.32; node [shape=circle, style="", width=0.5, fixedsize=true, fontsize=9.5];
+  r [label="root", width=0.55];
+  a1 [label="Q1=1"]; a2 [label="Q1=2"];
+  b11 [label="Q2=1\n✗"]; b12 [label="Q2=2\n✗"]; b13 [label="Q2=3"]; b14 [label="Q2=4"];
+  b21 [label="Q2=1\n✗"]; b22 [label="Q2=2\n✗"]; b23 [label="Q2=3\n✗"]; b24 [label="Q2=4"];
+  c13 [label="Q3\nall ✗", shape=box, style=rounded, width=0.6];
+  c141 [label="Q3=1\n✗"]; c142 [label="Q3=2"]; c143 [label="Q3=3\n✗"]; c144 [label="Q3=4\n✗"];
+  d142 [label="Q4\nall ✗", shape=box, style=rounded, width=0.6];
+  c241 [label="Q3=1"]; d2413 [label="Q4=3", penwidth=2.5];
+  sol [label="SOLUTION\n(2, 4, 1, 3)", shape=box, style=rounded, fixedsize=false, penwidth=2];
+  r -> {a1 a2}; a1 -> {b11 b12 b13 b14}; a2 -> {b21 b22 b23 b24};
+  b13 -> c13; b14 -> {c141 c142 c143 c144}; c142 -> d142; b24 -> c241 -> d2413 -> sol;
+}
 ```
 
 *Solution boards*
 
-```
-     Solution 1: (2, 4, 1, 3)              Solution 2: (3, 1, 4, 2)  (mirror image)
-
-        1   2   3   4                         1   2   3   4
-      +---+---+---+---+                     +---+---+---+---+
-   1  |   | Q |   |   |                  1  |   |   | Q |   |
-      +---+---+---+---+                     +---+---+---+---+
-   2  |   |   |   | Q |                  2  | Q |   |   |   |
-      +---+---+---+---+                     +---+---+---+---+
-   3  | Q |   |   |   |                  3  |   |   |   | Q |
-      +---+---+---+---+                     +---+---+---+---+
-   4  |   |   | Q |   |                  4  |   | Q |   |   |
-      +---+---+---+---+                     +---+---+---+---+
-```
+![The two solutions of 4-Queens (Solution 2 is the mirror image of Solution 1)](figures/daa_4queens.svg){width=60%}
 
 *Extension to 8-Queens*
 
@@ -6010,28 +5241,21 @@ Machine learning is divided into three main paradigms according to the **type of
 
 **2. Block Diagram**
 
+```{.dot caption="The three learning paradigms" width="96%"}
+digraph G { nodesep=0.25; ranksep=0.42; node [fontsize=11];
+  ml [label="MACHINE LEARNING", width=2.2];
+  s [label="SUPERVISED\nlabelled data (X, Y)"]; u [label="UNSUPERVISED\nunlabelled data X"]; r [label="REINFORCEMENT\nagent interacts\nwith environment"];
+  s1 [label="Classification\n(spam / not spam)"]; s2 [label="Regression\n(house price)"]; u1 [label="Clustering\n(K-Means)"]; u2 [label="Association\n(Apriori)"]; r1 [label="Model-based\n(value iteration)"]; r2 [label="Model-free\n(Q-learning)"];
+  ml -> {s u r}; s -> {s1 s2}; u -> {u1 u2}; r -> {r1 r2};
+}
 ```
-                         +-------------------------+
-                         |    MACHINE LEARNING     |
-                         +------------+------------+
-          +---------------------------+----------------------------+
-          |                           |                            |
-+---------v----------+    +-----------v----------+    +------------v-----------+
-|    SUPERVISED      |    |    UNSUPERVISED      |    |    REINFORCEMENT       |
-+--------------------+    +----------------------+    +------------------------+
-| Labelled data      |    | Unlabelled data      |    | No dataset; agent      |
-| (X, Y) pairs       |    | X only               |    | interacts with env.    |
-+---------+----------+    +-----------+----------+    +------------+-----------+
-          |                           |                            |
-   +------+------+             +------+------+          +----------+---------+
-   |             |             |             |          |                    |
-Classification Regression  Clustering  Association   Model-based      Model-free
-(Spam/Not)   (House price) (K-Means)   (Apriori)     (Value Iter.)   (Q-Learning)
 
-
-  SUPERVISED:      Data + Labels --> [ Model ] --> Prediction --> compare with label --> error
-  UNSUPERVISED:    Data ----------> [ Model ] --> Groups / Patterns
-  REINFORCEMENT:   Agent --action--> Environment --reward + new state--> Agent  (loop)
+```{.dot caption="How each paradigm learns" width="92%"}
+digraph G { rankdir=LR; nodesep=0.25; node [fontsize=11];
+  subgraph cluster_s { label="Supervised"; style=dashed; a1 [label="Data +\nlabels"]; a2 [label="Model"]; a3 [label="Prediction"]; a1 -> a2 -> a3; a3 -> a2 [label=" error vs.\n label", style=dashed]; }
+  subgraph cluster_u { label="Unsupervised"; style=dashed; b1 [label="Data only"]; b2 [label="Model"]; b3 [label="Groups /\npatterns"]; b1 -> b2 -> b3; }
+  subgraph cluster_r { label="Reinforcement"; style=dashed; c1 [label="Agent"]; c2 [label="Environment"]; c1 -> c2 [label=" action"]; c2 -> c1 [label=" reward +\n new state"]; }
+}
 ```
 
 **3. Core Explanation / Working**
@@ -6096,49 +5320,24 @@ Designing a learning system means choosing **how the program will gain experienc
 
 **2. Block Diagram - Design Choices and Final Design**
 
+```{.dot caption="Design choices for the checkers learner (the option chosen at each step)" width="98%"}
+digraph G { rankdir=LR; nodesep=0.2; ranksep=0.35; node [fontsize=10.5, width=1.45, height=0.85];
+  s1 [label="1. Training\nexperience\n\nself-play games"]; s2 [label="2. Target\nfunction\n\nV : Board → ℝ"]; s3 [label="3. Representation\n\nlinear function\nof 6 features"];
+  s4 [label="4. Learning\nalgorithm\n\nLMS weight\nupdate"]; s5 [label="5. Final\ndesign\n\n4 modules", penwidth=2];
+  s1 -> s2 -> s3 -> s4 -> s5;
+}
 ```
-   DESIGN CHOICES (step by step)
-
-   +-----------------------------+     Games against experts?
-   | 1. Choose TRAINING          |---> Games against itself?   <== chosen
-   |    EXPERIENCE               |     Table of correct moves?
-   +--------------+--------------+
-                  |
-   +--------------v--------------+     Board -> Move ?
-   | 2. Choose TARGET FUNCTION   |---> Board -> Value  V: B -> R   <== chosen
-   +--------------+--------------+
-                  |
-   +--------------v--------------+     Polynomial? Neural net? Table?
-   | 3. Choose REPRESENTATION    |---> Linear function of 6 features <== chosen
-   |    of target function       |
-   +--------------+--------------+
-                  |
-   +--------------v--------------+     Gradient descent?
-   | 4. Choose FUNCTION APPROX.  |---> LMS weight-update rule  <== chosen
-   |    ALGORITHM                |
-   +--------------+--------------+
-                  |
-   +--------------v--------------+
-   | 5. FINAL DESIGN             |
-   +-----------------------------+
 
 
-   FINAL DESIGN (four modules working in a loop)
-
-        +---------------------+    New problem      +---------------------+
-        | EXPERIMENT          |  (initial board)    | PERFORMANCE         |
-        | GENERATOR           |-------------------->| SYSTEM              |
-        +----------^----------+                     | (plays the game     |
-                   |                                |  using V-hat)       |
-                   | Hypothesis                     +----------+----------+
-                   | (V-hat)                                   |
-                   |                                           | Solution trace
-        +----------+----------+    Training examples+----------v----------+
-        | GENERALIZER         |<--------------------| CRITIC              |
-        | (LMS learns new     |  {<b1, Vtrain(b1)>, | (produces training  |
-        |  weights)           |   <b2, Vtrain(b2)>} |  examples)          |
-        +---------------------+                     +---------------------+
+```{.dot engine="neato" caption="Final design: four modules working in a loop" width="66%"}
+digraph G { splines=true; node [width=2.0, height=0.75, fontsize=11]; edge [fontsize=10.5];
+  eg [label="EXPERIMENT\nGENERATOR", pos="0,2!"]; ps [label="PERFORMANCE\nSYSTEM\n(plays using V̂)", pos="4,2!"];
+  cr [label="CRITIC", pos="4,0!"]; ge [label="GENERALIZER\n(LMS learns weights)", pos="0,0!"];
+  eg -> ps [label="new problem (initial board)"]; ps -> cr [label="solution trace"];
+  cr -> ge [label="training examples ⟨b, V_train(b)⟩"]; ge -> eg [label="hypothesis V̂"];
+}
 ```
+
 
 **3. Core Explanation / Working**
 
@@ -6162,9 +5361,7 @@ Designing a learning system means choosing **how the program will gain experienc
 
 - V̂ is represented as a **linear combination of 6 board features**:
 
-```
-   V^(b) = w0 + w1.x1 + w2.x2 + w3.x3 + w4.x4 + w5.x5 + w6.x6
-```
+$$\hat{V}(b) = w_0 + w_1x_1 + w_2x_2 + w_3x_3 + w_4x_4 + w_5x_5 + w_6x_6$$
 
 | Feature | Meaning |
 |---|---|
@@ -6232,31 +5429,15 @@ The **Candidate Elimination (CE) algorithm** finds the **version space**: the se
 
 **2. Flowchart - Algorithm**
 
-```
-            +--------------------------------------------------+
-            | Initialize:  S0 = { <ø, ø, ø, ø, ø, ø> }  (most specific)
-            |              G0 = { <?, ?, ?, ?, ?, ?> }  (most general)
-            +-------------------------+------------------------+
-                                      |
-            +-------------------------v------------------------+
-            |        For each training example d               |<------+
-            +-------------------------+------------------------+       |
-                                      |                                |
-                        +-------------v-------------+                  |
-                        |   d is POSITIVE ?         |                  |
-                        +------+-------------+------+                  |
-                           Yes |             | No                      |
-   +---------------------------v--+   +------v-------------------------+
-   | - Remove from G any h not    |   | - Remove from S any h that     |
-   |   consistent with d          |   |   covers d                     |
-   | - MINIMALLY GENERALIZE S     |   | - MINIMALLY SPECIALIZE G so it |
-   |   to cover d (keep it less   |   |   rejects d (keep it more      |
-   |   general than some g in G)  |   |   general than some s in S)    |
-   +---------------------------+--+   +------+-------------------------+
-                               |             |                         |
-                               +------+------+-------------------------+
-                                      |
-                           Output the final S and G (version space)
+```{.dot caption="Candidate Elimination algorithm" width="86%"}
+digraph G { nodesep=0.4; ranksep=0.4; node [fontsize=11];
+  a [label="Initialize  S₀ = {⟨ø, ø, ø, ø, ø, ø⟩} (most specific)\nG₀ = {⟨?, ?, ?, ?, ?, ?⟩} (most general)", width=4];
+  b [label="For each training example d"]; c [label="d positive?", shape=diamond, width=1.6];
+  p [label="POSITIVE\n• remove from G every h that does not cover d\n• MINIMALLY GENERALIZE S to cover d\n  (keep it less general than some g in G)"];
+  n [label="NEGATIVE\n• remove from S every h that covers d\n• MINIMALLY SPECIALIZE G to exclude d\n  (keep it more general than some s in S)"];
+  o [label="Output the final S and G (version space)", penwidth=2];
+  a -> b -> c; c -> p [label=" yes"]; c -> n [label=" no"]; p -> o; n -> o; p -> b [style=dashed, constraint=false]; n -> b [style=dashed, constraint=false];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -6313,12 +5494,13 @@ The **Candidate Elimination (CE) algorithm** finds the **version space**: the se
 
 *Final Version Space (all 6 consistent hypotheses)*
 
-```
-   S4 (Maximally Specific):            { <Sunny, Warm, ?, Strong, ?, ?> }
-                                      /               |               \
-            <Sunny, ?, ?, Strong, ?, ?>   <Sunny, Warm, ?, ?, ?, ?>   <?, Warm, ?, Strong, ?, ?>
-                                      \               |               /
-   G4 (Maximally General):     { <Sunny, ?, ?, ?, ?, ?> ,  <?, Warm, ?, ?, ?, ?> }
+```{.dot caption="Final version space: the S boundary, the three hypotheses between, and the G boundary" width="96%"}
+digraph G { rankdir=BT; nodesep=0.2; ranksep=0.5; node [fontsize=10.5];
+  s [label="S: ⟨Sunny, Warm, ?, Strong, ?, ?⟩", penwidth=2];
+  m1 [label="⟨Sunny, ?, ?, Strong, ?, ?⟩"]; m2 [label="⟨Sunny, Warm, ?, ?, ?, ?⟩"]; m3 [label="⟨?, Warm, ?, Strong, ?, ?⟩"];
+  g1 [label="G: ⟨Sunny, ?, ?, ?, ?, ?⟩", penwidth=2]; g2 [label="G: ⟨?, Warm, ?, ?, ?, ?⟩", penwidth=2];
+  s -> {m1 m2 m3} [arrowhead=none]; m1 -> g1 [arrowhead=none]; m2 -> g1 [arrowhead=none]; m2 -> g2 [arrowhead=none]; m3 -> g2 [arrowhead=none];
+}
 ```
 
 **Answer:**
@@ -6366,10 +5548,7 @@ Candidate Elimination illustrates **concept learning and version spaces**, and i
 
 - The **Maximum Likelihood (ML) hypothesis** is the hypothesis h in hypothesis space H that **maximizes the probability of the observed training data D**:
 
-```
-   h_ML = argmax  P(D | h)
-          h ∈ H
-```
+$$h_{ML} = \arg\max_{h \in H}\; P(D \mid h)$$
 
 - It is a special case of the **MAP (Maximum A Posteriori)** hypothesis, `h_MAP = argmax P(D|h)·P(h)`, in which **all hypotheses are assumed equally likely a priori**, so P(h) is the same for all h.
 - *Result:* under Gaussian noise, the ML hypothesis is the one that **minimizes the sum of squared errors**. This is the basis of least-squares regression.
@@ -6390,89 +5569,53 @@ Candidate Elimination illustrates **concept learning and version spaces**, and i
 
 **2. Block Diagram**
 
-```
-     y
-     ^
-   5 |                 *                    *      Best-fit line: ŷ = 2.2 + 0.6x
-     |                                .-''        (ŷ = 2.8, 3.4, 4.0, 4.6, 5.2)
-   4 |          *              .-''   *
-     |                    .-''
-   3 |             .-''
-     |      .-''
-   2 |      *
-     +------+------+------+------+------+------> x
-            1      2      3      4      5
+![Least-squares line through the five data points; each residual is the vertical gap between a point and the line](figures/ml_regression.svg){width=56%}
 
-     Residual  e_i = y_i - ŷ_i  = vertical gap between a point (*) and the line.
-     Least squares chooses β0, β1 so that  Σ e_i²  is MINIMUM.
-
-   +------------+     +-------------------+     +--------------------+     +------------+
-   | Data (x,y) |---->| Define SSE(β0,β1) |---->| Set ∂SSE/∂β = 0    |---->| β0, β1     |
-   +------------+     +-------------------+     | (normal equations) |     | best line  |
-                                                +--------------------+     +------------+
+```{.dot width="86%"}
+digraph G { rankdir=LR; node [fontsize=11];
+  a [label="Data (x, y)"]; b [label="Define SSE(β₀, β₁)"]; c [label="Set ∂SSE/∂β = 0\n(normal equations)"]; d [label="β₀, β₁:\nbest-fit line"]; a -> b -> c -> d;
+}
 ```
 
 **3. Core Explanation / Working - Derivation**
 
 *Step 1 - Define the cost function (SSE)*
 
-```
-   SSE(β0, β1) = Σ ( y_i - ŷ_i )²  =  Σ ( y_i - β0 - β1 x_i )²         (sum over i = 1..n)
-```
+$$SSE(\beta_0, \beta_1) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} (y_i - \beta_0 - \beta_1 x_i)^2$$
 
 *Step 2 - Partial derivative with respect to β0, set to zero*
 
-```
-   ∂SSE/∂β0 = -2 Σ ( y_i - β0 - β1 x_i ) = 0
+$$\frac{\partial SSE}{\partial \beta_0} = -2\sum (y_i - \beta_0 - \beta_1 x_i) = 0 \;\;\Rightarrow\;\; \sum y_i = n\beta_0 + \beta_1 \sum x_i \qquad \text{(Normal Eq. 1)}$$
 
-   =>  Σ y_i  =  n β0 + β1 Σ x_i                                        ... (Normal Eq. 1)
+Dividing by n:
 
-   Divide by n:   ȳ = β0 + β1 x̄
-
-   =>  β0 = ȳ - β1 x̄                                                    ... (A)
-```
+$$\bar{y} = \beta_0 + \beta_1\bar{x} \;\;\Rightarrow\;\; \boxed{\beta_0 = \bar{y} - \beta_1\bar{x}} \qquad \text{(A)}$$
 
 *Step 3 - Partial derivative with respect to β1, set to zero*
 
-```
-   ∂SSE/∂β1 = -2 Σ x_i ( y_i - β0 - β1 x_i ) = 0
-
-   =>  Σ x_i y_i  =  β0 Σ x_i + β1 Σ x_i²                               ... (Normal Eq. 2)
-```
+$$\frac{\partial SSE}{\partial \beta_1} = -2\sum x_i(y_i - \beta_0 - \beta_1 x_i) = 0 \;\;\Rightarrow\;\; \sum x_i y_i = \beta_0\sum x_i + \beta_1\sum x_i^2 \qquad \text{(Normal Eq. 2)}$$
 
 *Step 4 - Substitute (A) into Normal Eq. 2*
 
-```
-   Σ x_i y_i = (ȳ - β1 x̄) Σ x_i + β1 Σ x_i²
+$$\sum x_i y_i = (\bar{y} - \beta_1\bar{x})\sum x_i + \beta_1\sum x_i^2$$
 
-   Σ x_i y_i - ȳ Σ x_i = β1 ( Σ x_i² - x̄ Σ x_i )
+$$\sum x_i y_i - \bar{y}\sum x_i = \beta_1\Big(\sum x_i^2 - \bar{x}\sum x_i\Big)$$
 
-   Using Σ x_i = n x̄ :
+Using $\sum x_i = n\bar{x}$:
 
-   Σ x_i y_i - n x̄ ȳ = β1 ( Σ x_i² - n x̄² )
+$$\sum x_i y_i - n\bar{x}\bar{y} = \beta_1\Big(\sum x_i^2 - n\bar{x}^2\Big)$$
 
-             Σ x_i y_i - n x̄ ȳ          Σ (x_i - x̄)(y_i - ȳ)       Cov(x, y)
-   =>  β1 = -------------------   =   -----------------------  =  ---------
-              Σ x_i² - n x̄²              Σ (x_i - x̄)²              Var(x)
-```
+$$\beta_1 = \frac{\sum x_i y_i - n\bar{x}\bar{y}}{\sum x_i^2 - n\bar{x}^2} = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2} = \frac{\text{Cov}(x, y)}{\text{Var}(x)}$$
 
 **Final least squares solution:**
 
-```
-   β1 = Σ (x_i - x̄)(y_i - ȳ) / Σ (x_i - x̄)²          β0 = ȳ - β1 x̄
-```
+$$\boxed{\;\beta_1 = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}, \qquad \beta_0 = \bar{y} - \beta_1\bar{x}\;}$$
 
 *Step 5 - Matrix form (multiple linear regression)*
 
-```
-   Model:  y = Xβ + ε ,    Cost:  J(β) = (y - Xβ)ᵀ (y - Xβ)
+$$\text{Model: } \mathbf{y} = X\boldsymbol{\beta} + \boldsymbol{\varepsilon}, \qquad \text{Cost: } J(\boldsymbol{\beta}) = (\mathbf{y} - X\boldsymbol{\beta})^{T}(\mathbf{y} - X\boldsymbol{\beta})$$
 
-   ∂J/∂β = -2 Xᵀ y + 2 XᵀX β = 0
-
-   =>  XᵀX β = Xᵀ y                 (Normal Equation)
-
-   =>  β = (XᵀX)⁻¹ Xᵀ y
-```
+$$\frac{\partial J}{\partial \boldsymbol{\beta}} = -2X^{T}\mathbf{y} + 2X^{T}X\boldsymbol{\beta} = 0 \;\;\Rightarrow\;\; X^{T}X\boldsymbol{\beta} = X^{T}\mathbf{y} \;\;\Rightarrow\;\; \boxed{\boldsymbol{\beta} = (X^{T}X)^{-1}X^{T}\mathbf{y}}$$
 
 *Numerical example:* x = [1, 2, 3, 4, 5], y = [2, 4, 5, 4, 5]
 
@@ -6527,40 +5670,26 @@ The **Naive Bayes Classifier** is a **probabilistic supervised classifier** base
 
 **2. Block Diagram**
 
+```{.dot caption="Naive Bayes training and prediction" width="96%"}
+digraph G { rankdir=LR; nodesep=0.25; node [fontsize=11];
+  a [label="Training data\n(features + class)"]; b [label="Priors\nP(c)"]; c [label="Likelihoods\nP(aᵢ | c)"]; d [label="For new x:\nP(c) · Π P(aᵢ | c)"]; e [label="Class with the\nMAXIMUM value", penwidth=2];
+  a -> b -> c -> d -> e;
+}
 ```
-   +------------------+     +------------------------+     +----------------------+
-   | Training Data    |---->| Compute PRIOR P(c)     |---->| Compute LIKELIHOODS  |
-   | (features+class) |     | for each class         |     | P(a_i | c) for every |
-   +------------------+     +------------------------+     | feature value        |
-                                                           +----------+-----------+
-                                                                      |
-   +------------------+     +------------------------+     +----------v-----------+
-   | Predicted class  |<----| Choose class with      |<----| For new x, compute   |
-   | = argmax         |     | MAXIMUM value          |     | P(c) . Π P(a_i | c)  |
-   +------------------+     +------------------------+     +----------------------+
 
-   Bayes' Theorem:      P(c | x) = P(x | c) . P(c) / P(x)
-                       (posterior = likelihood x prior / evidence)
-```
+$$\text{Bayes' theorem:}\qquad \underbrace{P(c \mid x)}_{\text{posterior}} = \frac{\overbrace{P(x \mid c)}^{\text{likelihood}}\;\overbrace{P(c)}^{\text{prior}}}{\underbrace{P(x)}_{\text{evidence}}}$$
 
 **3. Core Explanation / Working**
 
 *Bayes' Theorem*
 
-```
-                P(x | c) . P(c)
-   P(c | x) = -----------------
-                     P(x)
-```
+$$P(c \mid x) = \frac{P(x \mid c)\,P(c)}{P(x)}$$
 
 *Naive independence assumption:* for x = <a1, a2, ..., an>,
 
-```
-   P(a1, a2, ..., an | c) = P(a1|c) . P(a2|c) . ... . P(an|c)
+$$P(a_1, a_2, \dots, a_n \mid c) = P(a_1 \mid c)\,P(a_2 \mid c)\cdots P(a_n \mid c)$$
 
-   c_NB = argmax  P(c) . Π P(a_i | c)          (P(x) is the same for all classes, so drop it)
-          c ∈ C
-```
+$$c_{NB} = \arg\max_{c \in C}\; P(c)\prod_{i} P(a_i \mid c) \qquad (P(x) \text{ is the same for all classes, so it is dropped})$$
 
 *Mathematical example - the PlayTennis dataset (14 days: 9 Yes, 5 No)*
 
@@ -6582,22 +5711,13 @@ The **Naive Bayes Classifier** is a **probabilistic supervised classifier** base
 
 *Step 3 - Compute P(c) × Π P(ai | c)*
 
-```
-   For YES:  P(Yes) x P(Sunny|Yes) x P(Cool|Yes) x P(High|Yes) x P(Strong|Yes)
-           = 0.643 x 0.222 x 0.333 x 0.333 x 0.333
-           = 0.0053
+$$\text{YES: } P(\text{Yes})\,P(\text{Sunny}|\text{Yes})\,P(\text{Cool}|\text{Yes})\,P(\text{High}|\text{Yes})\,P(\text{Strong}|\text{Yes}) = \frac{9}{14}\cdot\frac{2}{9}\cdot\frac{3}{9}\cdot\frac{3}{9}\cdot\frac{3}{9} = 0.0053$$
 
-   For NO:   P(No) x P(Sunny|No) x P(Cool|No) x P(High|No) x P(Strong|No)
-           = 0.357 x 0.600 x 0.200 x 0.800 x 0.600
-           = 0.0206
-```
+$$\text{NO: } P(\text{No})\,P(\text{Sunny}|\text{No})\,P(\text{Cool}|\text{No})\,P(\text{High}|\text{No})\,P(\text{Strong}|\text{No}) = \frac{5}{14}\cdot\frac{3}{5}\cdot\frac{1}{5}\cdot\frac{4}{5}\cdot\frac{3}{5} = 0.0206$$
 
 *Step 4 - Normalize (optional) and decide*
 
-```
-   P(No | x)  = 0.0206 / (0.0206 + 0.0053) = 0.795   (79.5 %)
-   P(Yes | x) = 0.0053 / (0.0206 + 0.0053) = 0.205   (20.5 %)
-```
+$$P(\text{No} \mid x) = \frac{0.0206}{0.0206 + 0.0053} = 0.795\;(79.5\%), \qquad P(\text{Yes} \mid x) = \frac{0.0053}{0.0206 + 0.0053} = 0.205\;(20.5\%)$$
 
 **Prediction: PlayTennis = NO.**
 
@@ -6642,32 +5762,14 @@ A **Support Vector Machine (SVM)** is a **supervised learning algorithm** for cl
 
 **2. Block Diagram - Maximum Margin Hyperplane**
 
-```
-     x2
-     ^           H-              H0              H+
-     |           :               |               :
-     |     o     :               |               :        +
-     |   o       :               |               :    +
-     |      o   [o]              |              [+]          +
-     |   o       :               |               :      +
-     |     o     :               |               :   +       +
-     |   o      [o]              |               :        +
-     |           :               |               :
-     |           |<----------- MARGIN ---------->|
-     +---------------------------------------------------------------> x1
+![Maximum-margin hyperplane with support vectors (circled)](figures/svm_margin.svg){width=56%}
 
-     H-:  w.x + b = -1        H0:  w.x + b = 0 (OPTIMAL HYPERPLANE)        H+:  w.x + b = +1
-     Margin = 2 / ||w||        [o], [+]  =  SUPPORT VECTORS (points on H- and H+)
-
-
-
-   SVM ARCHITECTURE (as a network)
-
-     Input x --+--> K(x, x1) --- α1 y1 ---+
-               +--> K(x, x2) --- α2 y2 ---+--> Σ + b --> sign( ) --> Class (+1 / -1)
-               +--> ...                   |
-               +--> K(x, xs) --- αs ys ---+
-              (one kernel unit per support vector)
+```{.dot caption="SVM viewed as a network: one kernel unit per support vector" width="70%"}
+digraph G { rankdir=LR; nodesep=0.15; node [fontsize=11];
+  x [label="Input x", shape=plaintext]; k1 [label="K(x, x₁)"]; k2 [label="K(x, x₂)"]; kd [label="· · ·", shape=plaintext]; ks [label="K(x, xₛ)"];
+  s [label="Σ + b", shape=circle, style=""]; o [label="sign( )\n→ class ±1"];
+  x -> {k1 k2 kd ks}; k1 -> s [label="α₁y₁"]; k2 -> s [label="α₂y₂"]; kd -> s; ks -> s [label="αₛyₛ"]; s -> o;
+}
 ```
 
 **3. Core Explanation / Working**
@@ -6681,27 +5783,19 @@ A **Support Vector Machine (SVM)** is a **supervised learning algorithm** for cl
 
 - The **margin** is the distance between the two parallel boundary hyperplanes `w·x + b = +1` and `w·x + b = −1`:
 
-```
-   Margin = 2 / ||w||
-```
+$$\text{Margin} = \frac{2}{\lVert \mathbf{w} \rVert}$$
 
 - **Maximizing the margin** is the same as **minimizing ||w||**. A larger margin gives **better generalization**.
 
 *(c) Optimization Problem (Hard Margin)*
 
-```
-   Minimize      (1/2) ||w||²
-   Subject to    y_i (w . x_i + b) >= 1     for all i
-```
+$$\min_{\mathbf{w},\,b}\;\; \frac{1}{2}\lVert \mathbf{w} \rVert^2 \qquad \text{subject to} \qquad y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1 \quad \forall i$$
 
 - This is solved with **Lagrange multipliers αi**. In the dual form, only the points with **αi > 0** affect the solution. These points are the **support vectors**.
 
 *(d) Soft Margin (for non-separable or noisy data)*
 
-```
-   Minimize      (1/2) ||w||² + C Σ ξ_i
-   Subject to    y_i (w . x_i + b) >= 1 - ξ_i ,   ξ_i >= 0
-```
+$$\min\;\; \frac{1}{2}\lVert \mathbf{w} \rVert^2 + C\sum_i \xi_i \qquad \text{subject to} \qquad y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1 - \xi_i,\;\; \xi_i \ge 0$$
 
 - The **slack variables ξi** allow some points to be misclassified or to fall inside the margin.
 - **C** controls the trade-off. A **large C** gives a narrow margin and few errors (risk of overfitting). A **small C** gives a wide margin and more errors (better generalization).
@@ -6763,65 +5857,29 @@ SVMs are used in **handwriting recognition, face detection, text and email categ
 
 **2. Block Diagram - Cost Curve and Algorithm Flow**
 
-```
-   J(θ)
-    ^
-    |  *  start (θ0)
-    |   \
-    |    *  step 1   (big gradient -> big step)
-    |     \
-    |      *  step 2
-    |       \
-    |        *  step 3
-    |         '-.  
-    |            *-.__*__.-*   <- GLOBAL MINIMUM  (gradient = 0)
-    +----------------------------------------------> θ
-               θ_new = θ_old - α . dJ/dθ
+![Gradient descent steps down the cost curve towards the minimum; steps get smaller as the slope flattens](figures/ml_gradient.svg){width=58%}
 
-
-   +-----------------------------+
-   | Initialize θ (random/zero)  |
-   +--------------+--------------+
-                  |
-   +--------------v--------------+
-   | Compute cost  J(θ)          |<-------------------+
-   +--------------+--------------+                    |
-                  |                                   |
-   +--------------v--------------+                    |
-   | Compute gradient ∂J/∂θ      |                    |
-   +--------------+--------------+                    |
-                  |                                   |
-   +--------------v--------------+                    |
-   | Update: θ = θ - α . ∂J/∂θ   |                    |
-   +--------------+--------------+                    |
-                  |                                   |
-          +-------v--------+   No                     |
-          | Converged?     |--------------------------+
-          | (ΔJ < ε)       |
-          +-------+--------+
-                  | Yes
-             Optimal θ
+```{.dot caption="Gradient descent loop" width="40%"}
+digraph G { node [width=2.6];
+  a [label="Initialize θ (random or zero)"]; b [label="Compute cost J(θ)"]; c [label="Compute gradient ∂J/∂θ"]; d [label="Update: θ = θ − α · ∂J/∂θ"];
+  e [label="Converged?\n(ΔJ < ε)", shape=diamond, width=1.6]; f [label="Optimal θ", penwidth=2];
+  a -> b -> c -> d -> e; e -> b [label=" no"]; e -> f [label=" yes"];
+}
 ```
 
 **3. Core Explanation / Working**
 
 *(a) Cost function (Linear Regression, Mean Squared Error)*
 
-```
-   h_θ(x) = θ0 + θ1 x
-
-   J(θ0, θ1) = (1 / 2m) Σ ( h_θ(x_i) - y_i )²          (sum over i = 1..m)
-```
+$$h_\theta(x) = \theta_0 + \theta_1 x, \qquad J(\theta_0, \theta_1) = \frac{1}{2m}\sum_{i=1}^{m}\big(h_\theta(x_i) - y_i\big)^2$$
 
 *(b) Update rule (applied to all θj at the same time)*
 
-```
-   θ_j := θ_j - α . ∂J(θ)/∂θ_j
+$$\theta_j := \theta_j - \alpha\,\frac{\partial J(\theta)}{\partial \theta_j}$$
 
-   For linear regression:
-   θ0 := θ0 - α . (1/m) Σ ( h_θ(x_i) - y_i )
-   θ1 := θ1 - α . (1/m) Σ ( h_θ(x_i) - y_i ) . x_i
-```
+For linear regression:
+
+$$\theta_0 := \theta_0 - \alpha\,\frac{1}{m}\sum_{i=1}^{m}\big(h_\theta(x_i) - y_i\big), \qquad \theta_1 := \theta_1 - \alpha\,\frac{1}{m}\sum_{i=1}^{m}\big(h_\theta(x_i) - y_i\big)\,x_i$$
 
 *(c) Why it minimizes the cost*
 
@@ -6886,11 +5944,7 @@ Gradient descent is used to train **linear and logistic regression, neural netwo
 
 - **Entropy** measures the **impurity (uncertainty or randomness)** of a set of examples S with respect to the class labels:
 
-```
-   Entropy(S) = - Σ p_i log2(p_i)          (sum over classes i = 1..c)
-
-   For two classes:   Entropy(S) = - p+ log2(p+)  -  p- log2(p-)
-```
+$$\text{Entropy}(S) = -\sum_{i=1}^{c} p_i \log_2 p_i \qquad\qquad \text{(two classes: } \text{Entropy}(S) = -p_{+}\log_2 p_{+} - p_{-}\log_2 p_{-}\text{)}$$
 
 - **Entropy = 0** when all examples belong to **one class** (pure). **Entropy = 1** (for 2 classes) when the classes are **equally mixed** (50:50).
 - *Example:* S = [9+, 5−] gives Entropy = −(9/14)log2(9/14) − (5/14)log2(5/14) = **0.940**.
@@ -6912,33 +5966,17 @@ Gradient descent is used to train **linear and logistic regression, neural netwo
 
 **2. Flowchart - ID3 Algorithm**
 
+```{.dot caption="ID3 algorithm" width="64%"}
+digraph G { node [width=3.2];
+  a [label="ID3(Examples S, Attributes A)"]; b [label="All examples in S\nthe same class?", shape=diamond, width=2.4]; l1 [label="Return LEAF\nwith that class"];
+  c [label="Attribute list A empty?", shape=diamond, width=2.4]; l2 [label="Return LEAF with\nthe MAJORITY class"];
+  d [label="Compute Gain(S, a) for every a ∈ A;\nBest = attribute with the MAX gain"];
+  e [label="Create node Best; for each value v:\nSᵥ = examples with Best = v\nchild = ID3(Sᵥ, A − {Best})", penwidth=2];
+  a -> b; b -> l1 [label=" yes"]; b -> c [label=" no"]; c -> l2 [label=" yes"]; c -> d [label=" no"]; d -> e; e -> a [style=dashed, label=" recurse"];
+}
 ```
-              +--------------------------------------+
-              |   ID3(Examples S, Attributes A)      |
-              +------------------+-------------------+
-                                 |
-              +------------------v-------------------+
-              | All examples in S same class?        |--- Yes --> Return LEAF with that class
-              +------------------+-------------------+
-                                 | No
-              +------------------v-------------------+
-              | Attribute list A empty?              |--- Yes --> Return LEAF with MAJORITY class
-              +------------------+-------------------+
-                                 | No
-              +------------------v-------------------+
-              | Compute Gain(S, a) for every a in A  |
-              | Best = attribute with MAX gain       |
-              +------------------+-------------------+
-                                 |
-              +------------------v-------------------+
-              | Create node "Best"; for each value v:|
-              |   Sv = examples with Best = v        |
-              |   child = ID3(Sv, A - {Best})        |
-              +--------------------------------------+
 
-     Entropy(S) = - p+ log2 p+  -  p- log2 p-
-     Gain(S, A) = Entropy(S) - Σ ( |Sv| / |S| ) . Entropy(Sv)
-```
+$$\text{Gain}(S, A) = \text{Entropy}(S) - \sum_{v \in \text{Values}(A)} \frac{|S_v|}{|S|}\,\text{Entropy}(S_v)$$
 
 **3. Core Explanation / Working**
 
@@ -6963,9 +6001,7 @@ Gradient descent is used to train **linear and logistic regression, neural netwo
 
 *Step 1 - Entropy of the whole set:* S = [9+, 5−]
 
-```
-   Entropy(S) = -(9/14) log2(9/14) - (5/14) log2(5/14) = 0.410 + 0.530 = 0.940
-```
+$$\text{Entropy}(S) = -\frac{9}{14}\log_2\frac{9}{14} - \frac{5}{14}\log_2\frac{5}{14} = 0.410 + 0.530 = 0.940$$
 
 *Step 2 - Information Gain of each attribute at the root*
 
@@ -7001,22 +6037,13 @@ Gradient descent is used to train **linear and logistic regression, neural netwo
 
 *Final Decision Tree*
 
-```
-                              +-----------+
-                              |  OUTLOOK  |
-                              +-----+-----+
-               +--------------------+---------------------+
-             Sunny               Overcast                Rain
-               |                    |                       |
-        +------v------+        +----v----+           +------v------+
-        |  HUMIDITY   |        |   YES   |           |    WIND     |
-        +------+------+        +---------+           +------+------+
-          +----+----+                                  +----+----+
-        High      Normal                             Weak      Strong
-          |          |                                 |          |
-       +--v--+    +--v--+                           +--v--+    +--v--+
-       | NO  |    | YES |                           | YES |    | NO  |
-       +-----+    +-----+                           +-----+    +-----+
+```{.dot caption="Final decision tree for PlayTennis" width="62%"}
+digraph G { ordering=out; nodesep=0.3; ranksep=0.4;
+  node [shape=ellipse, style=""]; O [label="Outlook"]; H [label="Humidity"]; W [label="Wind"];
+  node [shape=box, style=rounded]; y1 [label="Yes"]; n1 [label="No"]; y2 [label="Yes"]; y3 [label="Yes"]; n2 [label="No"];
+  O -> H [label=" Sunny"]; O -> y1 [label=" Overcast"]; O -> W [label=" Rain"];
+  H -> n1 [label=" High"]; H -> y2 [label=" Normal"]; W -> y3 [label=" Weak"]; W -> n2 [label=" Strong"];
+}
 ```
 
 *Rules extracted from the tree*
@@ -7066,25 +6093,7 @@ ID3-style decision trees are used for **loan approval, medical diagnosis, custom
 
 **2. Block Diagram - Accuracy vs. Tree Size**
 
-```
-   Accuracy
-     ^
- 1.0 |                                    ____________  Training accuracy
-     |                          _______---
-     |                  ___---''
-     |            _.--''          ...........
-     |        _.-'         ....'''           ''''....      Test accuracy
-     |     .-'      ...''''                          ''''......
-     |   .'    ..'''                                            '''...
-     |  /   .''
-     | / .'
-     |/.'
-     +-----------------+-----------------+------------------------------> Tree size
-     |  UNDERFITTING   |   GOOD FIT      |        OVERFITTING              (number of nodes)
-     |  (high bias)    | (optimal depth) |       (high variance)
-                       ^
-                       | Pruning moves the tree back to this region
-```
+![Accuracy vs. tree size: training accuracy keeps rising while test accuracy peaks and then falls (overfitting); pruning moves the tree back to the best size](figures/ml_overfit.svg){width=66%}
 
 **3. Core Explanation / Working**
 
@@ -7134,17 +6143,17 @@ ID3-style decision trees are used for **loan approval, medical diagnosis, custom
    - Minimize **R_α(T) = R(T) + α·|T|**, where R(T) is the error, |T| is the number of leaves and α is the complexity penalty.
    - Choose α by **cross-validation**.
 
-```
-   BEFORE PRUNING                               AFTER PRUNING
-          [Outlook]                                   [Outlook]
-        /     |     \                               /     |     \
-   [Humid]   YES   [Wind]                      [Humid]   YES   [Wind]
-    /   \          /    \                       /   \          /    \
-  NO   [Temp]    YES    NO       ==>          NO    YES      YES    NO
-       /    \
-     YES   [Day]            <- noisy splits      Sub-tree replaced by its
-           /   \               fit only 1-2       majority-class leaf (YES)
-         NO    YES             training rows
+```{.dot caption="Before and after pruning: the noisy sub-tree under Humidity = Normal is replaced by its majority leaf" width="92%"}
+digraph G { nodesep=0.15; ranksep=0.3; node [fontsize=11];
+  subgraph cluster_a { label="BEFORE PRUNING"; style=dashed; node [shape=ellipse, style=""];
+    o [label="Outlook"]; h [label="Humidity"]; w [label="Wind"]; t [label="Temp"]; d [label="Day"];
+    node [shape=box, style=rounded]; n1 [label="No"]; y1 [label="Yes"]; y2 [label="Yes"]; n2 [label="No"]; y3 [label="Yes"]; n3 [label="No"]; y4 [label="Yes"];
+    o -> h; o -> y1; o -> w; h -> n1; h -> t; t -> y3; t -> d; d -> n3; d -> y4; w -> y2; w -> n2; }
+  subgraph cluster_b { label="AFTER PRUNING"; style=bold; node [shape=ellipse, style=""];
+    o2 [label="Outlook"]; h2 [label="Humidity"]; w2 [label="Wind"];
+    node [shape=box, style=rounded]; pn1 [label="No"]; py0 [label="Yes"]; py1 [label="Yes\n(leaf replaces\nsub-tree)", penwidth=2]; py2 [label="Yes"]; pn2 [label="No"];
+    o2 -> h2; o2 -> py0; o2 -> w2; h2 -> pn1; h2 -> py1; w2 -> py2; w2 -> pn2; }
+}
 ```
 
 **4. Key Characteristics - Overfitting vs. Underfitting**
@@ -7185,26 +6194,12 @@ Pruned decision trees (C4.5, CART) and their ensembles (**Random Forest, XGBoost
 
 **2. Block Diagram - k-NN Classification**
 
-```
-       x2
-        ^
-        |      A         B        B
-        |                  B
-        |    A     .-----------.        B
-        |        /   A    B     \
-        |   A   |   (?)  query   |  B          k = 3  circle holds 3 nearest:
-        |       |      A         |               A, A, B  ->  majority = A
-        |        \              /
-        |    A    '-----------'     B
-        |                 B
-        +----------------------------------------> x1
+![k-NN with k = 3: the three nearest neighbours of the query (?) are A, A and B, so the majority class is A](figures/ml_knn.svg){width=52%}
 
-
-   +------------------+   +----------------------+   +--------------------+   +-----------------+
-   | Store all        |-->| For query x, compute |-->| Select k nearest   |-->| Majority vote   |
-   | training points  |   | distance to every    |   | (smallest dist.)   |   | (or mean value) |
-   | (no training)    |   | training point       |   |                    |   | = prediction    |
-   +------------------+   +----------------------+   +--------------------+   +-----------------+
+```{.dot width="94%"}
+digraph G { rankdir=LR; node [fontsize=11];
+  a [label="Store all training\npoints (no training)"]; b [label="Compute distance from\nquery to every point"]; c [label="Select the k\nnearest"]; d [label="Majority vote\n(or mean) = prediction", penwidth=2]; a -> b -> c -> d;
+}
 ```
 
 **3. Core Explanation / Working**
@@ -7221,11 +6216,9 @@ Pruned decision trees (C4.5, CART) and their ensembles (**Random Forest, XGBoost
 
 *Distance measures*
 
-```
-   Euclidean :  d(x, y) = sqrt( Σ (x_i - y_i)² )
-   Manhattan :  d(x, y) = Σ | x_i - y_i |
-   Minkowski :  d(x, y) = ( Σ | x_i - y_i |^p )^(1/p)
-```
+$$\text{Euclidean: } d(x, y) = \sqrt{\sum_i (x_i - y_i)^2} \qquad\qquad \text{Manhattan: } d(x, y) = \sum_i |x_i - y_i|$$
+
+$$\text{Minkowski: } d(x, y) = \Big(\sum_i |x_i - y_i|^p\Big)^{1/p} \qquad (p = 1 \text{ Manhattan},\; p = 2 \text{ Euclidean})$$
 
 *Numerical example:* classify the query **Q = (3, 2)** with **k = 3**.
 
@@ -7295,27 +6288,17 @@ k-NN is used in **recommendation systems (similar users or products), handwritin
 
 **2. Block Diagram - Splitting Criteria and Formulas**
 
+```{.dot caption="Attribute selection measures and the algorithms that use them" width="96%"}
+digraph G { nodesep=0.3; ranksep=0.4; node [fontsize=11];
+  a [label="ATTRIBUTE SELECTION MEASURE", width=3];
+  ig [label="INFORMATION GAIN (ID3)\nreduction in entropy\nchoose MAX gain"]; gr [label="GAIN RATIO (C4.5)\nGain / SplitInfo\nchoose MAX ratio"]; gi [label="GINI INDEX (CART)\n1 − Σ pᵢ²\nchoose MIN weighted Gini"];
+  a -> {ig gr gi};
+}
 ```
-                       +------------------------------+
-                       |  ATTRIBUTE SELECTION MEASURE |
-                       +---------------+--------------+
-          +----------------------------+----------------------------+
-          |                            |                            |
-+---------v----------+     +-----------v-----------+     +----------v-----------+
-| INFORMATION GAIN   |     |      GAIN RATIO       |     |     GINI INDEX       |
-|      (ID3)         |     |        (C4.5)         |     |       (CART)         |
-+--------------------+     +-----------------------+     +----------------------+
-| Gain(S,A) =        |     | GainRatio(S,A) =      |     | Gini(S) =            |
-|  Entropy(S) -      |     |   Gain(S,A)           |     |   1 - Σ p_i²         |
-|  Σ |Sv|/|S| .      |     |  ------------         |     |                      |
-|   Entropy(Sv)      |     |  SplitInfo(S,A)       |     | Gini_A(S) =          |
-|                    |     |                       |     |  Σ |Sv|/|S| Gini(Sv) |
-| Entropy(S) =       |     | SplitInfo(S,A) =      |     |                      |
-|  -Σ p_i log2 p_i   |     |  -Σ |Sv|/|S| log2     |     | Choose MIN Gini_A    |
-|                    |     |      (|Sv|/|S|)       |     | (= max Gini gain)    |
-| Choose MAX gain    |     | Choose MAX ratio      |     |                      |
-+--------------------+     +-----------------------+     +----------------------+
-```
+
+$$\text{Gain}(S, A) = \text{Entropy}(S) - \sum_v \frac{|S_v|}{|S|}\text{Entropy}(S_v) \qquad \text{GainRatio}(S, A) = \frac{\text{Gain}(S, A)}{\text{SplitInfo}(S, A)}$$
+
+$$\text{SplitInfo}(S, A) = -\sum_v \frac{|S_v|}{|S|}\log_2\frac{|S_v|}{|S|} \qquad\qquad \text{Gini}(S) = 1 - \sum_i p_i^2, \qquad \text{Gini}_A(S) = \sum_v \frac{|S_v|}{|S|}\text{Gini}(S_v)$$
 
 **3. Core Explanation / Working**
 
@@ -7345,26 +6328,17 @@ k-NN is used in **recommendation systems (similar users or products), handwritin
 
 *Gain Ratio*
 
-```
-   SplitInfo(S, Outlook) = -(5/14) log2(5/14) - (4/14) log2(4/14) - (5/14) log2(5/14)
-                         = 0.530 + 0.516 + 0.530 = 1.577
+$$\text{SplitInfo}(S, \text{Outlook}) = -\frac{5}{14}\log_2\frac{5}{14} - \frac{4}{14}\log_2\frac{4}{14} - \frac{5}{14}\log_2\frac{5}{14} = 0.530 + 0.516 + 0.530 = 1.577$$
 
-   GainRatio(S, Outlook) = 0.246 / 1.577 = 0.156
-```
+$$\text{GainRatio}(S, \text{Outlook}) = \frac{0.246}{1.577} = 0.156$$
 
 *Gini Index*
 
-```
-   Gini(S)        = 1 - (9/14)² - (5/14)² = 1 - 0.413 - 0.128 = 0.459
+$$\text{Gini}(S) = 1 - \left(\frac{9}{14}\right)^2 - \left(\frac{5}{14}\right)^2 = 1 - 0.413 - 0.128 = 0.459$$
 
-   Gini(Sunny)    = 1 - (2/5)² - (3/5)² = 1 - 0.16 - 0.36 = 0.480
-   Gini(Overcast) = 1 - (4/4)² - 0      = 0.000
-   Gini(Rain)     = 1 - (3/5)² - (2/5)² = 0.480
+$$\text{Gini}(\text{Sunny}) = 1 - \left(\frac{2}{5}\right)^2 - \left(\frac{3}{5}\right)^2 = 0.480, \qquad \text{Gini}(\text{Overcast}) = 1 - 1^2 = 0, \qquad \text{Gini}(\text{Rain}) = 0.480$$
 
-   Gini_Outlook(S) = (5/14)(0.480) + (4/14)(0) + (5/14)(0.480) = 0.343
-
-   Gini Gain       = 0.459 - 0.343 = 0.116
-```
+$$\text{Gini}_{\text{Outlook}}(S) = \frac{5}{14}(0.480) + \frac{4}{14}(0) + \frac{5}{14}(0.480) = 0.343, \qquad \text{Gini gain} = 0.459 - 0.343 = 0.116$$
 
 - All three measures **rank Outlook highest** for this dataset, so they agree here. They differ mainly on **many-valued attributes**.
 
@@ -7404,9 +6378,7 @@ The choice of criterion decides the algorithm. **Scikit-learn's DecisionTreeClas
 
 - **Backpropagation (backward propagation of errors)** is a **supervised learning algorithm** for training **multilayer feed-forward neural networks**. It computes the **gradient of the error with respect to every weight**, using the **chain rule of calculus**, by passing the error **backward from the output layer to the input layer**. It then updates the weights with **gradient descent**:
 
-```
-   w_ji  <-  w_ji + Δw_ji ,      Δw_ji = η . δ_j . x_ji
-```
+$$w_{ji} \leftarrow w_{ji} + \Delta w_{ji}, \qquad \Delta w_{ji} = \eta\,\delta_j\,x_{ji}$$
 
 - It has two phases: a **forward pass** (compute the outputs) and a **backward pass** (compute the error terms δ and update the weights).
 
@@ -7426,141 +6398,83 @@ The choice of criterion decides the algorithm. **Scikit-learn's DecisionTreeClas
 
 **2. Block Diagram - Network and Notation**
 
+```{.dot caption="Forward pass computes the outputs; the backward pass sends the error terms δ from the output layer back to the hidden layer" width="62%"}
+digraph G { rankdir=LR; splines=line; nodesep=0.3; ranksep=1.2;
+  node [shape=circle, style="", width=0.5, fixedsize=true, fontsize=12];
+  x1 [label="x₁"]; x2 [label="x₂"]; x3 [label="x₃"]; h1 [label="h₁"]; h2 [label="h₂"]; h3 [label="h₃"]; o1 [label="o₁"]; o2 [label="o₂"];
+  {x1 x2 x3} -> {h1 h2 h3} [arrowsize=0.5]; {h1 h2 h3} -> {o1 o2} [arrowsize=0.5];
+  node [shape=plaintext, fixedsize=false, fontsize=11]; li [label="Input layer"]; lh [label="Hidden layer"]; lo [label="Output layer"];
+  {rank=same; li; x1} {rank=same; lh; h1} {rank=same; lo; o1} li -> x1 [style=invis]; lh -> h1 [style=invis]; lo -> o1 [style=invis];
+}
 ```
-     INPUT LAYER (i)        HIDDEN LAYER (h)          OUTPUT LAYER (k)
 
-        x1 ---.                .--- h1 ---.                .--- o1  --> compare with t1
-               \    w_hi      /            \     w_kh     /
-        x2 -----+------------+---- h2 ------+------------+
-               /              \            /              \
-        x3 ---'                '--- h3 ---'                '--- o2  --> compare with t2
+$$\text{Forward: } net_j = \sum_i w_{ji}x_{ji}, \;\; o_j = \sigma(net_j) = \frac{1}{1 + e^{-net_j}} \qquad \text{Backward: } \delta_k = o_k(1 - o_k)(t_k - o_k), \;\; \delta_h = o_h(1 - o_h)\sum_k w_{kh}\delta_k$$
 
-                (every unit is connected to every unit in the next layer)
-
-    FORWARD PASS  ---------------------------------------------------->
-     net_j = Σ w_ji x_ji ,   o_j = σ(net_j) = 1 / (1 + e^(-net_j))
-
-    <---------------------------------------------------- BACKWARD PASS
-     δ_k (output) = o_k (1 - o_k)(t_k - o_k)
-     δ_h (hidden) = o_h (1 - o_h) Σ w_kh δ_k
-
-   Notation:
-     x_ji = i-th input to unit j          w_ji = weight from unit i to unit j
-     net_j = Σ_i w_ji x_ji               o_j  = output of unit j = σ(net_j)
-     t_j  = target output of unit j      η    = learning rate
-     Downstream(j) = units whose inputs include the output of unit j
-```
+*Notation:* $x_{ji}$ = i-th input to unit j, $w_{ji}$ = weight from unit i to unit j, $o_j$ = output of unit j, $t_j$ = target, η = learning rate, Downstream(j) = units that take the output of j as input.
 
 **3. Core Explanation / Working - The Derivation**
 
 *Step 1 - Error function (for one training example d)*
 
-```
-   E_d(w) = (1/2) Σ ( t_k - o_k )²           (sum over all output units k)
-```
+$$E_d(\mathbf{w}) = \frac{1}{2}\sum_{k \in \text{outputs}} (t_k - o_k)^2$$
 
 *Step 2 - Gradient descent rule*
 
-```
-   Δw_ji = - η . ∂E_d / ∂w_ji
-```
+$$\Delta w_{ji} = -\eta\,\frac{\partial E_d}{\partial w_{ji}}$$
 
 *Step 3 - Apply the chain rule through net_j.* The weight w_ji affects E only through net_j:
 
-```
-   ∂E_d       ∂E_d      ∂net_j        ∂E_d
-   ------  =  ------- . -------  =   ------- . x_ji          ... (1)
-   ∂w_ji      ∂net_j    ∂w_ji        ∂net_j
+$$\frac{\partial E_d}{\partial w_{ji}} = \frac{\partial E_d}{\partial net_j}\cdot\frac{\partial net_j}{\partial w_{ji}} = \frac{\partial E_d}{\partial net_j}\cdot x_{ji} \qquad \cdots (1)$$
 
-   (since net_j = Σ w_ji x_ji ,  ∂net_j / ∂w_ji = x_ji)
-```
+$$\left(\text{since } net_j = \sum_i w_{ji}x_{ji},\;\; \frac{\partial net_j}{\partial w_{ji}} = x_{ji}\right)$$
 
 - Now we need **∂E_d/∂net_j**. There are two cases.
 
 *Step 4 - Useful result: derivative of the sigmoid*
 
-```
-   σ(y) = 1 / (1 + e^(-y))
+$$\sigma(y) = \frac{1}{1 + e^{-y}}, \qquad \frac{d\sigma}{dy} = \frac{e^{-y}}{(1 + e^{-y})^2} = \sigma(y)\,\big(1 - \sigma(y)\big)$$
 
-   dσ/dy = e^(-y) / (1 + e^(-y))²  =  σ(y) . (1 - σ(y))
-
-   =>   ∂o_j / ∂net_j = o_j (1 - o_j)                           ... (2)
-```
+$$\Rightarrow\quad \frac{\partial o_j}{\partial net_j} = o_j(1 - o_j) \qquad \cdots (2)$$
 
 **CASE 1 - Training rule for OUTPUT unit weights**
 
 net_j affects E only through o_j:
 
-```
-    ∂E_d        ∂E_d      ∂o_j
-   -------  =  ------ . -------                                 ... (3)
-   ∂net_j       ∂o_j    ∂net_j
-```
+$$\frac{\partial E_d}{\partial net_j} = \frac{\partial E_d}{\partial o_j}\cdot\frac{\partial o_j}{\partial net_j} \qquad \cdots (3)$$
 
 First term:
 
-```
-   ∂E_d       ∂     1
-   ----  =  ---- [ --- Σ (t_k - o_k)² ]
-   ∂o_j     ∂o_j    2
+$$\frac{\partial E_d}{\partial o_j} = \frac{\partial}{\partial o_j}\left[\frac{1}{2}\sum_k (t_k - o_k)^2\right] = \frac{1}{2}\cdot 2(t_j - o_j)\cdot\frac{\partial (t_j - o_j)}{\partial o_j} = -(t_j - o_j) \qquad \cdots (4)$$
 
-   Only the k = j term depends on o_j:
-
-         =  (1/2) . 2 (t_j - o_j) . ∂(t_j - o_j)/∂o_j  =  -(t_j - o_j)      ... (4)
-```
+(only the term with k = j depends on $o_j$)
 
 Substituting (2) and (4) into (3):
 
-```
-    ∂E_d
-   ------- = -(t_j - o_j) . o_j (1 - o_j)
-   ∂net_j
-```
+$$\frac{\partial E_d}{\partial net_j} = -(t_j - o_j)\;o_j(1 - o_j)$$
 
 Define the **error term** δ_j = −∂E_d/∂net_j:
 
-```
-   ╔══════════════════════════════════════════╗
-   ║   δ_j = o_j (1 - o_j) (t_j - o_j)        ║   (OUTPUT unit)
-   ║   Δw_ji = η . δ_j . x_ji                 ║
-   ╚══════════════════════════════════════════╝
-```
+$$\boxed{\;\delta_j = o_j(1 - o_j)(t_j - o_j), \qquad \Delta w_{ji} = \eta\,\delta_j\,x_{ji}\;} \qquad \text{(OUTPUT unit)}$$
 
 **CASE 2 - Training rule for HIDDEN unit weights**
 
 A hidden unit j affects E only through the units **k ∈ Downstream(j)** that it feeds:
 
-```
-    ∂E_d                       ∂E_d       ∂net_k
-   -------  =     Σ          ------- .  -------
-   ∂net_j    k∈Downstream(j)  ∂net_k     ∂net_j
+$$\frac{\partial E_d}{\partial net_j} = \sum_{k \in \text{Downstream}(j)} \frac{\partial E_d}{\partial net_k}\cdot\frac{\partial net_k}{\partial net_j} = \sum_{k \in \text{Downstream}(j)} (-\delta_k)\cdot\frac{\partial net_k}{\partial o_j}\cdot\frac{\partial o_j}{\partial net_j}$$
 
-            =     Σ          (-δ_k) .   ∂net_k     ∂o_j
-              k∈Downstream(j)          ------- . -------
-                                         ∂o_j     ∂net_j
+Since $net_k = \sum_j w_{kj}o_j$, we get $\dfrac{\partial net_k}{\partial o_j} = w_{kj}$, and from (2) $\dfrac{\partial o_j}{\partial net_j} = o_j(1 - o_j)$:
 
-   Since net_k = Σ w_kj o_j :   ∂net_k / ∂o_j = w_kj
-   And from (2):                ∂o_j / ∂net_j = o_j (1 - o_j)
-
-            =     Σ          (-δ_k) . w_kj . o_j (1 - o_j)
-              k∈Downstream(j)
-```
+$$\frac{\partial E_d}{\partial net_j} = \sum_{k \in \text{Downstream}(j)} (-\delta_k)\,w_{kj}\,o_j(1 - o_j)$$
 
 So δ_j = −∂E_d/∂net_j gives:
 
-```
-   ╔══════════════════════════════════════════════════════════╗
-   ║   δ_h = o_h (1 - o_h)   Σ    w_kh . δ_k                  ║   (HIDDEN unit)
-   ║                     k∈Downstream(h)                      ║
-   ║   Δw_hi = η . δ_h . x_hi                                 ║
-   ╚══════════════════════════════════════════════════════════╝
-```
+$$\boxed{\;\delta_h = o_h(1 - o_h)\sum_{k \in \text{Downstream}(h)} w_{kh}\,\delta_k, \qquad \Delta w_{hi} = \eta\,\delta_h\,x_{hi}\;} \qquad \text{(HIDDEN unit)}$$
 
 - The hidden unit's error is the **weighted sum of the downstream error terms**. This is the error **propagated backward**, which gives the algorithm its name.
 
 *Step 5 - The complete Backpropagation algorithm (stochastic gradient descent)*
 
-```
+```text
 BACKPROPAGATION(training_examples, η, n_in, n_out, n_hidden)
 1. Initialize all weights to small random numbers (for example -0.05 to +0.05)
 2. Until the termination condition is met, for each <x, t> in training_examples:
@@ -7610,34 +6524,23 @@ A **Single-Layer Perceptron (SLP)** is the simplest neural network, proposed by 
 
 **2. Block Diagrams**
 
+```{.dot caption="Single-layer perceptron: weighted sum followed by a step function" width="72%"}
+digraph G { rankdir=LR; nodesep=0.25; ranksep=0.7; node [fontsize=12];
+  node [shape=circle, style="", width=0.5, fixedsize=true]; x0 [label="1"]; x1 [label="x₁"]; x2 [label="x₂"]; xn [label="xₙ"];
+  s [label="Σ", width=0.65, fontsize=16]; node [shape=box, style=rounded, fixedsize=false];
+  f [label="step / sign\nfunction"]; o [label="o = +1 / −1", shape=plaintext];
+  x0 -> s [label="w₀ (bias)"]; x1 -> s [label="w₁"]; x2 -> s [label="w₂"]; xn -> s [label="wₙ"]; s -> f [label=" net = Σ wᵢxᵢ"]; f -> o;
+}
 ```
-   SINGLE-LAYER PERCEPTRON
 
-      x0 = 1 (bias) --- w0 ---+
-                              |
-      x1 ----------- w1 ------+      +------------+     +-------------+
-                              +----->|  Σ = net   |---->| Step / sign |----> o = +1 / -1
-      x2 ----------- w2 ------+      | Σ wi.xi    |     |  function   |
-                              |      +------------+     +-------------+
-      xn ----------- wn ------+
-                                       o = 1  if  Σ wi xi > 0 ,  else -1
-
-      INPUT LAYER                  (single layer of adjustable weights)       OUTPUT
-
-
-   MULTILAYER PERCEPTRON (one hidden layer)
-
-      INPUT LAYER          HIDDEN LAYER              OUTPUT LAYER
-                         (sigmoid / ReLU)           (sigmoid / softmax)
-
-        x1 ---.                .--- h1 ---.
-               \               /            \
-        x2 -----+-------------+---- h2 ------+-------> o1 ---> y1
-               /               \            /  \
-        x3 ---'                '--- h3 ---'    '----> o2 ---> y2
-
-         Weights W1 (input -> hidden)       Weights W2 (hidden -> output)
-         Trained by BACKPROPAGATION (error flows from output back to input)
+```{.dot caption="Multilayer perceptron with one hidden layer (sigmoid / ReLU units), trained by backpropagation" width="62%"}
+digraph G { rankdir=LR; splines=line; nodesep=0.3; ranksep=1.2;
+  node [shape=circle, style="", width=0.5, fixedsize=true, fontsize=12];
+  x1 [label="x₁"]; x2 [label="x₂"]; x3 [label="x₃"]; h1 [label="h₁"]; h2 [label="h₂"]; h3 [label="h₃"]; o1 [label="o₁"]; o2 [label="o₂"];
+  {x1 x2 x3} -> {h1 h2 h3} [arrowsize=0.5]; {h1 h2 h3} -> {o1 o2} [arrowsize=0.5];
+  node [shape=plaintext, fixedsize=false, fontsize=11]; li [label="Input layer"]; lh [label="Hidden layer"]; lo [label="Output layer"];
+  {rank=same; li; x1} {rank=same; lh; h1} {rank=same; lo; o1} li -> x1 [style=invis]; lh -> h1 [style=invis]; lo -> o1 [style=invis];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -7647,25 +6550,13 @@ A **Single-Layer Perceptron (SLP)** is the simplest neural network, proposed by 
 - **Output:** `o = sign(Σ wi·xi)`, where `x0 = 1` is the bias input.
 - **Perceptron training rule:**
 
-```
-   wi  <-  wi + Δwi ,     Δwi = η (t - o) xi
-```
+$$w_i \leftarrow w_i + \Delta w_i, \qquad \Delta w_i = \eta\,(t - o)\,x_i$$
 
   - The weights change **only when the output is wrong** (t ≠ o).
 - **Perceptron Convergence Theorem:** if the data is **linearly separable**, the rule converges in a finite number of steps.
 - **Limitation (Minsky and Papert, 1969):** it **cannot learn XOR**, because XOR is **not linearly separable**.
 
-```
-     AND (separable)                      XOR (NOT separable)
-   x2                                   x2
-    1 |  0      1                        1 |  1       0
-      |     \                              |
-    0 |  0   \  0                        0 |  0       1
-      +--------\---- x1                    +-------------- x1
-         0     \ 1                            0       1
-     one line separates                no single straight line can
-     the classes                       separate the 1s from the 0s
-```
+![AND is linearly separable (one line separates the classes); XOR is not, so a single-layer perceptron cannot learn it](figures/ml_and_xor.svg){width=66%}
 
 *(b) Multilayer Perceptron*
 
@@ -7715,22 +6606,18 @@ A **Convolutional Neural Network (CNN)** is a **deep learning** architecture des
 
 **2. Block Diagram - CNN Architecture**
 
+```{.dot caption="CNN architecture (LeNet-style): feature extraction (left), then classification (right)" width="66%"}
+digraph G { rankdir=TB; nodesep=0.8; ranksep=0.28; node [fontsize=11, width=2.1];
+  subgraph cluster_fe { label="FEATURE EXTRACTION"; style=dashed;
+    i [label="INPUT  32 × 32 × 3"]; c1 [label="CONV1 + ReLU\n6 filters 5×5 → 28×28×6"]; p1 [label="MAX POOL 2×2, s = 2\n→ 14×14×6"];
+    c2 [label="CONV2 + ReLU\n16 filters 5×5 → 10×10×16"]; p2 [label="MAX POOL 2×2, s = 2\n→ 5×5×16"]; i -> c1 -> p1 -> c2 -> p2; }
+  subgraph cluster_cl { label="CLASSIFICATION"; style=dashed;
+    fl [label="FLATTEN → 400"]; f1 [label="FULLY CONNECTED\n120 → 84"]; sm [label="SOFTMAX\n10 classes", penwidth=2]; fl -> f1 -> sm; }
+  p2 -> fl [constraint=false];
+  i -> fl [style=invis];
+}
 ```
-  +----------+    +-------------+    +-------------+    +-------------+    +-------------+
-  |  INPUT   |--->| CONV1 + ReLU|--->|  MAX POOL 1 |--->| CONV2 + ReLU|--->|  MAX POOL 2 |
-  | 32x32x3  |    | 6 filters   |    | 2x2, s = 2  |    | 16 filters  |    | 2x2, s = 2  |
-  |          |    | 5x5         |    |             |    | 5x5         |    |             |
-  +----------+    +-------------+    +-------------+    +-------------+    +------+------+
-                     28x28x6            14x14x6            10x10x16           5x5x16
-                                                                                 |
-  +----------+    +-------------+    +-------------+    +-------------+          |
-  | SOFTMAX  |<---|   FC 84     |<---|   FC 120    |<---|  FLATTEN    |<---------+
-  | 10 class |    |             |    |             |    |  400 values |
-  +----------+    +-------------+    +-------------+    +-------------+
 
-  Top row    = FEATURE EXTRACTION (edges -> textures, shapes -> object parts)
-  Bottom row = CLASSIFICATION
-```
 
 **3. Core Explanation / Working**
 
@@ -7748,27 +6635,14 @@ A **Convolutional Neural Network (CNN)** is a **deep learning** architecture des
 - **Hyper-parameters:** number of filters (K), filter size (F), **stride (S)**, **padding (P)**.
 - **Output size:**
 
-```
-   Output = (W - F + 2P) / S + 1
-
-   Example: W = 32, F = 5, P = 0, S = 1  =>  (32 - 5 + 0)/1 + 1 = 28   =>  28 x 28 x K
-```
+$$\text{Output size} = \frac{W - F + 2P}{S} + 1 \qquad \text{e.g. } W = 32,\; F = 5,\; P = 0,\; S = 1:\;\; \frac{32 - 5 + 0}{1} + 1 = 28 \;\Rightarrow\; 28 \times 28 \times K$$
 
 - *Convolution example (3 × 3 input, 2 × 2 kernel, stride 1):*
 
-```
-     Input I            Kernel K          Output feature map
-   +---+---+---+       +---+---+          +---+---+
-   | 1 | 2 | 0 |       | 1 | 0 |          | 2 | 5 |
-   +---+---+---+   *   +---+---+   =      +---+---+
-   | 0 | 1 | 3 |       | 0 | 1 |          | 1 | 1 |
-   +---+---+---+       +---+---+          +---+---+
-   | 2 | 1 | 0 |
-   +---+---+---+
+$$\underbrace{\begin{bmatrix} 1 & 2 & 0 \\ 0 & 1 & 3 \\ 2 & 1 & 0 \end{bmatrix}}_{\text{Input } I} \;\ast\; \underbrace{\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}}_{\text{Kernel } K} \;=\; \underbrace{\begin{bmatrix} 2 & 5 \\ 1 & 1 \end{bmatrix}}_{\text{Feature map}}$$
 
-   Top-left:  1x1 + 2x0 + 0x0 + 1x1 = 2        Top-right:    2x1 + 0x0 + 1x0 + 3x1 = 5
-   Bot-left:  0x1 + 1x0 + 2x0 + 1x1 = 1        Bottom-right: 1x1 + 3x0 + 1x0 + 0x1 = 1
-```
+- Top-left: $1(1) + 2(0) + 0(0) + 1(1) = 2$. Top-right: $2(1) + 0(0) + 1(0) + 3(1) = 5$.
+- Bottom-left: $0(1) + 1(0) + 2(0) + 1(1) = 1$. Bottom-right: $1(1) + 3(0) + 1(0) + 0(1) = 1$.
 
 *(c) Activation Layer (ReLU)*
 
@@ -7781,18 +6655,7 @@ A **Convolutional Neural Network (CNN)** is a **deep learning** architecture des
 - It has **no learnable parameters**.
 - **Max pooling** keeps the maximum value in each window. **Average pooling** keeps the mean.
 
-```
-   Input 4x4                       Max Pool (2x2, stride 2)    Avg Pool (2x2, stride 2)
-   +---+---+---+---+               +---+---+                   +------+------+
-   | 1 | 3 | 2 | 4 |               | 6 | 4 |                   | 3.75 | 2.25 |
-   +---+---+---+---+               +---+---+                   +------+------+
-   | 5 | 6 | 1 | 2 |      ==>      | 7 | 9 |                   | 4.00 | 4.50 |
-   +---+---+---+---+               +---+---+                   +------+------+
-   | 7 | 2 | 9 | 1 |
-   +---+---+---+---+
-   | 3 | 4 | 0 | 8 |
-   +---+---+---+---+
-```
+$$\underbrace{\left[\begin{array}{cc|cc} 1 & 3 & 2 & 4 \\ 5 & 6 & 1 & 2 \\ \hline 7 & 2 & 9 & 1 \\ 3 & 4 & 0 & 8 \end{array}\right]}_{\text{Input } 4\times 4} \;\xrightarrow{\text{max pool } 2\times2,\; s=2}\; \begin{bmatrix} 6 & 4 \\ 7 & 9 \end{bmatrix} \qquad\qquad \xrightarrow{\text{avg pool}}\; \begin{bmatrix} 3.75 & 2.25 \\ 4.00 & 4.50 \end{bmatrix}$$
 
 *(e) Flatten Layer*
 
@@ -7808,9 +6671,7 @@ A **Convolutional Neural Network (CNN)** is a **deep learning** architecture des
 
 - **Softmax** converts the scores into **class probabilities** that sum to 1:
 
-```
-   P(class_i) = e^(z_i) / Σ e^(z_j)
-```
+$$P(\text{class}_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$$
 
 - Training uses **cross-entropy loss** with **backpropagation** and gradient descent (Adam or SGD).
 
@@ -7856,13 +6717,11 @@ CNNs (LeNet-5, AlexNet, VGG, ResNet) power **face recognition, medical image dia
 - **Q-learning** is a **model-free, off-policy reinforcement learning** algorithm. It learns the **action-value function Q(s, a)**, which is the expected cumulative reward of taking action a in state s and then acting optimally. It **does not need a model** of the environment's transitions or rewards.
 - **Update rule (Bellman equation):**
 
-```
-   Q(s, a)  <-  Q(s, a) + α [ r + γ . max Q(s', a')  -  Q(s, a) ]
-                                     a'
-   α = learning rate,  γ = discount factor (0 <= γ < 1),  r = reward,  s' = next state
-```
+$$Q(s, a) \leftarrow Q(s, a) + \alpha\Big[\, r + \gamma\,\max_{a'} Q(s', a') - Q(s, a) \,\Big]$$
 
-- The optimal policy is then **π*(s) = argmax_a Q(s, a)**. Exploration is usually handled with an **ε-greedy** strategy.
+where α = learning rate, γ = discount factor (0 ≤ γ < 1), r = reward and s' = next state.
+
+- The optimal policy is then $\pi^{*}(s) = \arg\max_a Q(s, a)$. Exploration is usually handled with an **ε-greedy** strategy.
 
 **(b) What is the crowding problem in Genetic Algorithms?**
 
@@ -7880,26 +6739,15 @@ CNNs (LeNet-5, AlexNet, VGG, ResNet) power **face recognition, medical image dia
 
 **2. Block Diagram - Agent-Environment Interaction**
 
+```{.dot caption="Agent-environment interaction in an MDP" width="52%"}
+digraph G { nodesep=1.2; ranksep=0.9; node [width=2.4];
+  A [label="AGENT\npolicy π(a | s)\nvalues V(s), Q(s, a)", penwidth=2];
+  E [label="ENVIRONMENT\ntransitions P(s' | s, a)\nrewards R(s, a)"];
+  A -> E [label="  action aₜ"]; E -> A [label="  state sₜ₊₁,\n  reward rₜ₊₁"];
+}
 ```
-                     +----------------------------------+
-                     |              AGENT               |
-                     |   Policy  π(a | s)               |
-                     |   Value   V(s), Q(s, a)          |
-                     +-----^---------------+------------+
-                           |               |
-              state s_t+1  |               |  action a_t
-              reward r_t+1 |               |
-                           |               v
-                     +-----+----------------------------+
-                     |           ENVIRONMENT            |
-                     |   Transition P(s' | s, a)       |
-                     |   Reward     R(s, a)            |
-                     +----------------------------------+
 
-   Trajectory:  s0 --a0--> (r1) s1 --a1--> (r2) s2 --a2--> (r3) s3 ...
-
-   Return:      G_t = r_t+1 + γ r_t+2 + γ² r_t+3 + ...  =  Σ γ^k r_t+k+1
-```
+$$\text{Trajectory: } s_0 \xrightarrow{a_0} (r_1)\, s_1 \xrightarrow{a_1} (r_2)\, s_2 \cdots \qquad \text{Return: } G_t = r_{t+1} + \gamma r_{t+2} + \gamma^2 r_{t+3} + \cdots = \sum_{k=0}^{\infty}\gamma^k r_{t+k+1}$$
 
 **3. Core Explanation / Working**
 
@@ -7915,9 +6763,7 @@ CNNs (LeNet-5, AlexNet, VGG, ResNet) power **face recognition, medical image dia
 
 - *"The future depends only on the present state, not on the past."*
 
-```
-   P(s_t+1 | s_t, a_t, s_t-1, a_t-1, ..., s_0) = P(s_t+1 | s_t, a_t)
-```
+$$P(s_{t+1} \mid s_t, a_t, s_{t-1}, a_{t-1}, \dots, s_0) = P(s_{t+1} \mid s_t, a_t)$$
 
 *(c) Policy π*
 
@@ -7931,15 +6777,9 @@ CNNs (LeNet-5, AlexNet, VGG, ResNet) power **face recognition, medical image dia
 
 *(e) Bellman Optimality Equations*
 
-```
-   V*(s)    = max_a  Σ P(s'|s,a) [ R(s,a,s') + γ V*(s') ]
-                    s'
+$$V^{*}(s) = \max_a \sum_{s'} P(s' \mid s, a)\big[R(s, a, s') + \gamma V^{*}(s')\big]$$
 
-   Q*(s, a) = Σ P(s'|s,a) [ R(s,a,s') + γ max_a' Q*(s', a') ]
-              s'
-
-   π*(s)    = argmax_a  Q*(s, a)
-```
+$$Q^{*}(s, a) = \sum_{s'} P(s' \mid s, a)\Big[R(s, a, s') + \gamma\max_{a'} Q^{*}(s', a')\Big], \qquad \pi^{*}(s) = \arg\max_a Q^{*}(s, a)$$
 
 *(f) Solving an MDP*
 
@@ -7953,18 +6793,7 @@ CNNs (LeNet-5, AlexNet, VGG, ResNet) power **face recognition, medical image dia
 
 *(g) Example - Grid World MDP*
 
-```
-   +--------+--------+--------+--------+
-   |        |        |        | GOAL   |      S = 12 cells, A = {Up, Down, Left, Right}
-   |   →    |   →    |   →    |  +1    |      Reward: +1 at GOAL, -1 at PIT,
-   +--------+--------+--------+--------+              -0.04 for every other step
-   |        | ////// |        |  PIT   |      P: 0.8 intended move, 0.1 each sideways
-   |   ↑    | (wall) |   ↑    |  -1    |      γ = 0.9
-   +--------+--------+--------+--------+
-   | START  |        |        |        |      Arrows = optimal policy π* learned
-   |   ↑    |   →    |   ↑    |   ←    |      by value iteration / Q-learning
-   +--------+--------+--------+--------+
-```
+![Grid-world MDP (γ = 0.9; +1 at GOAL, −1 at PIT, −0.04 per step; 0.8 chance of the intended move). Arrows show the optimal policy π*](figures/ml_gridworld.svg){width=56%}
 
 **4. Key Characteristics - Reinforcement Learning vs. Supervised Learning**
 
@@ -8005,40 +6834,14 @@ A **Genetic Algorithm (GA)** is a **search and optimization technique** inspired
 
 **2. Flowchart - GA Cycle**
 
-```
-               +-------------------------------------+
-               | 1. INITIALIZE random population     |
-               |    of N chromosomes (bit strings)   |
-               +------------------+------------------+
-                                  |
-               +------------------v------------------+
-               | 2. EVALUATE FITNESS f(x) of each    |<---------------+
-               |    chromosome                       |                |
-               +------------------+------------------+                |
-                                  |                                   |
-                        +---------v---------+   Yes                   |
-                        | Termination met?  |-------> Return BEST     |
-                        | (max gen / goal)  |         chromosome      |
-                        +---------+---------+                         |
-                                  | No                                |
-               +------------------v------------------+                |
-               | 3. SELECTION (roulette wheel /      |                |
-               |    tournament / rank)               |                |
-               +------------------+------------------+                |
-                                  |                                   |
-               +------------------v------------------+                |
-               | 4. CROSSOVER (with probability Pc)  |                |
-               |    combine parents -> offspring     |                |
-               +------------------+------------------+                |
-                                  |                                   |
-               +------------------v------------------+                |
-               | 5. MUTATION (with probability Pm)   |                |
-               |    flip random bits                 |                |
-               +------------------+------------------+                |
-                                  |                                   |
-               +------------------v------------------+                |
-               | 6. REPLACEMENT -> new generation    |----------------+
-               +-------------------------------------+
+```{.dot caption="Genetic Algorithm cycle" width="58%"}
+digraph G { node [width=3.2];
+  a [label="1. INITIALIZE a random population\nof N chromosomes (bit strings)"]; b [label="2. EVALUATE the fitness f(x)\nof each chromosome"];
+  c [label="Termination met?\n(max generations / goal)", shape=diamond, width=2.6]; d [label="Return the BEST chromosome", penwidth=2];
+  e [label="3. SELECTION\n(roulette wheel / tournament / rank)"]; f [label="4. CROSSOVER (probability P_c)\ncombine parents → offspring"];
+  g [label="5. MUTATION (probability P_m)\nflip random bits"]; h [label="6. REPLACEMENT → new generation"];
+  a -> b -> c; c -> d [label=" yes"]; c -> e [label=" no"]; e -> f -> g -> h; h -> b [constraint=false];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -8064,25 +6867,21 @@ A **Genetic Algorithm (GA)** is a **search and optimization technique** inspired
 - **Exploitation:** it **combines good building blocks (schemata)** from two parents to make potentially better offspring.
 - Types:
 
-```
-   Single-point:   Parent1 = 1 0 1 | 1 0       Child1 = 1 0 1 | 0 1
-                   Parent2 = 0 1 0 | 0 1  ==>  Child2 = 0 1 0 | 1 0
-
-   Two-point:      P1 = 1 1 | 0 0 1 | 1        C1 = 1 1 | 1 1 0 | 1
-                   P2 = 0 0 | 1 1 0 | 0   ==>  C2 = 0 0 | 0 0 1 | 0
-
-   Uniform:        each bit is taken from either parent at random (mask)
-```
+| Type | Parents | Offspring |
+|---|---|---|
+| **Single-point** (after bit 3) | P1 = 101 \| 10, P2 = 010 \| 01 | C1 = 101 \| **01**, C2 = 010 \| **10** |
+| **Two-point** (bits 3-5 swapped) | P1 = 11 \| 001 \| 1, P2 = 00 \| 110 \| 0 | C1 = 11 \| **110** \| 1, C2 = 00 \| **001** \| 0 |
+| **Uniform** | each bit is taken from either parent at random (using a mask) | - |
 
 *(e) Mutation: role*
 
 - **Exploration:** it **flips random bits** with a small probability Pm (for example 0.001 to 0.01).
 - It **maintains diversity** and lets the GA **recover lost genetic material**, which prevents premature convergence (**crowding**).
 
-```
-   Before:  1 0 1 1 0 1          After (bit 3 flipped):  1 0 0 1 0 1
-                ^
-```
+| | Chromosome |
+|---|---|
+| Before mutation | 1 0 **1** 1 0 1 |
+| After flipping bit 3 | 1 0 **0** 1 0 1 |
 
 *(f) Worked Trace:* maximize **f(x) = x²** for x in 0 to 31 (5-bit chromosomes), N = 4
 
@@ -8155,34 +6954,15 @@ GAs are used in **timetable and job-shop scheduling, the travelling salesman pro
 
 **2. Block Diagram**
 
-```
-   PURELY INDUCTIVE LEARNING                       PURELY ANALYTICAL LEARNING
-
-   +---------------------------+                   +---------------------------+
-   |   MANY training examples  |                   |  DOMAIN THEORY (prior     |
-   |   (x1,y1), (x2,y2), ...   |                   |  knowledge, rules) B      |
-   +-------------+-------------+                   +-------------+-------------+
-                 |                                               |
-                 |                                 +-------------+-------------+
-                 |                                 |  FEW training examples D  |
-                 |                                 +-------------+-------------+
-   +-------------v-------------+                   +-------------v-------------+
-   | Statistical inference /   |                   | 1. EXPLAIN: prove example |
-   | search hypothesis space   |                   |    using domain theory    |
-   | (ID3, ANN, SVM, GA)       |                   | 2. ANALYZE: find relevant |
-   +-------------+-------------+                   |    features (weakest      |
-                 |                                 |    preimage)              |
-                 |                                 | 3. REFINE: form general   |
-                 |                                 |    rule (Prolog-EBG)      |
-                 |                                 +-------------+-------------+
-   +-------------v-------------+                   +-------------v-------------+
-   | Hypothesis h that FITS    |                   | Hypothesis h that FOLLOWS |
-   | the DATA (may be wrong on |                   | DEDUCTIVELY from B and D  |
-   | unseen cases)             |                   | (correct if B is correct) |
-   +---------------------------+                   +---------------------------+
-
-                   COMBINED (HYBRID) LEARNING: KBANN, TangentProp, EBNN, FOCL
-                   (use the domain theory to guide or initialize inductive learning)
+```{.dot caption="Purely inductive vs. purely analytical learning" width="92%"}
+digraph G { nodesep=0.8; ranksep=0.35; node [width=2.6, fontsize=11];
+  subgraph cluster_i { label="PURELY INDUCTIVE"; style=dashed;
+    i1 [label="MANY training examples\n(x₁, y₁), (x₂, y₂), ..."]; i2 [label="Statistical inference / search\nof hypothesis space\n(ID3, ANN, SVM, GA)"]; i3 [label="Hypothesis h that FITS the data\n(may be wrong on unseen cases)", penwidth=2]; i1 -> i2 -> i3; }
+  subgraph cluster_a { label="PURELY ANALYTICAL (EBL)"; style=dashed;
+    a0 [label="DOMAIN THEORY B\n(prior knowledge, rules)"]; a1 [label="FEW training examples D"]; a2 [label="1. EXPLAIN (proof using B)\n2. ANALYZE (weakest preimage)\n3. REFINE (general rule)"]; a3 [label="Hypothesis h that FOLLOWS\ndeductively from B and D", penwidth=2]; a0 -> a2; a1 -> a2; a2 -> a3; }
+  hy [label="HYBRID: KBANN, TangentProp, EBNN, FOCL\n(domain theory guides / initializes inductive learning)", shape=note, width=4];
+  i3 -> hy [style=dashed, arrowhead=none]; a3 -> hy [style=dashed, arrowhead=none];
+}
 ```
 
 **3. Core Explanation / Working**
@@ -11834,15 +10614,15 @@ A **digital signature** is an **electronic method of authenticating** a document
 
 **2. Diagram - Creating and Verifying a Digital Signature**
 
-```{.dot caption="Digital signature process (sender signs with the private key, receiver verifies with the public key)" width="98%"}
-digraph G { rankdir=LR; nodesep=0.3; ranksep=0.45; node [fontsize=11];
+```{.dot caption="Digital signature process (sender signs with the private key, receiver verifies with the public key)" width="80%"}
+digraph G { rankdir=TB; nodesep=0.5; ranksep=0.35; node [fontsize=11, width=2];
   subgraph cluster_s { label="SENDER (signing)"; style=dashed;
     m [label="Message /\nDocument"]; h1 [label="Hash function\n(SHA-256)"]; d1 [label="Message\ndigest"]; e [label="Encrypt with\nSENDER's PRIVATE key"]; sg [label="Digital\nsignature", penwidth=2];
     m -> h1 -> d1 -> e -> sg; }
   subgraph cluster_r { label="RECEIVER (verification)"; style=dashed;
     h2 [label="Hash the\nreceived message"]; d2 [label="Digest A"]; dc [label="Decrypt signature with\nSENDER's PUBLIC key\n(from DSC)"]; d3 [label="Digest B"]; cmp [label="A = B ?\nvalid & unaltered", shape=diamond];
     h2 -> d2 -> cmp; dc -> d3 -> cmp; }
-  m -> h2 [label=" message sent", style=dashed]; sg -> dc [label=" signature sent", style=dashed];
+  m -> h2 [label=" message sent", style=dashed, constraint=false]; sg -> dc [label=" signature sent", style=dashed];
 }
 ```
 

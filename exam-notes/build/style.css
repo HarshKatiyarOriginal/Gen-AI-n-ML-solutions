@@ -38,3 +38,19 @@ figcaption { font-style: italic; font-size: 9.5pt; margin-top: 3pt; }
 p > img { display: block; margin: 8pt auto; max-width: 100%; }
 hr { border: 0; border-top: 1px dashed #000; margin: 14pt 0; }
 blockquote { border-left: 3px solid #000; margin: 6pt 0; padding: 2pt 10pt; }
+
+/* HTML mock-ups drawn as figures */
+.formmock { display: inline-block; text-align: left; border: 1.5px solid #000; border-radius: 6px; padding: 8px 14px 10px; font-size: 10pt; width: 72%; }
+.fm-title { font-weight: bold; text-align: center; border-bottom: 1px solid #000; padding-bottom: 4px; margin-bottom: 6px; letter-spacing: 0.5px; }
+.fm-row { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
+.fm-row > span { width: 95px; flex: none; }
+.fm-row input[type=text], .fm-row input[type=password], .fm-row select, .fm-row textarea { flex: 1; border: 1px solid #000; border-radius: 3px; padding: 2px 4px; font: inherit; background: #fff; color: #000; }
+.fm-row button { border: 1px solid #000; background: #fff; border-radius: 3px; padding: 1px 10px; font: inherit; }
+.fm-note { margin-top: 6px; font-style: italic; font-size: 9pt; text-align: center; }
+.boxmodel { display: inline-block; width: 78%; font-size: 10pt; }
+.boxmodel div { position: relative; padding: 24px 22px 14px; border-radius: 3px; }
+.bm-margin { border: 1.2px dashed #000; }
+.bm-border { border: 3px solid #000; }
+.bm-padding { border: 1px dotted #000; background: #ececec; }
+.bm-content { border: 1.2px solid #000; background: #fff; text-align: center; padding: 14px !important; font-weight: bold; }
+.bm-lbl { position: absolute; top: 5px; left: 10px; font-size: 9pt; }

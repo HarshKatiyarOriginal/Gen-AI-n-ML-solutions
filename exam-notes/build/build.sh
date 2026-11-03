@@ -7,7 +7,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 OUT="${1:-$ROOT/AKTU_Revision_Notebook.pdf}"
 
-ORDER="u1 u2 u3 u4 u5 w1 w2 w3 w4 w5 d1 d2 d3 d4 d5 m1 m2 m3 m4 m5 m6 a1 a2 a3 a4 a5 a6 c1 c2 c3 c4 c5"
+ORDER="${ORDER:-u1 u2 u3 u4 u5 w1 w2 w3 w4 w5 d1 d2 d3 d4 d5 m1 m2 m3 m4 m5 m6 a1 a2 a3 a4 a5 a6 c1 c2 c3 c4 c5}"
 FILES=()
 for f in $ORDER; do [ -f "$ROOT/src/$f.md" ] && FILES+=("$ROOT/src/$f.md"); done
 
@@ -38,7 +38,7 @@ PY
 # 3. Markdown -> HTML (Graphviz figures, MathML maths) -> PDF
 cd "$ROOT"
 pandoc "$ROOT/AKTU_Revision_Notebook.md" -s --mathml \
-  --lua-filter "$HERE/figures.lua" \
+  --lua-filter "$HERE/figures.lua" --highlight-style=monochrome \
   --metadata pagetitle="AKTU Revision Notebook" \
   -c "$HERE/style.css" --embed-resources \
   -o "$ROOT/build/notebook.html"
