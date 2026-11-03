@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="242.990656pt" height="251.2905pt" viewBox="0 0 242.990656 251.2905" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-03T19:23:23.062591</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 251.2905 
+L 242.990656 251.2905 
+L 242.990656 0 
+L 0 0 
+L 0 251.2905 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 40.210656 211.0905 
+L 230.290656 211.0905 
+L 230.290656 11.5065 
+L 40.210656 11.5065 
+L 40.210656 211.0905 
+z
+" style="fill: none"/>
+   </g>
+   <g id="PathCollection_1">
+    <defs>
+     <path id="m49ece710ca" d="M 0 2.915476 
+C 0.773193 2.915476 1.514823 2.608283 2.061553 2.061553 
+C 2.608283 1.514823 2.915476 0.773193 2.915476 0 
+C 2.915476 -0.773193 2.608283 -1.514823 2.061553 -2.061553 
+C 1.514823 -2.608283 0.773193 -2.915476 0 -2.915476 
+C -0.773193 -2.915476 -1.514823 -2.608283 -2.061553 -2.061553 
+C -2.608283 -1.514823 -2.915476 -0.773193 -2.915476 0 
+C -2.915476 0.773193 -2.608283 1.514823 -2.061553 2.061553 
+C -1.514823 2.608283 -0.773193 2.915476 0 2.915476 
+z
+" style="stroke: #000000"/>
+    </defs>
+    <g clip-path="url(#p325df478c5)">
+     <use xlink:href="#m49ece710ca" x="78.226656" y="182.5785" style="stroke: #000000"/>
+     <use xlink:href="#m49ece710ca" x="97.234656" y="106.5465" style="stroke: #000000"/>
+     <use xlink:href="#m49ece710ca" x="116.242656" y="144.5625" style="stroke: #000000"/>
+     <use xlink:href="#m49ece710ca" x="135.250656" y="87.5385" style="stroke: #000000"/>
+     <use xlink:href="#m49ece710ca" x="154.258656" y="68.5305" style="stroke: #000000"/>
+     <use xlink:href="#m49ece710ca" x="173.266656" y="49.5225" style="stroke: #000000"/>
+    </g>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <defs>
+       <path id="m607ab6e05c" d="M 0 0 
+L 0 3.5 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m607ab6e05c" x="40.210656" y="211.0905" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <!-- 0 -->
+      <g transform="translate(37.460656 226.7035) scale(0.11 -0.11)">
+       <defs>
+        <path id="TeXGyreTermes-Regular-7a" d="M 3046 2112 
+C 3046 3424 2464 4326 1626 4326 
+C 1274 4326 1005 4218 768 3994 
+C 397 3635 154 2899 154 2150 
+C 154 1453 365 704 666 346 
+C 902 64 1229 -90 1600 -90 
+C 1926 -90 2202 19 2432 243 
+C 2803 595 3046 1338 3046 2112 
+z
+M 2432 2099 
+C 2432 762 2150 77 1600 77 
+C 1050 77 768 762 768 2093 
+C 768 3450 1056 4160 1606 4160 
+C 2144 4160 2432 3437 2432 2099 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#TeXGyreTermes-Regular-7a"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2">
+      <g>
+       <use xlink:href="#m607ab6e05c" x="78.226656" y="211.0905" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <!-- 2 -->
+      <g transform="translate(75.476656 226.7035) scale(0.11 -0.11)">
+       <defs>
+        <path id="TeXGyreTermes-Regular-6c" d="M 3040 877 
+L 2957 909 
+C 2720 544 2637 486 2349 486 
+L 819 486 
+L 1894 1613 
+C 2464 2208 2714 2694 2714 3194 
+C 2714 3834 2195 4326 1530 4326 
+C 1178 4326 845 4186 608 3930 
+C 403 3712 307 3507 198 3053 
+L 333 3021 
+C 589 3648 819 3853 1261 3853 
+C 1798 3853 2163 3488 2163 2950 
+C 2163 2451 1869 1856 1331 1286 
+L 192 77 
+L 192 0 
+L 2688 0 
+L 3040 877 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#TeXGyreTermes-Regular-6c"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3">
+      <g>
+       <use xlink:href="#m607ab6e05c" x="116.242656" y="211.0905" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <!-- 4 -->
+      <g transform="translate(113.492656 226.7035) scale(0.11 -0.11)">
+       <defs>
+        <path id="TeXGyreTermes-Regular-3a" d="M 3021 1069 
+L 3021 1478 
+L 2368 1478 
+L 2368 4326 
+L 2086 4326 
+L 77 1478 
+L 77 1069 
+L 1875 1069 
+L 1875 0 
+L 2368 0 
+L 2368 1069 
+L 3021 1069 
+z
+M 1869 1478 
+L 333 1478 
+L 1869 3674 
+L 1869 1478 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#TeXGyreTermes-Regular-3a"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#m607ab6e05c" x="154.258656" y="211.0905" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <!-- 6 -->
+      <g transform="translate(151.508656 226.7035) scale(0.11 -0.11)">
+       <defs>
+        <path id="TeXGyreTermes-Regular-66" d="M 2995 1402 
+C 2995 2221 2528 2739 1792 2739 
+C 1510 2739 1376 2694 973 2451 
+C 1146 3418 1862 4109 2867 4275 
+L 2854 4378 
+C 2125 4314 1754 4192 1286 3866 
+C 595 3373 218 2643 218 1786 
+C 218 1229 390 666 666 346 
+C 909 64 1254 -90 1651 -90 
+C 2445 -90 2995 518 2995 1402 
+z
+M 2419 1184 
+C 2419 480 2170 90 1722 90 
+C 1158 90 813 691 813 1683 
+C 813 2010 864 2189 992 2285 
+C 1126 2387 1325 2445 1549 2445 
+C 2099 2445 2419 1984 2419 1184 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#TeXGyreTermes-Regular-66"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5">
+      <g>
+       <use xlink:href="#m607ab6e05c" x="192.274656" y="211.0905" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <!-- 8 -->
+      <g transform="translate(189.524656 226.7035) scale(0.11 -0.11)">
+       <defs>
+        <path id="TeXGyreTermes-Regular-34" d="M 2848 992 
+C 2848 1485 2630 1798 1856 2374 
+C 2490 2714 2714 2982 2714 3418 
+C 2714 3942 2253 4326 1613 4326 
+C 915 4326 397 3898 397 3315 
+C 397 2899 518 2714 1190 2125 
+C 499 1600 358 1402 358 966 
+C 358 346 864 -90 1587 -90 
+C 2355 -90 2848 333 2848 992 
+z
+M 2362 794 
+C 2362 378 2074 90 1658 90 
+C 1171 90 845 461 845 1018 
+C 845 1427 986 1696 1357 1997 
+L 1741 1715 
+C 2208 1382 2362 1152 2362 794 
+z
+M 2272 3424 
+C 2272 3059 2093 2771 1728 2528 
+C 1696 2509 1696 2509 1670 2490 
+C 1101 2861 870 3155 870 3514 
+C 870 3885 1158 4147 1562 4147 
+C 1997 4147 2272 3866 2272 3424 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#TeXGyreTermes-Regular-34"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#m607ab6e05c" x="230.290656" y="211.0905" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <!-- 10 -->
+      <g transform="translate(224.790656 226.7035) scale(0.11 -0.11)">
+       <defs>
+        <path id="TeXGyreTermes-Regular-53" d="M 2522 0 
+L 2522 96 
+C 2016 102 1914 166 1914 474 
+L 1914 4314 
+L 1862 4326 
+L 710 3744 
+L 710 3654 
+C 787 3686 858 3712 883 3725 
+C 998 3770 1107 3795 1171 3795 
+C 1306 3795 1363 3699 1363 3494 
+L 1363 595 
+C 1363 384 1312 237 1210 179 
+C 1114 122 1024 102 755 96 
+L 755 0 
+L 2522 0 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#TeXGyreTermes-Regular-53"/>
+       <use xlink:href="#TeXGyreTermes-Regular-7a" transform="translate(50 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="text_7">
+     <!-- x -->
+     <g transform="translate(132.500656 241.7035) scale(0.11 -0.11)">
+      <defs>
+       <path id="TeXGyreTermes-Regular-75" d="M 3066 0 
+L 3066 96 
+C 2867 96 2739 198 2541 480 
+L 1722 1734 
+L 2253 2502 
+C 2374 2675 2566 2778 2771 2784 
+L 2771 2880 
+L 1760 2880 
+L 1760 2784 
+C 1952 2771 2016 2733 2016 2643 
+C 2016 2566 1939 2426 1779 2227 
+C 1747 2189 1670 2074 1587 1946 
+L 1498 2074 
+C 1318 2342 1203 2560 1203 2643 
+C 1203 2733 1286 2778 1478 2784 
+L 1478 2880 
+L 154 2880 
+L 154 2784 
+L 211 2784 
+C 403 2784 506 2701 704 2400 
+L 1306 1478 
+L 576 422 
+C 384 160 320 115 109 96 
+L 109 0 
+L 1037 0 
+L 1037 96 
+C 858 96 781 128 781 211 
+C 781 250 826 346 909 474 
+L 1414 1261 
+L 1997 365 
+C 2022 326 2035 288 2035 250 
+C 2035 134 1990 109 1779 96 
+L 1779 0 
+L 3066 0 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#TeXGyreTermes-Regular-75"/>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_7">
+      <defs>
+       <path id="m9bde65bebe" d="M 0 0 
+L -3.5 0 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m9bde65bebe" x="40.210656" y="201.5865" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <!-- 0 -->
+      <g transform="translate(27.710656 205.893) scale(0.11 -0.11)">
+       <use xlink:href="#TeXGyreTermes-Regular-7a"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#m9bde65bebe" x="40.210656" y="163.5705" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <!-- 2 -->
+      <g transform="translate(27.710656 167.877) scale(0.11 -0.11)">
+       <use xlink:href="#TeXGyreTermes-Regular-6c"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_9">
+      <g>
+       <use xlink:href="#m9bde65bebe" x="40.210656" y="125.5545" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <!-- 4 -->
+      <g transform="translate(27.710656 129.861) scale(0.11 -0.11)">
+       <use xlink:href="#TeXGyreTermes-Regular-3a"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#m9bde65bebe" x="40.210656" y="87.5385" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_11">
+      <!-- 6 -->
+      <g transform="translate(27.710656 91.845) scale(0.11 -0.11)">
+       <use xlink:href="#TeXGyreTermes-Regular-66"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_11">
+      <g>
+       <use xlink:href="#m9bde65bebe" x="40.210656" y="49.5225" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_12">
+      <!-- 8 -->
+      <g transform="translate(27.710656 53.829) scale(0.11 -0.11)">
+       <use xlink:href="#TeXGyreTermes-Regular-34"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#m9bde65bebe" x="40.210656" y="11.5065" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_13">
+      <!-- 10 -->
+      <g transform="translate(22.210656 15.813) scale(0.11 -0.11)">
+       <use xlink:href="#TeXGyreTermes-Regular-53"/>
+       <use xlink:href="#TeXGyreTermes-Regular-7a" transform="translate(50 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="text_14">
+     <!-- y -->
+     <g transform="translate(15.813 114.0485) rotate(-90) scale(0.11 -0.11)">
+      <defs>
+       <path id="TeXGyreTermes-Regular-77" d="M 3040 2784 
+L 3040 2880 
+L 2176 2880 
+L 2176 2784 
+C 2381 2784 2483 2726 2483 2624 
+C 2483 2598 2477 2560 2458 2515 
+L 1837 749 
+L 1101 2368 
+C 1062 2458 1037 2541 1037 2611 
+C 1037 2726 1133 2771 1408 2784 
+L 1408 2880 
+L 90 2880 
+L 90 2790 
+C 256 2765 365 2694 416 2586 
+L 1472 358 
+C 1517 250 1542 173 1542 122 
+C 1542 26 1395 -378 1286 -570 
+C 1197 -736 1056 -858 966 -858 
+C 928 -858 870 -845 806 -813 
+C 685 -768 576 -742 467 -742 
+C 320 -742 192 -870 192 -1024 
+C 192 -1235 397 -1395 666 -1395 
+C 1094 -1395 1402 -1037 1747 -115 
+L 2733 2496 
+C 2816 2701 2886 2765 3040 2784 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#TeXGyreTermes-Regular-77"/>
+     </g>
+    </g>
+   </g>
+   <g id="line2d_13">
+    <path d="M 125.746656 106.5465 
+" clip-path="url(#p325df478c5)" style="fill: none; stroke: #000000; stroke-width: 1.5; stroke-linecap: square"/>
+    <defs>
+     <path id="mf646315fd0" d="M -5 0 
+L 5 0 
+M 0 5 
+L 0 -5 
+" style="stroke: #000000"/>
+    </defs>
+    <g clip-path="url(#p325df478c5)">
+     <use xlink:href="#mf646315fd0" x="125.746656" y="106.5465" style="stroke: #000000"/>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 40.210656 211.0905 
+L 40.210656 11.5065 
+" style="fill: none; stroke: #000000; stroke-width: 0.9; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 40.210656 211.0905 
+L 230.290656 211.0905 
+" style="fill: none; stroke: #000000; stroke-width: 0.9; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_15">
+    <!-- (2,1) -->
+    <g transform="translate(83.226656 192.5785) scale(0.085 -0.085)">
+     <defs>
+      <path id="TeXGyreTermes-Regular-56" d="M 1946 -1030 
+C 1434 -627 1254 -403 1082 77 
+C 928 506 858 992 858 1632 
+C 858 2304 941 2829 1114 3226 
+C 1293 3622 1485 3853 1946 4224 
+L 1888 4326 
+C 1414 4019 1222 3853 986 3558 
+C 531 3002 307 2362 307 1613 
+C 307 800 544 173 1107 -480 
+C 1370 -787 1536 -928 1869 -1133 
+L 1946 -1030 
+z
+" transform="scale(0.015625)"/>
+      <path id="TeXGyreTermes-Regular-2e" d="M 1248 83 
+C 1248 403 1024 653 736 653 
+C 512 653 358 506 358 288 
+C 358 83 506 -38 736 -38 
+C 774 -38 819 -32 858 -26 
+C 902 -13 909 -13 909 -13 
+C 960 -13 998 -51 998 -102 
+C 998 -307 819 -544 474 -781 
+L 531 -902 
+C 960 -691 1248 -301 1248 83 
+z
+" transform="scale(0.015625)"/>
+      <path id="TeXGyreTermes-Regular-57" d="M 1824 1581 
+C 1824 2400 1587 3021 1024 3674 
+C 762 3981 595 4122 262 4326 
+L 186 4224 
+C 698 3821 870 3597 1050 3117 
+C 1203 2688 1274 2202 1274 1562 
+C 1274 896 1190 365 1018 -26 
+C 838 -429 646 -659 186 -1030 
+L 243 -1133 
+C 717 -826 909 -659 1146 -365 
+C 1600 192 1824 832 1824 1581 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#TeXGyreTermes-Regular-56"/>
+     <use xlink:href="#TeXGyreTermes-Regular-6c" transform="translate(33.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-2e" transform="translate(83.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-53" transform="translate(108.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-57" transform="translate(158.296875 0)"/>
+    </g>
+   </g>
+   <g id="text_16">
+    <!-- (3,5) -->
+    <g transform="translate(102.234656 116.5465) scale(0.085 -0.085)">
+     <defs>
+      <path id="TeXGyreTermes-Regular-6b" d="M 2765 1402 
+C 2765 1728 2662 2029 2477 2227 
+C 2349 2368 2227 2445 1946 2566 
+C 2387 2867 2547 3104 2547 3450 
+C 2547 3968 2138 4326 1549 4326 
+C 1229 4326 947 4218 717 4013 
+C 525 3840 429 3674 288 3290 
+L 384 3264 
+C 646 3731 934 3942 1338 3942 
+C 1754 3942 2042 3661 2042 3258 
+C 2042 3027 1946 2797 1786 2637 
+C 1594 2445 1414 2349 979 2195 
+L 979 2112 
+C 1357 2112 1504 2099 1658 2042 
+C 2054 1901 2304 1536 2304 1094 
+C 2304 557 1939 141 1466 141 
+C 1293 141 1165 186 928 339 
+C 736 454 627 499 518 499 
+C 371 499 275 410 275 275 
+C 275 51 550 -90 998 -90 
+C 1491 -90 1997 77 2298 339 
+C 2598 602 2765 973 2765 1402 
+z
+" transform="scale(0.015625)"/>
+      <path id="TeXGyreTermes-Regular-39" d="M 2803 4358 
+L 2746 4403 
+C 2650 4269 2586 4237 2451 4237 
+L 1114 4237 
+L 416 2720 
+C 410 2707 410 2688 410 2688 
+C 410 2656 435 2637 486 2637 
+C 691 2637 947 2592 1210 2509 
+C 1946 2272 2285 1875 2285 1242 
+C 2285 627 1894 147 1395 147 
+C 1267 147 1158 192 966 333 
+C 762 480 614 544 480 544 
+C 294 544 205 467 205 307 
+C 205 64 506 -90 986 -90 
+C 1523 -90 1984 83 2304 410 
+C 2598 698 2733 1062 2733 1549 
+C 2733 2010 2611 2304 2291 2624 
+C 2010 2906 1645 3053 890 3187 
+L 1158 3731 
+L 2413 3731 
+C 2515 3731 2541 3744 2560 3789 
+L 2803 4358 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#TeXGyreTermes-Regular-56"/>
+     <use xlink:href="#TeXGyreTermes-Regular-6b" transform="translate(33.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-2e" transform="translate(83.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-39" transform="translate(108.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-57" transform="translate(158.296875 0)"/>
+    </g>
+   </g>
+   <g id="text_17">
+    <!-- (4,3) -->
+    <g transform="translate(121.242656 154.5625) scale(0.085 -0.085)">
+     <use xlink:href="#TeXGyreTermes-Regular-56"/>
+     <use xlink:href="#TeXGyreTermes-Regular-3a" transform="translate(33.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-2e" transform="translate(83.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-6b" transform="translate(108.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-57" transform="translate(158.296875 0)"/>
+    </g>
+   </g>
+   <g id="text_18">
+    <!-- (5,6) -->
+    <g transform="translate(140.250656 97.5385) scale(0.085 -0.085)">
+     <use xlink:href="#TeXGyreTermes-Regular-56"/>
+     <use xlink:href="#TeXGyreTermes-Regular-39" transform="translate(33.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-2e" transform="translate(83.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-66" transform="translate(108.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-57" transform="translate(158.296875 0)"/>
+    </g>
+   </g>
+   <g id="text_19">
+    <!-- (6,7) -->
+    <g transform="translate(159.258656 78.5305) scale(0.085 -0.085)">
+     <defs>
+      <path id="TeXGyreTermes-Regular-65" d="M 2874 4134 
+L 2874 4237 
+L 506 4237 
+L 128 3296 
+L 237 3245 
+C 512 3680 627 3763 979 3763 
+L 2368 3763 
+L 1101 -51 
+L 1517 -51 
+L 2874 4134 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#TeXGyreTermes-Regular-56"/>
+     <use xlink:href="#TeXGyreTermes-Regular-66" transform="translate(33.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-2e" transform="translate(83.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-65" transform="translate(108.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-57" transform="translate(158.296875 0)"/>
+    </g>
+   </g>
+   <g id="text_20">
+    <!-- (7,8) -->
+    <g transform="translate(178.266656 59.5225) scale(0.085 -0.085)">
+     <use xlink:href="#TeXGyreTermes-Regular-56"/>
+     <use xlink:href="#TeXGyreTermes-Regular-65" transform="translate(33.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-2e" transform="translate(83.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-34" transform="translate(108.296875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-57" transform="translate(158.296875 0)"/>
+    </g>
+   </g>
+   <g id="patch_5">
+    <path d="M 74.917583 179.889925 
+Q 125.746637 106.546527 175.875163 34.213951 
+" style="fill: none; stroke: #000000; stroke-width: 1.1; stroke-linecap: round"/>
+    <path d="M 171.560665 36.577234 
+L 175.875163 34.213951 
+L 175.17709 39.083519 
+z
+" style="fill: #1f77b4; stroke: #000000; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="text_21">
+    <!-- PC1 -->
+    <g transform="translate(180.567249 28.706459) scale(0.1 -0.1)">
+     <defs>
+      <path id="TeXGyreTermes-Regular-54" d="M 3469 3078 
+C 3469 3347 3379 3590 3206 3776 
+C 2950 4058 2394 4237 1792 4237 
+L 102 4237 
+L 102 4115 
+C 576 4064 640 4000 640 3539 
+L 640 768 
+C 640 230 589 166 102 122 
+L 102 0 
+L 1894 0 
+L 1894 122 
+C 1389 141 1293 230 1293 698 
+L 1293 1862 
+C 1459 1850 1568 1843 1734 1843 
+C 2234 1843 2579 1907 2854 2061 
+C 3238 2266 3469 2656 3469 3078 
+z
+M 2771 3040 
+C 2771 2419 2394 2099 1658 2099 
+C 1530 2099 1440 2106 1293 2118 
+L 1293 3782 
+C 1293 3955 1338 4000 1510 4000 
+C 2374 4000 2771 3699 2771 3040 
+z
+" transform="scale(0.015625)"/>
+      <path id="TeXGyreTermes-Regular-2b" d="M 4051 723 
+L 3936 838 
+C 3462 384 3040 192 2509 192 
+C 2125 192 1779 307 1510 531 
+C 1133 845 922 1421 922 2163 
+C 922 3322 1517 4070 2445 4070 
+C 2816 4070 3142 3936 3398 3680 
+C 3603 3475 3699 3296 3821 2880 
+L 3968 2880 
+L 3910 4326 
+L 3776 4326 
+C 3738 4192 3635 4115 3514 4115 
+C 3450 4115 3360 4134 3258 4173 
+C 2944 4275 2630 4326 2317 4326 
+C 1824 4326 1318 4141 928 3821 
+C 442 3418 179 2810 179 2080 
+C 179 781 1030 -90 2304 -90 
+C 3027 -90 3661 205 4051 723 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#TeXGyreTermes-Regular-54"/>
+     <use xlink:href="#TeXGyreTermes-Regular-2b" transform="translate(55.59375 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-53" transform="translate(122.296875 0)"/>
+    </g>
+   </g>
+   <g id="patch_6">
+    <path d="M 149.098284 122.72984 
+Q 125.746162 106.546157 103.404861 91.063003 
+" style="fill: none; stroke: #000000; stroke-width: 1.1; stroke-linecap: round"/>
+    <path d="M 105.768144 95.377501 
+L 103.404861 91.063003 
+L 108.274429 91.761075 
+z
+" style="fill: #1f77b4; stroke: #000000; stroke-width: 1.1; stroke-linecap: round"/>
+   </g>
+   <g id="text_22">
+    <!-- PC2 -->
+    <g transform="translate(103.601576 86.372169) scale(0.1 -0.1)">
+     <use xlink:href="#TeXGyreTermes-Regular-54"/>
+     <use xlink:href="#TeXGyreTermes-Regular-2b" transform="translate(55.59375 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-6c" transform="translate(122.296875 0)"/>
+    </g>
+   </g>
+   <g id="text_23">
+    <!-- mean (4.5, 5) -->
+    <g transform="translate(128.597856 117.0009) scale(0.085 -0.085)">
+     <defs>
+      <path id="TeXGyreTermes-Regular-4c" d="M 4960 0 
+L 4960 96 
+L 4794 109 
+C 4602 122 4518 237 4518 486 
+L 4518 1805 
+C 4518 2560 4269 2944 3776 2944 
+C 3405 2944 3078 2778 2733 2406 
+C 2618 2771 2400 2944 2054 2944 
+C 1773 2944 1594 2854 1062 2451 
+L 1062 2931 
+L 1018 2944 
+C 691 2822 474 2752 122 2656 
+L 122 2547 
+C 205 2566 256 2573 326 2573 
+C 493 2573 550 2470 550 2163 
+L 550 544 
+C 550 198 461 102 102 96 
+L 102 0 
+L 1523 0 
+L 1523 96 
+C 1184 109 1088 179 1088 429 
+L 1088 2234 
+C 1088 2234 1139 2310 1184 2355 
+C 1344 2502 1619 2611 1843 2611 
+C 2125 2611 2266 2387 2266 1939 
+L 2266 550 
+C 2266 192 2195 122 1830 96 
+L 1830 0 
+L 3264 0 
+L 3264 96 
+C 2899 102 2803 211 2803 608 
+L 2803 2221 
+C 2995 2496 3206 2611 3501 2611 
+C 3866 2611 3981 2438 3981 1907 
+L 3981 557 
+C 3981 192 3930 141 3558 96 
+L 3558 0 
+L 4960 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="TeXGyreTermes-Regular-33" d="M 2714 1005 
+L 2611 1050 
+C 2304 563 2029 378 1619 378 
+C 1267 378 998 544 813 890 
+C 685 1139 634 1363 621 1773 
+L 2592 1773 
+C 2541 2189 2477 2374 2317 2579 
+C 2125 2810 1830 2944 1498 2944 
+C 704 2944 160 2304 160 1370 
+C 160 486 621 -64 1357 -64 
+C 1971 -64 2445 314 2714 1005 
+z
+M 1939 1978 
+L 634 1978 
+C 704 2483 922 2714 1312 2714 
+C 1702 2714 1856 2534 1939 1978 
+z
+" transform="scale(0.015625)"/>
+      <path id="TeXGyreTermes-Regular-1d" d="M 2829 256 
+L 2829 422 
+C 2720 333 2643 301 2547 301 
+C 2400 301 2355 390 2355 672 
+L 2355 1920 
+C 2355 2246 2323 2426 2234 2573 
+C 2099 2816 1824 2944 1434 2944 
+C 1107 2944 800 2854 621 2707 
+C 461 2573 358 2387 358 2227 
+C 358 2080 480 1952 634 1952 
+C 787 1952 922 2080 922 2221 
+C 922 2246 915 2278 909 2323 
+C 896 2381 890 2432 890 2477 
+C 890 2650 1094 2790 1350 2790 
+C 1664 2790 1837 2605 1837 2259 
+L 1837 1869 
+C 851 1472 742 1421 467 1178 
+C 326 1050 237 832 237 621 
+C 237 218 512 -64 909 -64 
+C 1190 -64 1453 70 1843 403 
+C 1875 64 1990 -64 2253 -64 
+C 2470 -64 2605 13 2829 256 
+z
+M 1837 787 
+C 1837 589 1805 531 1670 448 
+C 1517 358 1338 307 1203 307 
+C 979 307 800 525 800 800 
+L 800 826 
+C 800 1203 1062 1434 1837 1715 
+L 1837 787 
+z
+" transform="scale(0.015625)"/>
+      <path id="TeXGyreTermes-Regular-4e" d="M 3104 0 
+L 3104 96 
+C 2790 128 2714 205 2714 518 
+L 2714 1984 
+C 2714 2586 2432 2944 1958 2944 
+C 1664 2944 1466 2835 1030 2426 
+L 1030 2931 
+L 986 2944 
+C 672 2829 454 2758 102 2656 
+L 102 2547 
+C 141 2566 205 2573 275 2573 
+C 454 2573 512 2477 512 2163 
+L 512 576 
+C 512 211 442 122 115 96 
+L 115 0 
+L 1472 0 
+L 1472 96 
+C 1146 122 1050 198 1050 429 
+L 1050 2227 
+C 1357 2515 1498 2592 1709 2592 
+C 2022 2592 2176 2394 2176 1971 
+L 2176 634 
+C 2176 230 2093 122 1773 96 
+L 1773 0 
+L 3104 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="TeXGyreTermes-Regular-68" transform="scale(0.015625)"/>
+      <path id="TeXGyreTermes-Regular-59" d="M 1158 275 
+C 1158 474 992 640 800 640 
+C 608 640 448 474 448 275 
+C 448 90 608 -70 794 -70 
+C 992 -70 1158 90 1158 275 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#TeXGyreTermes-Regular-4c"/>
+     <use xlink:href="#TeXGyreTermes-Regular-33" transform="translate(77.796875 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-1d" transform="translate(122.203125 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-4e" transform="translate(166.609375 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-68" transform="translate(216.609375 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-56" transform="translate(241.609375 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-3a" transform="translate(274.90625 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-59" transform="translate(324.90625 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-39" transform="translate(349.90625 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-2e" transform="translate(399.90625 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-68" transform="translate(424.90625 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-39" transform="translate(449.90625 0)"/>
+     <use xlink:href="#TeXGyreTermes-Regular-57" transform="translate(499.90625 0)"/>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p325df478c5">
+   <rect x="40.210656" y="11.5065" width="190.08" height="199.584"/>
+  </clipPath>
+ </defs>
+</svg>
